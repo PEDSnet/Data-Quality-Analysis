@@ -1,0 +1,8 @@
+Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_Threshold
+CA-013,Condition_Occurrence,condition_concept_id,0,
+CA-013,Observation,observation_concept_id,0,
+CA-013,Procedure_Occurrence,procedure_concept_id,0,
+CA-013,Drug_Exposure,drug_concept_id,0,
+CA-013,Measurement,measurement_concept_id,0,
+CA-013,measurement_organism,organism_source_value,0,
+CA-013,measurement_organism,organism_concept_id,0,

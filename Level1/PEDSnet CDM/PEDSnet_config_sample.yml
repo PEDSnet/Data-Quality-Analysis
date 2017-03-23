@@ -1,0 +1,17 @@
+db:
+ driver :  
+ dbname	: 
+ dbuser	: 
+ dbpass	: 
+ dbhost : 
+ dbport	:  
+ schema	: 
+ vocab_schema : 
+ dqa_schema : 
+reporting:
+ site_directory : 
+ etl_script_version : 
+ dqa_script_version : 
+ site : 
+ cdm : PEDSnet 
+ conventions_version : 

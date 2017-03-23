@@ -1,0 +1,7 @@
+Category Code,PEDSnet_Table,PEDSnet_Field_1,PEDSnet_Field_2,Lower_Threshold,Upper_Threshold
+CA-016,Visit_Occurrence,visit_start_date,visit_end_date,0,0
+CA-016,Condition_Occurrence,condition_start_date,condition_end_date,0,0
+CA-016,Observation_Period,Observation_period_start_date,Observation_period_end_date,0,0
+CA-016,Drug_exposure,drug_exposure_start_date,drug_exposure_end_date,0,0
+CA-016,Drug_exposure,drug_exposure_start_time,drug_exposure_end_time,0,0
+CA-016,Measurement,measurement_order_date,measurement_result_date,0,0

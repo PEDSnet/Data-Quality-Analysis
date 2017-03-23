@@ -1,0 +1,32 @@
+DBMS:
+postgresql
+
+Error:
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+
+SQL:
+SELECT * FROM stlouis_pedsnet.person
+
+R version:
+R version 3.3.2 (2016-10-31)
+
+Platform:
+x86_64-apple-darwin15.6.0
+
+Attached base packages:
+- stats
+- graphics
+- grDevices
+- utils
+- datasets
+- methods
+- base
+
+Other attached packages:
+- DatabaseConnector (1.9.1)
+- RJDBC (0.2-5)
+- rJava (0.9-8)
+- DBI (0.5-1)
+- plyr (1.8.4)
+- ggplot2 (2.2.1)
+- yaml (2.1.14)
