@@ -326,7 +326,7 @@ null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649
   ##########DQA CHECKPOINT################
   df_qual <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",
   ("domain_id='Observation' and concept_class_id ='Qualifier Value'"))
-  order_bins <-c(df_qual$concept_id,0)
+  order_bins <-c(df_qual$concept_id,0,44814653,44814649,44814650)
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
 
