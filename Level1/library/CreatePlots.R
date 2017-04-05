@@ -190,7 +190,10 @@ reportNullFlavors<-function(df_table,table_name,field_name,UN_code,OT_code,NI_co
         )
 
         # flog.info(dfTab)
+        #print(df_table)
+      
         count_ni<-subset(df_table,Var1==NI_code)$label[1]
+        #print(count_ni)
         if(is.na(count_ni)) count_ni<-"0%";
         count_un<-subset(df_table,Var1==UN_code)$label[1]
         if(is.na(count_un)) count_un<-"0%";
