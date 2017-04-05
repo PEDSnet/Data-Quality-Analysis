@@ -501,15 +501,17 @@ generateDrugExposureReport <- function(g_data_version) {
   df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
   describeNominalField_basic(df_table_unit_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  df_table<-retrieve_dataframe_top_5(con, g_config, table_name, field_name)
+  df_table_top_5<-retrieve_dataframe_top_5(con, g_config, table_name, field_name)
   fileContent<-c(fileContent,paste("The most frequent values for",field_name,"are:"))
   for(row_count in 1:5)
   {
-    fileContent<-c(fileContent,paste(df_table[row_count,1],"(count=",df_table[row_count,2],")"))
+    fileContent<-c(fileContent,paste(df_table_top_5[row_count,1],"(count=",df_table_top_5[row_count,2],")"))
   }
 
 
    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
+   #print(null_message)
+   #print(extract_ni_missing_percent( null_message))
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"dose_unit_source_value",
                                                            (missing_percent_source_value-
