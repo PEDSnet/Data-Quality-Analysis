@@ -124,7 +124,7 @@ generateProviderReport <- function (g_data_version) {
   field_name="specialty_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_provider,table_name,field_name,big_data_flag)
-  missing_percent<-extract_numeric_value(message)
+  missing_percent_source_value<-extract_numeric_value(message)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
@@ -154,7 +154,9 @@ generateProviderReport <- function (g_data_version) {
   field_name="specialty_concept_id"
    null_message<-reportNullFlavors(df_provider,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name, "specialty_source_value",(missing_percent-
+   #print(missing_percent_source_value)
+   #print(extract_ni_missing_percent( null_message))
+  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name, "specialty_source_value",(missing_percent_source_value-
                                                             extract_ni_missing_percent( null_message)), table_name, g_data_version))
   missing_percent_message<-reportMissingCount(df_provider,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)
