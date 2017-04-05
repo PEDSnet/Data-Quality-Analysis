@@ -69,7 +69,6 @@ generateMeasurementReport <- function(g_data_version) {
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
-    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   # flog.info(fileContent)
 
   field_name<-"provider_id" #
@@ -248,6 +247,7 @@ generateMeasurementReport <- function(g_data_version) {
   describeNominalField_basic(df_table_unit_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
+  null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"unit_source_value",
                                                            (missing_percent_source_value-
@@ -323,7 +323,8 @@ generateMeasurementReport <- function(g_data_version) {
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
-
+    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
+    
     ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
     logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"priority_source_value",
                                                              (missing_percent_source_value-
