@@ -124,6 +124,44 @@ generateObservationReport <- function(g_data_version) {
                                                               extract_ni_missing_percent( null_message)), table_name, g_data_version))
 
 
+  ###########DQA CHECKPOINT############## missing expected concepts 
+  if(nrow(subset(df_table,df_table$observation_concept_id==4145666))==0)
+  {
+    message<-"No admitting source records found"
+    #print(message)
+    fileContent<-c(fileContent,message,"\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
+  }
+  if(nrow(subset(df_table,df_table$observation_concept_id==4137274))==0)
+  {
+    message<-"No discharge disposition records found"
+    fileContent<-c(fileContent,message,"\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
+    
+  }
+  if(nrow(subset(df_table,df_table$observation_concept_id==44813951))==0)
+  {
+    message<-"No discharge status records found"
+    fileContent<-c(fileContent,message,"\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
+    
+  }
+  if(nrow(subset(df_table,df_table$observation_concept_id==3040464))==0)
+  {
+    message<-"No DRG records found"
+    fileContent<-c(fileContent,message,"\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
+    
+  }
+  if(nrow(subset(df_table,df_table$observation_concept_id==4005823 | 
+                 df_table$observation_concept_id==4219336 |
+                 df_table$observation_concept_id==4275495))==0)
+  {
+    message<-"No Tobacco records found"
+    fileContent<-c(fileContent,message,"\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
+  }
+  
   #NOMINAL Fields
 
   field_name<-"person_id" #
