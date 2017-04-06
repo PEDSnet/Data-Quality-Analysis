@@ -24,7 +24,7 @@ CA-010,low record count,identifies tables with unexpectedly low number of record
 CA-011,implausible numerical values,identifies numerical values out of expected range,atemporal plausibility verification,1,1,,manual,done
 CA-012,unexpected distribution,identifies any implausible distribution of values ,atemporal plausibility verification,1,1,,manual,
 CA-013,unexpected most frequent values,review list of most frequent values to identify values that are not expected to be frequent,atemporal plausibility verification,1,1,,manual,done
-CA-014,inconsistent null distribution between source values and concept ids,identifies percentage of null source values and with no corresponding No Information concept id,atemporal plausibility verification,1,2,,done,done
+CA-014,inconsistent null distribution between source values and concept ids,computes percent difference between NULL source values and  'No Information' (44814650) concept id,atemporal plausibility verification,1,2,,done,done
 CA-015,inconsistent frequency distribution between source values and concept ids,returns true if the list of most frequent values don't match between concept id and source value,atemporal plausibility verification,1,2,,manual,done
 CA-016,start date after end date,identifies records where the start date is greater than end date,temporal plausibility verification,1,2,,,done
 CB-001,unexpected fact to patient ratio,identifies irregular ratios of facts per patient as compared between sites,atemporal plausibility validation,1,2,,manual,done
