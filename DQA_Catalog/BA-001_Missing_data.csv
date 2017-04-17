@@ -105,3 +105,10 @@ BA-001,ADT_Occurrence,prior_adt_occurrence_id,0,0
 BA-001,ADT_Occurrence,next_adt_occurrence_id,0,0
 BA-001,ADT_Occurrence,service_source_value,0,0
 BA-001,ADT_Occurrence,adt_type_source_value,0,0
+BA-001,Device_Exposure,device_source_concept_id,0,0
+BA-001,Device_Exposure,device_source_value,0,0
+BA-001,Device_Exposure,device_exposure_end_date,0,0
+BA-001,Device_Exposure,unique_device_id,0,0
+BA-001,Device_Exposure,quantity,0,0
+BA-001,Device_Exposure,provider_id,0,0
+BA-001,Device_Exposure,visit_occurrence_id,0,0

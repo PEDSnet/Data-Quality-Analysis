@@ -25,7 +25,7 @@ executeLevel1DQA <- function() {
     success_log = 'Person report succesfully generated.',
     error_log = 'Failed to generate person report, see dqa.log for more details.',
     g_data_version)
-  
+
   flog.info("GENERATING PROVIDER REPORT")
     runAndLog(
     FUN = generateProviderReport,
@@ -35,7 +35,7 @@ executeLevel1DQA <- function() {
 
 
     flog.info("GENERATING CARE_SITE REPORT")
-    runAndLog(  
+    runAndLog(
     FUN = generateCareSiteReport,
     success_log = 'Care site report succesfully generated.',
     error_log = 'Failed to generate Care site report, see dqa.log for more details.',
@@ -68,14 +68,14 @@ executeLevel1DQA <- function() {
    success_log = 'Procedure occurrence report succesfully generated.',
    error_log = 'Failed to generate procedure occurrence report, see dqa.log for more details.',
    g_data_version)
-  
+
   flog.info("GENERATING CONDITION_OCCURRENCE REPORT")
   runAndLog(
    FUN = generateConditionOccurrenceReport,
    success_log = 'Condition occurrence report succesfully generated.',
    error_log = 'Failed to generate condition occurrence report, see dqa.log for more details.',
    g_data_version)
-  
+
   flog.info("GENERATING OBSERVATION REPORT")
   runAndLog(
     FUN = generateObservationReport,
@@ -103,6 +103,13 @@ executeLevel1DQA <- function() {
    success_log = 'Drug exposure report succesfully generated.',
    error_log = 'Failed to generate drug exposure report, see dqa.log for more details.',
    g_data_version)
+
+   flog.info("GENERATING DEVICE_EXPOSURE REPORT")
+   runAndLog(
+     FUN = generateDeviceExposureReport,
+     success_log = 'Device exposure report succesfully generated.',
+     error_log = 'Failed to generate device exposure report, see dqa.log for more details.',
+     g_data_version)
 
    flog.info("GENERATING VISIT_PAYER REPORT")
    runAndLog(
