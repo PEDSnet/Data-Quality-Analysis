@@ -36,3 +36,5 @@ AA-002,Fact_relationship,domain_concept_id_2,0,0
 AA-002,Measurement_organism,organism_concept_id,0,0
 AA-002,ADT_Occurrence,service_concept_id,0,0
 AA-002,ADT_Occurrence,adt_type_concept_id,0,0
+AA-002,Device_Exposure,device_concept_id,0,0
+AA-002,Device_Exposure,device_type_concept_id,0,0
