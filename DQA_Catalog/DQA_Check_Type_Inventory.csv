@@ -1,30 +1,30 @@
-check_code,check_type,function,framework_term,number_of_required_tables,number_of_required_variables,jira _id,automation_status,complete_catalogue
-AA-001,value set violation,identifies values that do not belong to a pre-defined set,value conformance verification,1,1,,done,done
-AA-002,invalid concept identifier,identifies concept ids that are not in pre-defined set of concept ids,value conformance verification,1,1,,done,done
-AA-003,inconsistency between pk and source value,returns difference between total number of records and total number of source values ,relational conformance verification,1,2,,done,done
-AA-004,unexpected fact,identifies values that are placed into an inappropriate field ,value conformance verification,1,1,,manual,done
-AA-005,illegal vocabulary,identifies concept ids not in prescribed set of vocabularies,value conformance verification,1,1,,done,done
-AA-006,inclusion criteria violation,identifies number of patients that do not satisfy pedsnet's inclusion criteria,value conformance verification,3,5,,done,
-AA-007,incorrect mapping,identifies source values and concept ids that are incorrectly mapped,value conformance,1,2,,,done
-AA-008,illegal concept class,identifies concepts that are not in the correct classes,value conformance,1,1,,,done
-BA-001,missing data,returns percentage of records having null value in a given field,completeness verification,1,1,,done,done
-BA-002,no matching concepts,returns the percentage of records with unmapped concept ids,completeness verification,1,1,,done,done
-BA-003,missing expected concept,identifies concept expected to be present,completeness verification,1,1,,done,done
-BA-004,insufficient facts for visits,identifies percent of visits with no facts associated with them,completeness verification,1,2,,done,done
-CA-001,future event,identifies number of records that occurs after today's date,temporal plausibility verification,1,1,,done,done
-CA-002,past event,identifies dates that occur impossibly far in the past,temporal plausibility verification,1,1,,manual,done
-CA-003,pre-birth fact,"identifies the number of facts that occur before birth, excluding the pre-natal facts",temporal plausibility verification,2,2,,done,done
-CA-004,post-death fact,identifies the number of facts that occur after death,temporal plausibility verification,2,2,,done,done
-CA-005,unexpected change in number of records between data cycles,identifies the percentage difference between number of records between two cycles,atemporal plausibility verification,1,n/a,,done,done
-CA-006,unexpected change in missingness of a field between data cycles,identifies number of records with missingness outside of expected limits,atemporal plausibility verification,1,1,,done,done
-CA-007,entity outliers,"identifies patients, visits, or providers that have an exceptionally high number of facts",atemporal plausibility verification,1,1,,manual,done
-CA-008,temporal outliers,"identifies specific dates with excessively high number of facts, which are characterized by peaks in the data",temporal plausibility verification,1,1,,manual,done
-CA-009,sudden change in temporal distribution,"identifies sudden shift in distribution of facts, changes occur on a specific date but are sustained over time",temporal plausibility verification,1,1,,manual,done
-CA-010,low record count,identifies tables with unexpectedly low number of records,atemporal plausibility verification,1,n/a,,manual,
-CA-011,implausible numerical values,identifies numerical values out of expected range,atemporal plausibility verification,1,1,,manual,done
-CA-012,unexpected distribution,identifies any implausible distribution of values ,atemporal plausibility verification,1,1,,manual,
-CA-013,unexpected most frequent values,review list of most frequent values to identify values that are not expected to be frequent,atemporal plausibility verification,1,1,,manual,done
-CA-014,inconsistent null distribution between source values and concept ids,computes percent difference between NULL source values and  'No Information' (44814650) concept id,atemporal plausibility verification,1,2,,done,done
-CA-015,inconsistent frequency distribution between source values and concept ids,returns true if the list of most frequent values don't match between concept id and source value,atemporal plausibility verification,1,2,,manual,done
-CA-016,start date after end date,identifies records where the start date is greater than end date,temporal plausibility verification,1,2,,,done
-CB-001,unexpected fact to patient ratio,identifies irregular ratios of facts per patient as compared between sites,atemporal plausibility validation,1,2,,manual,done
+check_code,check_type,function,framework_term,return_value,alias,number_of_required_tables,number_of_required_variables,jira _id,automation_status,complete_catalogue
+AA-001,value set violation,identifies values that do not belong to a pre-defined set,value conformance verification,set of value(s),vs_violation,1,1,,done,done
+AA-002,invalid concept identifier,identifies concept ids that are not in pre-defined set of concept ids,value conformance verification,set of value(s),invalid_concept_id,1,1,,done,done
+AA-003,inconsistency between pk and source value,returns difference between total number of records and total number of source values ,relational conformance verification,Number,pk_sv_inconsistency,1,2,,done,done
+AA-004,unexpected fact,identifies values that are placed into an inappropriate field ,value conformance verification,text message,unexpected_fact,1,1,,manual,done
+AA-005,illegal vocabulary,identifies concept ids not in prescribed set of vocabularies,value conformance verification,set of value(s),illegal_vocab,1,1,,done,done
+AA-006,inclusion criteria violation,identifies number of patients that do not satisfy pedsnet's inclusion criteria,value conformance verification,number,inclusion_criteria,3,5,,done,
+AA-007,incorrect mapping,identifies source values and concept ids that are incorrectly mapped,value conformance,set of value(s),incorrect_map,1,2,,,done
+AA-008,illegal concept class,identifies concepts that are not in the correct classes,value conformance,set of value(s),illegal_con_class,1,1,,,done
+BA-001,missing data,returns percentage of records having null value in a given field,completeness verification,percentage,missing_data,1,1,,done,done
+BA-002,no matching concepts,returns the percentage of records with unmapped concept ids,completeness verification,percentage,no_matching_concept,1,1,,done,done
+BA-003,missing expected concept,identifies concept expected to be present,completeness verification,text message,missing_expected_concept,1,1,,done,done
+BA-004,insufficient facts for visits,identifies percent of visits with no facts associated with them,completeness verification,percentage,insufficient_facts,1,2,,done,done
+CA-001,future event,identifies number of records that occurs after today's date,temporal plausibility verification,number,future_event,1,1,,done,done
+CA-002,past event,identifies dates that occur impossibly far in the past,temporal plausibility verification,text message,past_event,1,1,,manual,done
+CA-003,pre-birth fact,"identifies the number of facts that occur before birth, excluding the pre-natal facts",temporal plausibility verification,number,pre-birth_fact,2,2,,done,done
+CA-004,post-death fact,identifies the number of facts that occur after death,temporal plausibility verification,number,post-death_fact,2,2,,done,done
+CA-005,unexpected change in number of records between data cycles,identifies the percentage difference between number of records between two cycles,atemporal plausibility verification,percentage,change_in_record_number,1,n/a,,done,done
+CA-006,unexpected change in missingness of a field between data cycles,identifies number of records with missingness outside of expected limits,atemporal plausibility verification,number,change_in_missingness,1,1,,done,done
+CA-007,entity outliers,"identifies patients, visits, or providers that have an exceptionally high number of facts",atemporal plausibility verification,text message,entity_outliers,1,1,,manual,done
+CA-008,temporal outliers,"identifies specific dates with excessively high number of facts, which are characterized by peaks in the data",temporal plausibility verification,text message,temporal_outliear,1,1,,manual,done
+CA-009,sudden change in temporal distribution,"identifies sudden shift in distribution of facts, changes occur on a specific date but are sustained over time",temporal plausibility verification,text message,temporal_distribution,1,1,,manual,done
+CA-010,low record count,identifies tables with unexpectedly low number of records,atemporal plausibility verification,text message,low_record_count,1,n/a,,manual,
+CA-011,implausible numerical values,identifies numerical values out of expected range,atemporal plausibility verification,text message,implausible_number_value,1,1,,manual,done
+CA-012,unexpected distribution,identifies any implausible distribution of values ,atemporal plausibility verification,text message,unexpected_distribution,1,1,,manual,
+CA-013,unexpected most frequent values,review list of most frequent values to identify values that are not expected to be frequent,atemporal plausibility verification,set of value(s),unexpected_freq_value,1,1,,manual,done
+CA-014,inconsistent null distribution between source values and concept ids,computes percent difference between NULL source values and  'No Information' (44814650) concept id,atemporal plausibility verification,percentage,inconsistent_null_dist,1,2,,done,done
+CA-015,inconsistent frequency distribution between source values and concept ids,returns true if the list of most frequent values don't match between concept id and source value,atemporal plausibility verification,text message,inconsistent_freq_dist,1,2,,manual,done
+CA-016,start date after end date,identifies records where the start date is greater than end date,temporal plausibility verification,number,start_after_end,1,2,,no,done
+CB-001,unexpected fact to patient ratio,identifies irregular ratios of facts per patient as compared between sites,atemporal plausibility validation,number,unexpected_pt_ratio,1,2,,manual,done
