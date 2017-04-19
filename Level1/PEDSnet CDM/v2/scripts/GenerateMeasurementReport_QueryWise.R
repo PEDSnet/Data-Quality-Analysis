@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateMeasurementReport <- function(g_data_version) {
+generateMeasurementReport <- function() {
   flog.info(Sys.time())
 
   big_data_flag<-TRUE

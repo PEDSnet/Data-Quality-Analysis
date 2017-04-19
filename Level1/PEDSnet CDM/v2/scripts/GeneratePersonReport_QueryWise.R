@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generatePersonReport <- function(g_data_version) {
+generatePersonReport <- function() {
   #setting up big data flag
   big_data_flag<-TRUE
   #establish connection to database

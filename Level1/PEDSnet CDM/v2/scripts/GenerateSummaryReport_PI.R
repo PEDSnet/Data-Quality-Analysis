@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateSummaryReport <- function (g_data_version) {
+generateSummaryReport <- function () {
   #establish connection to database
   con <- establish_database_connection_OHDSI( g_config)
 

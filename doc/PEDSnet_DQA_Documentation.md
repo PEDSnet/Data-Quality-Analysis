@@ -43,19 +43,37 @@ Execute [DDL_RxNorm_Tables.sql](../Level1/library/DDL_RxNorm_Tables.sql)
 
 ### Apply DQA Checks
 
-``` R
+
+```R
 setwd("/path/to/repo/")
-source('Run_DQA.R')
+source("Run_DQA.R")
+```
+
+
+#### Run All Level 1 DQA Checks
+``` R
 runDQA(level=1)
 ```
 
-###### Level 2 For Postgres Users
+#### Run Single Level 1 DQA Check
+```R
+generateSingleReport(level=1, report="report_name")
+
+"report_name" examples include: "person", "fact relationship", "visit occurrence", etc
+```
+
+#### Run All Level 2 DQA Checks For Postgres Users
 
 ``` R
-setwd("/path/to/repo/")
-source('Run_DQA.R')
 runDQA(level=2)
 ```
 
-###### Level 2 For Oracle Users 
+#### Run Single Level 2 DQA Check
+```R
+generateSingleReport(level=2, report="report_name")
+
+"report_name" examples include: "procedure", "drug", "measurement", etc
+```
+
+#### Run All Level 2 DQA Checks For Oracle Users 
 Execute [Level2\_queries.md](../Level2/Level2\_queries.md) 

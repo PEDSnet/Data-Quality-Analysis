@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateConditionOccurrenceReport <- function(g_data_version) {
+generateConditionOccurrenceReport <- function() {
   flog.info(Sys.time())
 
   #establish connection to database

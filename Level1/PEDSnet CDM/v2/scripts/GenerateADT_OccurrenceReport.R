@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateAdtOccurrenceReport <- function(g_data_version) {
+generateAdtOccurrenceReport <- function() {
   flog.info(Sys.time())
 
   #establish connection to database

@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateLocationReport <- function(g_data_version) {
+generateLocationReport <- function() {
   #establish connection to database
   con <- establish_database_connection_OHDSI( g_config)
 

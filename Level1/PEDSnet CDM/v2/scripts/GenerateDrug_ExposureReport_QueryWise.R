@@ -1,9 +1,6 @@
-library(DBI)
-library(yaml)
-
 flog.info(Sys.time())
 
-generateDrugExposureReport <- function(g_data_version) {
+generateDrugExposureReport <- function() {
   big_data_flag<-TRUE
 
   #establish connection to database

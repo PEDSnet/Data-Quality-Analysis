@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateVisitOccurrenceReport <- function(g_data_version) {
+generateVisitOccurrenceReport <- function() {
   flog.info(Sys.time())
   big_data_flag<-TRUE
 
