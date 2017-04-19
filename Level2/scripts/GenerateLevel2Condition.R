@@ -234,7 +234,7 @@ generateLevel2Condition <- function() {
       log_entry_content<-(read.csv(log_file_name))
 
       log_entry_content<-custom_rbind(log_entry_content,
-                                      apply_check_type_1('CA-013', "condition_concept_id",
+                                      apply_check_type_1('CB-002', "condition_concept_id",
                                                          paste("outlier inpatient condition:",df_condition_counts_by_visit[row,1],df_condition_counts_by_visit[row,2]), table_name, g_data_version)
       )
       # flog.info(df_condition_counts_by_visit[row,1])

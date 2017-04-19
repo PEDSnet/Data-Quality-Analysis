@@ -18,12 +18,9 @@ executeLevel1DQA <- function() {
   # data version
   g_data_version<-paste("pedsnet-",g_config$reporting$conventions_version,"-",g_config$reporting$site,"-ETL",g_config$reporting$etl_script_version, sep="")
 
-
   flog.info("Starting Level 1 DQA")
   for (available_report in ls(g_level1_reports)) {
       report <- g_level1_reports[[available_report]]
-
-      flog.info("GENERATING %s REPORT", toupper(available_report))
 
       runAndLog(
         FUN = report,

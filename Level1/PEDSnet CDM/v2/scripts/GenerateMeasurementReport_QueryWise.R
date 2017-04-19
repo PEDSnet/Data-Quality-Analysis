@@ -397,15 +397,22 @@ generateMeasurementReport <- function() {
   df_measurement_concept <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
                                       ,"(domain_id='Measurement' and  (invalid_reason is null or invalid_reason=''))
                                    or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))")
+  
   order_bins <-c(df_measurement_concept$concept_id,0,NA)
 
-
+  
   field_name<-"measurement_concept_id" #
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  
+  
+  ###########DQA CHECKPOINT############## FOR LABS only 
+  df_labs<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id=44818702")
+  acceptable_labs<- read.csv(paste(getwd(), "/Data/PEDSnet_lab_list.csv", sep= ""))$concept_id ## read from lablist
+  unexpected_message<- reportUnexpected(df_labs,table_name,field_name,acceptable_labs,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste("Labs: ",unexpected_message), table_name, g_data_version));
+  
+  
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name, big_data_flag))
   # add % of no matching concept (concept id = 0). for the completeness report
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)

@@ -10,6 +10,7 @@ source("../Level1/PEDSnet CDM/v2/scripts/GenerateObservationReport_QueryWise.R",
 source("../Level1/PEDSnet CDM/v2/scripts/GenerateMeasurementReport_QueryWise.R", chdir = T)
 source("../Level1/PEDSnet CDM/v2/scripts/GenerateMeasurement_OrganismReport_QueryWise.R", chdir = T)
 source("../Level1/PEDSnet CDM/v2/scripts/GenerateDrug_ExposureReport_QueryWise.R", chdir = T)
+source("../Level1/PEDSnet CDM/v2/scripts/GenerateDevice_ExposureReport_QueryWise.R", chdir = T)
 source("../Level1/PEDSnet CDM/v2/scripts/GenerateVisit_PayerReport_QueryWise.R", chdir = T)
 source("../Level1/PEDSnet CDM/v2/scripts/GenerateFact_RelationshipReport_QueryWise.R", chdir = T)
 source("../Level1/PEDSnet CDM/v2/scripts/GenerateADT_OccurrenceReport.R", chdir = T)
