@@ -10,7 +10,12 @@
 
 ## Required Downloads
 
-### JDK
+### JDK  
+Java version 5
+
+If using OSX, download [here](https://support.apple.com/kb/dl1572?locale=en_US)
+
+Note: version 5 must be installed, even if a higher version of Java is installed
 
 ### R
 R version 3.1.x or above, 64-bit ([Comprehensive R Archive Network](http://cran.r-project.org/))
