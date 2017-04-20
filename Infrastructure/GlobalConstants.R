@@ -25,27 +25,27 @@ g_data_version<<-paste("pedsnet-",g_config$reporting$conventions_version,"-", g_
 g_level1_reports<<-new.env()
 g_level1_reports[["person"]] = generatePersonReport
 g_level1_reports[["provider"]] = generateProviderReport
-g_level1_reports[["care site"]] = generateCareSiteReport
+g_level1_reports[["care_site"]] = generateCareSiteReport
 g_level1_reports[["location"]] = generateLocationReport
 g_level1_reports[["death"]] = generateDeathReport
-g_level1_reports[["visit occurrence"]] = generateVisitOccurrenceReport
-g_level1_reports[["procedure occurrence"]] = generateProcedureOccurrenceReport
-g_level1_reports[["condition occurrence"]] = generateConditionOccurrenceReport
+g_level1_reports[["visit_occurrence"]] = generateVisitOccurrenceReport
+g_level1_reports[["procedure_occurrence"]] = generateProcedureOccurrenceReport
+g_level1_reports[["condition_occurrence"]] = generateConditionOccurrenceReport
 g_level1_reports[["observation"]] = generateObservationReport
 g_level1_reports[["measurement"]] = generateMeasurementReport
-g_level1_reports[["measurement organism"]] = generateMeasurementOrganismReport
-g_level1_reports[["drug exposure"]] = generateDrugExposureReport
-g_level1_reports[["visit payer"]] = generateVisitPayerReport
-g_level1_reports[["fact relationship"]] = generateFactRelationshipReport
-g_level1_reports[["adt occurrence"]] = generateAdtOccurrenceReport
-g_level1_reports[["device exposure"]] = generateDeviceExposureReport
+g_level1_reports[["measurement_organism"]] = generateMeasurementOrganismReport
+g_level1_reports[["drug_exposure"]] = generateDrugExposureReport
+g_level1_reports[["visit_payer"]] = generateVisitPayerReport
+g_level1_reports[["fact_relationship"]] = generateFactRelationshipReport
+g_level1_reports[["adt_occurrence"]] = generateAdtOccurrenceReport
+g_level1_reports[["device_exposure"]] = generateDeviceExposureReport
 
 g_level2_reports<<-new.env()
 g_level2_reports[["patient"]] = generateLevel2Patient
-g_level2_reports[["visit"]] = generateLevel2Visit
+g_level2_reports[["visit_occurrence"]] = generateLevel2Visit
 g_level2_reports[["observation"]] = generateLevel2Observation
-g_level2_reports[["condition"]] = generateLevel2Condition
-g_level2_reports[["procedure"]] = generateLevel2Procedure
-g_level2_reports[["drug"]] = generateLevel2Drug
+g_level2_reports[["condition_occurrence"]] = generateLevel2Condition
+g_level2_reports[["procedure_occurrence"]] = generateLevel2Procedure
+g_level2_reports[["drug_exposure"]] = generateLevel2Drug
 g_level2_reports[["measurement"]] = generateLevel2Measurement
-g_level2_reports[["measurement organism"]] = generateLevel2MeasurementOrganism
+g_level2_reports[["measurement_organism"]] = generateLevel2MeasurementOrganism

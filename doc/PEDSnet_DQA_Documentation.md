@@ -41,39 +41,40 @@ Execute [DDL_RxNorm_Tables.sql](../Level1/library/DDL_RxNorm_Tables.sql)
 
 **Note**: If using a custom schema for DQA tables, please change all references to schema "dqa" in the above script into the custom schema.  
 
-### Apply DQA Checks
 
-
+### Setup
 ```R
 setwd("/path/to/repo/")
 source("Run_DQA.R")
 ```
 
+### Level 1
 
-#### Run All Level 1 DQA Checks
+#### All Tables
 ``` R
 runDQA(level=1)
 ```
 
-#### Run Single Level 1 DQA Check
+#### Single Table
 ```R
-generateSingleReport(level=1, report="report_name")
+generateSingleReport(level=1, table="table_name")
 
-"report_name" examples include: "person", "fact relationship", "visit occurrence", etc
+"table_name" examples include: "person", "fact_relationship", "visit_occurrence", etc
 ```
 
-#### Run All Level 2 DQA Checks For Postgres Users
+### Level 2
 
+#### All Tables: Postgres
 ``` R
 runDQA(level=2)
 ```
 
-#### Run Single Level 2 DQA Check
+#### Single Table: Postgres
 ```R
-generateSingleReport(level=2, report="report_name")
+generateSingleReport(level=2, table="table_name")
 
-"report_name" examples include: "procedure", "drug", "measurement", etc
+"table_name" examples include: "procedure", "drug", "measurement", etc
 ```
 
-#### Run All Level 2 DQA Checks For Oracle Users 
+#### All Tables: Oracle
 Execute [Level2\_queries.md](../Level2/Level2\_queries.md) 
