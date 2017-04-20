@@ -1,0 +1,8 @@
+Level1/PEDSnet\ CDM/PEDSnet_config.yml
+Level1/PCORnet\ CDM/PCORnet_config.yml
+
+*.idea/
+*.Rhistory
+
+.DS_Store
+dqa.log

@@ -1,9 +1,6 @@
-library(DBI)
-library(yaml)
-
 flog.info(Sys.time())
 
-generateFactRelationshipReport <- function(g_data_version) {
+generateFactRelationshipReport <- function() {
   #establish connection to database
   con <- establish_database_connection_OHDSI( g_config)
 

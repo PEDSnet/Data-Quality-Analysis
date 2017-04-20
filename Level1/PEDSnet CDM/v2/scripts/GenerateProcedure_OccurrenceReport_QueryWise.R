@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateProcedureOccurrenceReport <- function(g_data_version) {
+generateProcedureOccurrenceReport <- function() {
   flog.info(Sys.time())
 
   big_data_flag<-TRUE # for query wise analysis

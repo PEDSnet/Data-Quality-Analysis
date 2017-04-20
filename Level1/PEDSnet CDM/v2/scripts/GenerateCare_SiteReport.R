@@ -1,7 +1,4 @@
-library(DBI)
-library(yaml)
-
-generateCareSiteReport <- function(g_data_version) {
+generateCareSiteReport <- function() {
 
   big_data_flag<-FALSE
   #establish connection to database
