@@ -430,7 +430,7 @@ generateDrugExposureReport <- function() {
   field_name="route_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_route <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                           ,"domain_id ='Route'")
+                                           ,"domain_id ='Route' and invalid_reason is null ")
   order_bins <-c(df_route$concept_id,0,44814650,NA)
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)

@@ -56,21 +56,8 @@ generateCareSiteReport <- function() {
 
 
   #place of service concept id
-  df_place_of_service <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",
-                                       "
-                                       domain_id='Visit' or (vocabulary_id='PCORNet' and concept_class_id='Encounter Type' and
-  	                                 	(concept_code not like  '%-ED'
-                                       and concept_code not like '%-IP'
-                                       and concept_code not like '%-AV'))
-                                       or
-                                       (vocabulary_id='PCORNet' and concept_class_id='Undefined' and
-                                       (concept_code not like  '%-ED'
-                                       and concept_code not like '%-IP'
-                                       and concept_code not like '%-AV')
-                                       ) and invalid_reason is null
-                                       "
-                                       )
-  order_bins <-c(df_place_of_service$concept_id,0,NA)
+                                       
+  order_bins <-c(8782, 8761, 8756, 8940, 8971, 8717, 8716, 8870, 8844, 8892, 44814653, 44814649,44814650,0,NA)
 
   field_name="place_of_service_concept_id"
   null_message<-reportNullFlavors(df_care_site,table_name,field_name,44814653,44814649,44814650,big_data_flag)
