@@ -63,8 +63,15 @@ generateConditionOccurrenceReport <- function() {
 
 
   #NOMINAL Fields
-  df_condition_type_concept_id<-retrieve_dataframe_clause(con,g_config,g_config$db$vocab_schema,"concept","concept_id,concept_name","domain_id ='Condition Type'")
-  order_bins <-c(df_condition_type_concept_id$concept_id,NA)
+ # df_condition_type_concept_id<-retrieve_dataframe_clause(con,g_config,g_config$db$vocab_schema,
+  #                                                        "concept","concept_id,concept_name",
+   #                                                       "domain_id ='Condition Type'
+    #                                                      and vocabulary_id='PEDSnet'")
+  order_bins <-c(2000000095, 2000000096, 2000000097, 
+                 2000000092, 2000000093, 2000000094, 
+                 2000000098, 2000000099, 2000000100, 
+                 2000000101, 2000000102, 2000000103, 
+                 2000000089, 2000000090, 2000000091,0,NA)
 
 
   # this is a nominal field - work on it
@@ -303,7 +310,39 @@ generateConditionOccurrenceReport <- function() {
 
        flog.info(Sys.time())
 
-
+   ## condition status source value 
+    field_name<-"condition_status_source_value"
+    df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
+    missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+    missing_percent<- extract_numeric_value(missing_percent_message)
+    fileContent<-c(fileContent,missing_percent_message)
+    ###########DQA CHECKPOINT##############
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+    
+    order_bins <-c(df_condition_type_concept_id$concept_id,NA)
+    
+    
+    # this is a nominal field - work on it
+    field_name<-"condition_status_concept_id" #
+    df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
+    order_bins <-c("4230359","0",NA)
+    label_bins<-c("Final Diagnosis (4230359)","Other (0)","NULL")
+    color_bins <-c("4230359"="lightcoral","0"="grey64")
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+    missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+    missing_percent<- extract_numeric_value(missing_percent_message)
+    fileContent<-c(fileContent,missing_percent_message)
+    ###########DQA CHECKPOINT##############
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+    unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+    ###########DQA CHECKPOINT##############
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+    fileContent<-c(fileContent,unexpected_message)
+    describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
+    fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+    
+    
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

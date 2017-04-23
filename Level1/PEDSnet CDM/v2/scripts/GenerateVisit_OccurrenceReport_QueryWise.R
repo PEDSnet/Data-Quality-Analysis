@@ -164,7 +164,7 @@ generateVisitOccurrenceReport <- function() {
                               ) and invalid_reason is null
                               "
                                        )
-  order_bins <-c(df_visit$concept_id,0,NA)
+  order_bins <-c(df_visit$concept_id,2000000088,0,NA)
   field_name="visit_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
 null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
