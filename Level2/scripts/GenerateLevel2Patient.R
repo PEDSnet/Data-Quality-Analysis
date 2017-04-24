@@ -52,9 +52,10 @@ generateLevel2Patient <- function() {
                                   & (visit_concept_id ==9201
                                     |visit_concept_id== 9202
                                     |visit_concept_id== 9203
-                                    |visit_concept_id== 42898160
+                                    |visit_concept_id==42898160
                                     |visit_concept_id==44814710
-                                    |visit_concept_id==2000000048)
+                                    |visit_concept_id==2000000048
+                                    |visit_concept_id==2000000088)
                                     ), person_id
                                   )
   
