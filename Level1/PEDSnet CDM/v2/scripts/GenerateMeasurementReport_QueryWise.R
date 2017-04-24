@@ -427,7 +427,7 @@ generateMeasurementReport <- function() {
 
   ## Specific lab checks
   ## for creatinine
-  num_creatinine_records<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*)","measurement_concept_id = 3016723 and value_as_number > 0")[1,1]
+  num_creatinine_records<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*)","measurement_concept_id in (3016723,3017250) and value_as_number > 0")[1,1]
 
   fileContent<-c(fileContent,paste("The number of creatinine records is: ",num_creatinine_records,"(",
                                    round((num_creatinine_records/df_total_measurement_count),2),"%)"))
