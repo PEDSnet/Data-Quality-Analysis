@@ -45,7 +45,7 @@ order by 3 desc
 limit 15
 ```
 
-## Query C1. Top-15 Inpatient Conditions
+## Query C1. Top-100 Inpatient Conditions
 ```
 select condition_concept_id, concept_name, count(*)
 from dcc_pedsnet.condition_occurrence, vocabulary.concept
@@ -53,10 +53,10 @@ where condition_concept_id = concept_id
 and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9201)
 group by condition_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
 
-## Query C2. Top-15 Outpatient Conditions
+## Query C2. Top-100 Outpatient Conditions
 ```
 select condition_concept_id, concept_name, count(*)
 from dcc_pedsnet.condition_occurrence, vocabulary.concept
@@ -64,10 +64,20 @@ where condition_concept_id = concept_id
 and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9202)
 group by condition_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
 
-## Query D1. Top-15 Inpatient Procedures
+## Query C3. Top-100 No Matching Conditions
+```
+select condition_source_value, count(*)
+from dcc_pedsnet.condition_occurrence
+where condition_concept_id=0
+group by condition_source_value
+order by 2 desc
+limit 100
+```
+
+## Query D1. Top-100 Inpatient Procedures
 ```
 select procedure_concept_id, concept_name, count(*)
 from dcc_pedsnet.procedure_occurrence, vocabulary.concept
@@ -75,10 +85,10 @@ where procedure_concept_id = concept_id
 and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9201)
 group by procedure_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
 
-## Query D2. Top-15 Outpatient Procedures
+## Query D2. Top-100 Outpatient Procedures
 ```
 select procedure_concept_id, concept_name, count(*)
 from dcc_pedsnet.procedure_occurrence, vocabulary.concept
@@ -86,9 +96,18 @@ where procedure_concept_id = concept_id
 and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9202)
 group by procedure_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
-## Query E1. Top-15 Inpatient Drugs
+## Query D3. Top-100 No Matching Procedures
+```
+select procedure_source_value, count(*)
+from dcc_pedsnet.procedure_occurrence
+where procedure_concept_id=0
+group by procedure_source_value
+order by 2 desc
+limit 100
+```
+## Query E1. Top-100 Inpatient Drugs
 ```
 select drug_concept_id, concept_name, count(*)
 from dcc_pedsnet.drug_exposure, vocabulary.concept
@@ -96,10 +115,10 @@ where drug_concept_id = concept_id
 and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9201)
 group by drug_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
 
-## Query E2. Top-15 Outpatient Drugs
+## Query E2. Top-100 Outpatient Drugs
 ```
 select drug_concept_id, concept_name, count(*)
 from dcc_pedsnet.drug_exposure, vocabulary.concept
@@ -107,34 +126,70 @@ where drug_concept_id = concept_id
 and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9202)
 group by drug_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
+```
+## Query E3. Top-100 No Matching Drugs
+```
+select drug_source_value, count(*)
+from dcc_pedsnet.drug_exposure
+where drug_concept_id=0
+group by drug_source_value
+order by 2 desc
+limit 100
 ```
 
-## Query F1. Top-15 Inpatient Labs
+## Query F1. Top-100 Labs
 
 ```
 select measurement_concept_id, concept_name, count(*)
 from dcc_pedsnet.measurement, vocabulary.concept
 where measurement_concept_id = concept_id
 and measurement_type_concept_id = 44818702
-and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9201)
 group by measurement_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
-## Query F2. Top-15 Outpatient Labs
+## Query F2. Top-100 Vitals
 ```
 select measurement_concept_id, concept_name, count(*)
 from dcc_pedsnet.measurement, vocabulary.concept
 where measurement_concept_id = concept_id
-and measurement_type_concept_id = 44818702
-and visit_occurrence_id in (Select visit_occurrence_id from dcc_pedsnet.visit_occurrence where visit_concept_id = 9202)
+and measurement_type_concept_id in ( 2000000033, 2000000032)
 group by measurement_concept_id, concept_name
 order by 3 desc
-limit 15
+limit 100
 ```
 
-## Query Set G1. Facts before birth
+## Query F3. Top-100 No Matching Measurements
+```
+select measurement_source_value, count(*)
+from dcc_pedsnet.measurement
+where measurement_concept_id=0
+group by measurement_source_value
+order by 2 desc
+limit 100
+```
+## Query G1. Top-100 Organisms
+```
+select organism_concept_id, concept_name, count(*)
+from dcc_pedsnet.measurement_organism, vocabulary.concept
+where organism_concept_id = concept_id
+group by organism_concept_id, concept_name
+order by 3 desc
+limit 100
+```
+
+## Query G2. Top-100 No Matching Organisms
+```
+select organism_source_value, count(*)
+from dcc_pedsnet.measurement_organism
+where organism_concept_id=0
+group by organism_source_value
+order by 2 desc
+limit 100
+```
+
+## Query Set H1. Facts before birth
 ### Visits before birth
 ```
 select count(*) from dcc_pedsnet.visit_occurrence a, dcc_pedsnet.person b
@@ -197,7 +252,7 @@ where floor(months_between(time_of_birth - drug_exposure_start_date)) < 9
  and a.person_id=b.person_id
 ```
 
-## Query Set G2. Facts after death
+## Query Set H2. Facts after death
 
 ### Visits after death
 ```
@@ -233,56 +288,22 @@ select count(*) from dcc_pedsnet.drug_exposure a,  dcc_pedsnet.death b
 where drug_exposure_start_date > death_date
  and a.person_id=b.person_id
 ```
-## Query Set H
-### % Visits with no associated conditions
+## Query I: Visits with no associated facts
 ```
-with sub as
-(select
-sum(case when co.visit_occurrence_id is null then 1 else 0 end) as no_association,
-count(distinct vo.visit_occurrence_id) as total
-from pedsnet.visit_occurrence vo
-left outer join condition_occurrence co on vo.visit_occurrence_id = co.visit_occurrence_id)
-select
-sub.no_association/sub.total
-from sub
-```
-
-
-### % Visits with no associated procedures
-```
-with sub as
-(select
-sum(case when po.visit_occurrence_id is null then 1 else 0 end) as no_association,
-count(distinct vo.visit_occurrence_id) as total
-from pedsnet.visit_occurrence vo
-left outer join procedure_occurrence po on vo.visit_occurrence_id = po.visit_occurrence_id)
-select
-sub.no_association/sub.total
-from sub
-```
-
-### % Visits with no associated measurements
-```
-with sub as
-(select
-sum(case when m.visit_occurrence_id is null then 1 else 0 end) as no_association,
-count(distinct vo.visit_occurrence_id) as total
-from pedsnet.visit_occurrence vo
-left outer join measurement m on vo.visit_occurrence_id = m.visit_occurrence_id)
-select
-sub.no_association/sub.total
-from sub
-```
-
-### % Visits with no associated drugs
-```
-with sub as
-(select
-sum(case when de.visit_occurrence_id is null then 1 else 0 end) as no_association,
-count(distinct vo.visit_occurrence_id) as total
-from pedsnet.visit_occurrence vo
-left outer join drug_exposure de on vo.visit_occurrence_id = de.visit_occurrence_id)
-select
-sub.no_association/sub.total
-from sub
+with total_visits as 
+(select count(*) as total_count 
+from dcc_pedsnet.visit_occurrence 
+), 
+ f2f_visits as ( select visit_occurrence_id from dcc_pedsnet.visit_occurrence  where visit_concept_id in (9201, 9202, 9203)), 
+ no_fact_visit as 
+ ( select v.visit_occurrence_id from 
+f2f_visits v left outer join dcc_pedsnet.condition_occurrence c on v.visit_occurrence_id = c.visit_occurrence_id 
+left outer join dcc_pedsnet.procedure_occurrence p on v.visit_occurrence_id = p.visit_occurrence_id
+left outer join dcc_pedsnet.measurement m on v.visit_occurrence_id = m.visit_occurrence_id
+left outer join dcc_pedsnet.drug_exposure d on v.visit_occurrence_id = d.visit_occurrence_id
+where c.visit_occurrence_id is null and p.visit_occurrence_id is null
+and  m.visit_occurrence_id is null and  d.visit_occurrence_id is null)
+,no_fact_visits as (
+select count(*) as nofact_count from no_fact_visit )
+select  round(nofact_count*100/total_count,2) from total_visits, no_fact_visits 
 ```
