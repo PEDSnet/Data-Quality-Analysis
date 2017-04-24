@@ -126,6 +126,14 @@ if(length(message)==3)
   order_bins <-c(df_adt_type_concept_id$concept_id,0,NA)
   field_name="adt_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  fileContent<-c(fileContent,message)
+  ###########DQA CHECKPOINT -- missing information##############
+  missing_percent<-extract_numeric_value(message)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  
+  if(missing_percent<100)
+  {
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
@@ -134,7 +142,8 @@ if(length(message)==3)
   df_adt_type_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_adt_type_concept_id);
   describeNominalField_basic(df_adt_type_concept_id_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
+  }
+  
    flog.info(Sys.time())
   field_name<-"prior_adt_occurrence_id" # 8 minutes
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)

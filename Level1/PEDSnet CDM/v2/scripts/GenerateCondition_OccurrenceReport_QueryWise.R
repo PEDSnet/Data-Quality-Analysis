@@ -224,9 +224,12 @@ generateConditionOccurrenceReport <- function() {
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  if(grepl("future",message[3]))
+  if(missing_percent<100)
   {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "conditions cannot end in the future", table_name, g_data_version));
+    if(grepl("future",message[3]))
+    {
+      logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "conditions cannot end in the future", table_name, g_data_version));
+    }
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   
