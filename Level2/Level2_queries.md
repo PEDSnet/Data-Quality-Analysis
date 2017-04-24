@@ -5,7 +5,7 @@
 select count(*) from dcc_pedsnet.person
 where person_id not in
  (select person_id from dcc_pedsnet.visit_occurrence where visit_start_date >='01-01-2009'
-    and visit_concept_id in (9201, 9202, 9203, 42898160,44814710,2000000048)
+    and visit_concept_id in (9201, 9202, 9203, 42898160,44814710,2000000048, 2000000088)
   intersect
   select person_id from dcc_pedsnet.condition_occurrence where condition_start_date>='01-01-2009'
   )
