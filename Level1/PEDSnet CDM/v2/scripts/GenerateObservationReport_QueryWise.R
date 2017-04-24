@@ -249,7 +249,7 @@ generateObservationReport <- function() {
 df_vac <-retrieve_dataframe_clause(con,g_config,g_config$db$vocab_schema,"concept","concept_id,concept_name"
                                     ,"concept_class_id='MS-DRG' and invalid_reason is null")
 df_vac2 <-retrieve_dataframe_clause(con,g_config,g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                   ,"concept_class_id='DRG' and valid_end_date = '2007-09-30' and 
+                                   ,"concept_class_id='DRG' and valid_end_date=to_date('2007-09-30','YYYY-MM-DD') and 
                                    invalid_reason = 'D'")
   order_bins <-c (df_vac$concept_id, df_vac2$concept_id, 44814670, 44814671,44814672, 8870, 44814674, 44814675,8546,38004279, 44814678,
   44814679, 44814680, 8863, 44814650,44814653,44814649,4161979,4216643,38004205,
