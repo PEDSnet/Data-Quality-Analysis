@@ -200,6 +200,7 @@ where visit_start_date < time_of_birth
 ```
 select count(*) from dcc_pedsnet.visit_occurrence a, dcc_pedsnet.person b
 where floor(months_between(time_of_birth  - visit_start_date)) < 9
+and floor(months_between(time_of_birth,visit_start_date)) > 0
  and a.person_id=b.person_id
 ```
 
@@ -213,6 +214,7 @@ where condition_start_date < time_of_birth
 ```
 select count(*) from dcc_pedsnet.condition_occurrence a, dcc_pedsnet.person b
 where floor(months_between(time_of_birth - condition_start_date )) < 9
+and floor(months_between(time_of_birth,condition_start_date )) > 0
  and a.person_id=b.person_id
 ```
 ### Procedures before birth
@@ -225,6 +227,7 @@ where procedure_date < time_of_birth
 ```
 select count(*) from dcc_pedsnet.procedure_occurrence a, dcc_pedsnet.person b
 where floor(months_between(time_of_birth - procedure_date)) < 9
+and floor(months_between(time_of_birth,procedure_date)) >0
  and a.person_id=b.person_id
 ```
 ### Measurement before birth
@@ -237,6 +240,7 @@ where measurement_date < time_of_birth
 ```
 select count(*) from dcc_pedsnet.measurement a, dcc_pedsnet.person b
 where floor(months_between(time_of_birth - measurement_date)) < 9
+and floor(months_between(time_of_birth,measurement_date)) >0
  and a.person_id=b.person_id
 ```
 ### Drug Exposure before birth
@@ -249,6 +253,7 @@ where drug_exposure_start_date < time_of_birth
 ```
 select count(*) from dcc_pedsnet.drug_exposure a, dcc_pedsnet.person b
 where floor(months_between(time_of_birth - drug_exposure_start_date)) < 9
+and floor(months_between(time_of_birth,drug_exposure_start_date)) >0
  and a.person_id=b.person_id
 ```
 
