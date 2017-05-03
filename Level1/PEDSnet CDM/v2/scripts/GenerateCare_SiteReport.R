@@ -56,8 +56,10 @@ generateCareSiteReport <- function() {
 
 
   #place of service concept id
-                                       
-  order_bins <-c(8782, 8761, 8756, 8940, 8971, 8717, 8716, 8870, 8844, 8892, 44814653, 44814649,44814650,0,NA)
+  df_place_of_service <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
+                                           ,"concept_id in (8782, 8761, 8756, 8940, 8971, 8717, 8716, 8870, 8844, 8892, 44814653, 44814649,44814650)")
+  order_bins <-c(df_place_of_service$concept_id,0,NA)
+  
 
   field_name="place_of_service_concept_id"
   null_message<-reportNullFlavors(df_care_site,table_name,field_name,44814653,44814649,44814650,big_data_flag)
