@@ -57,7 +57,7 @@ runDQA(level=1)
 
 #### Single Table
 ```R
-generateSingleReport(level=1, table="table_name")
+generateSingleReport(level=1, report="table_name")
 
 "table_name" examples include: "person", "fact_relationship", "visit_occurrence", etc
 ```
@@ -71,7 +71,7 @@ runDQA(level=2)
 
 #### Single Table: Postgres
 ```R
-generateSingleReport(level=2, table="table_name")
+generateSingleReport(level=2, report="table_name")
 
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```
