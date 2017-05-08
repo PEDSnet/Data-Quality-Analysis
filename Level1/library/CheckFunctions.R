@@ -210,7 +210,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   if(check_entry$check_code=='AA-001'
      ||check_entry$check_code=='AA-002' || check_entry$check_code=='CA-001'
      || check_entry$check_code=='AA-005'
-      || check_entry$check_code=='BA-003'|| check_entry$check_code=='CA-013')
+      || check_entry$check_code=='BA-003'|| check_entry$check_code=='CB-002')
   {
     if(nchar(trim(value))>0)
     {

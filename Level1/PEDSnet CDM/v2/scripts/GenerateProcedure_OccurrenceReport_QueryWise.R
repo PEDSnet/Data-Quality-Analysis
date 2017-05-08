@@ -287,8 +287,8 @@ generateProcedureOccurrenceReport <- function() {
 
    flog.info(Sys.time())
 
-  field_name<-"visit_occurrence_id"
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
+    field_name<-"visit_occurrence_id"
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
 
     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
     message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -299,10 +299,9 @@ generateProcedureOccurrenceReport <- function() {
     message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
+    flog.info(Sys.time())
 
-   flog.info(Sys.time())
-
-  field_name<-"provider_id" #  4 minutes
+    field_name<-"provider_id" #  4 minutes
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
