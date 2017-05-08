@@ -66,23 +66,28 @@ generatePersonReport <- function() {
 
 
   #Gender Concept Id
+  
+  
   field_name = "gender_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   order_bins <-c("8507","8532","44814664","44814653","44814649","44814650")
   label_bins<-c("Male (8507)","Female (8532)","Ambiguous (44814664)","Unknown (44814653)","Other (44814649)","No Information (44814650 )","NULL")
   color_bins <-c("8507"="lightcoral","8532"="steelblue1","44814664"="red","44814653"="grey64","44814649"="grey64","44814650 "="grey64")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  
+  ###########DQA CHECKPOINT############## For gender only 
+  acceptable_genders<- read.csv(paste(getwd(), "/Data/PEDSnet_gender_list.csv", sep= ""))$concept_id ## read from gender list
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_genders,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  
 
   ############DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                            extract_ni_missing_percent( null_message), table_name, g_data_version))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
@@ -122,25 +127,25 @@ generatePersonReport <- function() {
 
 
   #Race Concept Id
-  ## reading specific subset of the concept table to retrieve race concepts
-  df_race <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                      ,"(domain_id='Race' and vocabulary_id = 'Race' and (invalid_reason is null or invalid_reason=''))
-                                      or (vocabulary_id = 'PCORNet' and concept_class_id='Race' and (invalid_reason is null or invalid_reason=''))
-                                      or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))")
-  order_bins <-c(df_race$concept_id,NA)
-
+  
   field_name="race_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
+  ###########DQA CHECKPOINT##############
+  file_txt <- "Data/PEDSnet_race.txt"
+  race_clause <- readChar(file_txt, file.info(file_txt)$size)
+  race_clause_trunc <- gsub("\n", '', noquote(race_clause), fixed = T) # takes off extra characters
+  df_race <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", race_clause_trunc)
+  order_bins <-c(df_race$concept_id,NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
 
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                          extract_ni_missing_percent( null_message), table_name, g_data_version))
   # flog.info( null_message)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
@@ -190,21 +195,23 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
 
-
+  ###########DQA CHECKPOINT############## For ethinicity only 
+  acceptable_ethnicities<- read.csv(paste(getwd(), "/Data/PEDSnet_ethnicity_list.csv", sep= ""))$concept_id ## read from ethnicity list
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_ethnicities,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                          extract_ni_missing_percent( null_message), table_name, g_data_version))
   # flog.info( null_message)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   # flog.info(paste("Unexpected Values:",unexpected_message))
-  fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins,big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
+  
 
   if(nrow(subset(df_table,df_table$ethnicity_concept_id == 38003563))==0)
   {
@@ -242,27 +249,23 @@ generatePersonReport <- function() {
 
   #language Concept Id
   ## reading specific subset of the concept table to retrieve language concepts
-  df_language<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-   								,"concept_id in
-                                      (4182354,4181374,4052786,4181727,40481563,4182948,4177463,4181724,4180186
-                                      ,4180190,44802876,4181524,4175771,4181724,4175908,4181536,4181539,40483152
-                                      ,4182350,4182511,4181526)
-   								or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))
-   								")
-  order_bins <-c(df_language$concept_id,NA)
-
   field_name="language_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-
+  ###########DQA CHECKPOINT##############
+  file.txt <- "Data/PEDSnet_language.txt"
+  language_clause <- readChar(file.txt, file.info(file.txt)$size) # call in where statement from txt file
+  language_clause_trunc <- gsub("\n", '', noquote(language_clause), fixed = T) #remove extra characters
+  df_language<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",language_clause_trunc)
+  order_bins <-c(df_language$concept_id,NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                          extract_ni_missing_percent( null_message), table_name, g_data_version))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   # flog.info(unexpected_message)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
   #update values of the field before plotting
   df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_race);
   describeNominalField_basic(df_table_language_enhanced,table_name,field_name,big_data_flag);

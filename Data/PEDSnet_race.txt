@@ -1,0 +1,1 @@
+(domain_id='Race' and vocabulary_id = 'Race') and (invalid_reason is null or invalid_reason='') or (vocabulary_id = 'PCORNet' and concept_class_id='Race') and (invalid_reason is null or invalid_reason='') or (vocabulary_id = 'PCORNet') and (concept_class_id = 'Undefined')
