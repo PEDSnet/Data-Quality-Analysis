@@ -6,23 +6,23 @@ library(RPostgreSQL)
 
 generateLevel2Procedure <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
-
+  
   big_data_flag<-TRUE
-
+  
   # load the configuration file
   #get path for current script
   config = yaml.load_file(g_config_path)
-
+  
   #establish connection to database
   #con <- establish_database_connection_OHDSI(config)
-
+  
   #con <- establish_database_connection(config)
-
+  
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_Procedure_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",config)
-
-
+  
+  
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
   my_db <- src_postgres(dbname=config$db$dbname,
@@ -30,37 +30,49 @@ generateLevel2Procedure <- function () {
                         user =config$db$dbuser,
                         password =config$db$dbpass,
                         options=paste("-c search_path=",config$db$schema,sep=""))
-
+  
   # Then reference a tbl within that src
-  observation_period_tbl <- tbl(my_db, "observation_period")
-  observation_tbl <- tbl(my_db, "observation")
+  #observation_period_tbl <- tbl(my_db, "observation_period")
+  #observation_tbl <- tbl(my_db, "observation")
   visit_tbl <- tbl(my_db, "visit_occurrence")
   patient_tbl<-tbl(my_db, "person")
-  condition_tbl<-tbl(my_db, "condition_occurrence")
   procedure_tbl<-tbl(my_db, "procedure_occurrence")
-  drug_tbl <- tbl(my_db, "drug_exposure")
-  measurement_tbl <- tbl(my_db, "measurement")
+  #drug_tbl <- tbl(my_db, "drug_exposure")
+  #measurement_tbl <- tbl(my_db, "measurement")
   death_tbl <- tbl(my_db, "death")
-
+  
   concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
-
+  concept_ancestor_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept_ancestor',sep='')))
+  procedure_concept_tbl <- select(filter(concept_tbl, domain_id=='Procedure'), concept_id, concept_name)
+  
   patient_dob_tbl <- tbl(my_db, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
-
-
+  
+  ## sibling concepts 
+  procedure_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, procedure_concept_tbl, 
+                                               by = c("ancestor_concept_id" = "concept_id"))
+  
+  temp1<-inner_join(procedure_concept_ancestor_tbl, procedure_concept_ancestor_tbl, 
+                    by =c("ancestor_concept_id"="ancestor_concept_id"))
+  temp2<-filter(temp1
+                , max_levels_of_separation.x==1 & max_levels_of_separation.y==1)
+  #print(head(temp2))
+  sibling_concepts_tbl<-
+    (select (temp2,
+             descendant_concept_id.x, descendant_concept_id.y)
+    )
+  
   #filter by inpatient and outpatient visits and select visit occurrence id column
   inpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9201),visit_occurrence_id)
   outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202),visit_occurrence_id)
-
+  
   fileContent<-c(fileContent,
                  get_top_concepts(inpatient_visit_tbl,procedure_tbl, "procedure_concept_id", "procedure_occurrence_id", "Inpatient Procedures", concept_tbl))
   fileContent<-c(fileContent,
                  get_top_concepts(outpatient_visit_tbl,procedure_tbl, "procedure_concept_id", "procedure_occurrence_id", "Outpatient Procedures", concept_tbl))
-
-
-
-
-
+  
+  
+  
   table_name<-"procedure_occurrence"
   
   ### Print top 100 no matching concept source values in procedure table 
@@ -82,19 +94,31 @@ generateLevel2Procedure <- function () {
   
   if(nrow(df_no_match_procedure_counts)>0)
   {
-  ## writing to the issue log file
-  data_file<-data.frame(concept_id=character(0), concept_name=character(0), procedure_source_value=character(0))
-  
-  data_file<-rbind(df_no_match_procedure_counts)
-  colnames(data_file)<-c("procedure_source_value","occurrence_counts")
-  write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),
-                                    "./data/no_match_procedures.csv",sep="")
-            ,row.names=FALSE)
+    ## writing to the issue log file
+    data_file<-data.frame(concept_id=character(0), concept_name=character(0), procedure_source_value=character(0))
+    
+    data_file<-rbind(df_no_match_procedure_counts)
+    colnames(data_file)<-c("procedure_source_value","occurrence_counts")
+    write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),
+                                      "./data/no_match_procedures.csv",sep="")
+              ,row.names=FALSE)
   }
-  ##### Printing top 100 inpatient procedures ##### 
+  
+  ### implementation of unexpected top inpatient procedures check 
+  #filter by inpatient and outpatient visits and select visit occurrence id column
+  inpatient_visit_tbl<-select(filter(visit_tbl,
+                                     (visit_concept_id==9201
+                                      | visit_concept_id==2000000048) & !is.na(visit_end_date)
+  )
+  ,visit_occurrence_id,visit_start_date, visit_end_date)
+  
+  
+  
+  
+  ##### Printing top 100 inpatient visits ##### 
   procedure_tbl_enhanced<- distinct(select(inner_join(concept_tbl,procedure_tbl, by = c("concept_id"="procedure_concept_id"))
                                            , visit_occurrence_id, procedure_concept_id, concept_name))
-  #print(head(condition_tbl_enhanced))
+  #print(head(procedure_tbl_enhanced))
   #print(head(inpatient_visit_tbl))
   inpatient_visit_procedures<-
     distinct(select(
@@ -119,7 +143,7 @@ generateLevel2Procedure <- function () {
     ), desc(visit_count)
     ))
   
-  #print(df_condition_counts_by_visit_all)
+  #print(df_procedure_counts_by_visit_all)
   
   ## writing to the issue log file
   data_file<-data.frame(concept_id=character(0), concept_name=character(0), visit_counts=character(0))
@@ -130,10 +154,120 @@ generateLevel2Procedure <- function () {
             ,row.names=FALSE)
   
   
+  ###### Identifying outliers in top inpatient procedures 
+  #inpatient_visit_df<-as.data.frame(inpatient_visit_tbl)
+  inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
+                                        , visit_occurrence_id)
+  
+  
+  temp_join <- inner_join(procedure_concept_tbl,procedure_tbl, by = c("concept_id"="procedure_concept_id"))
+  
+  procedure_tbl_restricted <- select (temp_join, visit_occurrence_id, concept_id, concept_name)
+  
+  procedure_visit_join_tbl <- distinct(
+    select (
+      inner_join(inpatient_visit_gte_2days_tbl,
+                 procedure_tbl_restricted,
+                 by = c("visit_occurrence_id" = "visit_occurrence_id"))
+      ,visit_occurrence_id, concept_id, concept_name)
+  )
+  
+  
+  procedure_counts_by_visit <-
+    filter(
+      arrange(
+        summarize(
+          group_by(procedure_visit_join_tbl, concept_id)
+          , count=n())
+        , desc(count))
+      , row_number()>=1 & row_number()<=20) ## look at top 20
+  
+  df_procedure_counts_by_visit<-as.data.frame(
+    select(
+      inner_join(procedure_counts_by_visit, procedure_concept_tbl,
+                 by=c("concept_id"="concept_id"))
+      , concept_id, concept_name, count)
+  )
+  
+  ## create a list to be compared with.
+  all_top_procedures<-read.csv(g_top50_inpatient_procedures_path)
+  colnames(all_top_procedures)<-tolower(colnames(all_top_procedures))
+  site_column_number<-which(colnames(all_top_procedures)==tolower(config$reporting$site))
+  top_procedures_other_sites<-all_top_procedures[-c(1,site_column_number)]
+  top_cond_other_sites_list <- unique(c(top_procedures_other_sites[,1]
+                                        , top_procedures_other_sites[,2], top_procedures_other_sites[,3]
+                                        , top_procedures_other_sites[,4], top_procedures_other_sites[,5]))
+  
+  extended_list<-list()
+  for (list_index in 1:length(top_cond_other_sites_list))
+  {
+    
+    temp<- as.data.frame(union(
+      select(
+        filter(concept_ancestor_tbl, ancestor_concept_id==top_cond_other_sites_list[list_index]
+        ), descendant_concept_id)
+      ,
+      select(
+        filter(concept_ancestor_tbl, descendant_concept_id==top_cond_other_sites_list[list_index]
+        ), ancestor_concept_id)
+    ))
+    extended_list<-(c(extended_list, unique(temp$descendant_concept_id)))
+    #if(list_index==2)
+    #break;
+  }
+  
+  extended_list<-unique(extended_list)
+  
+  ## further extend by including siblings of those concepts 
+  for (list_index in 1:length(top_cond_other_sites_list))
+  {
+    temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x==top_cond_other_sites_list[list_index])
+    sibling_table<- as.data.frame(select(temp3, descendant_concept_id.y))
+    extended_list<-(c(extended_list, unique(sibling_table$descendant_concept_id.y))) 
+    
+  }  
+  extended_list<-unique(extended_list)
+  
+  fileContent<-c(fileContent,"##Inpatient procedures")
+  for(row in 1:20)
+  {
+    ## add to descriptive report
+    fileContent<-c(fileContent,paste(
+      df_procedure_counts_by_visit[row,1],
+      df_procedure_counts_by_visit[row,2],"(count=",
+      df_procedure_counts_by_visit[row,3],")","\n"))
+    ## match with lists from other sites.
+    # flog.info("Testing for : ")
+    # flog.info(df_procedure_counts_by_visit[row,1])
+    if(is.element(df_procedure_counts_by_visit[row,1],extended_list)==FALSE)
+    {
+      # flog.info("HERE")
+      ### open the person log file for appending purposes.
+      log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
+      log_entry_content<-(read.csv(log_file_name))
+      
+      log_entry_content<-custom_rbind(log_entry_content,
+                                      apply_check_type_1('CB-002', "procedure_concept_id",
+                                                         paste("outlier inpatient procedure:",df_procedure_counts_by_visit[row,1],df_procedure_counts_by_visit[row,2]), table_name, g_data_version)
+      )
+      # flog.info(df_procedure_counts_by_visit[row,1])
+      write.csv(log_entry_content, file = log_file_name
+                ,row.names=FALSE)
+      
+      #break;
+    }
+    
+  }
+  
+  
   ### printing top 100 outpatient procedures by patient counts
   outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
                                ,visit_occurrence_id, person_id)
   
+  #procedure_tbl_enhanced<- distinct(select(inner_join(concept_tbl,procedure_tbl, by = c("concept_id"="procedure_concept_id"))
+  #                                        , visit_occurrence_id, procedure_concept_id, concept_name))
+  #print(head(procedure_tbl_enhanced))
+  #print(head(inpatient_visit_tbl))
   outpatient_visit_procedures<-
     distinct(select(
       inner_join(procedure_tbl_enhanced, 
@@ -149,7 +283,7 @@ generateLevel2Procedure <- function () {
         , desc(pt_count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
-  df_procedure_counts_by_patients_all<-as.data.frame(
+  df_procedure_counts_by_visit_all<-as.data.frame(
     arrange(distinct(
       select(inner_join(procedure_counts_by_patients, procedure_tbl_enhanced, 
                         by = c("procedure_concept_id"="procedure_concept_id"))
@@ -157,16 +291,124 @@ generateLevel2Procedure <- function () {
     ), desc(pt_count)
     ))
   
-  #print(df_condition_counts_by_visit_all)
+  #print(df_procedure_counts_by_visit_all)
   
   ## writing to the issue log file
-  data_file<-data.frame(concept_id=character(0), concept_name=character(0), pt_counts=character(0))
+  data_file<-data.frame(concept_id=character(0), concept_name=character(0), visit_counts=character(0))
   
-  data_file<-rbind(df_procedure_counts_by_patients_all)
+  data_file<-rbind(df_procedure_counts_by_visit_all)
   colnames(data_file)<-c("concept_id", "concept_name","pt_counts")
   write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),
                                     "./data/top_outpatient_procedures.csv",sep="")
             ,row.names=FALSE)
+  
+  ### implementation of unexpected top outpatient procedures check 
+  
+  
+  out_procedure_visit_join_tbl <- distinct(
+    select (
+      inner_join(outpatient_visit_tbl,
+                 procedure_tbl_restricted,
+                 by = c("visit_occurrence_id" = "visit_occurrence_id"))
+      ,person_id, concept_id, concept_name)
+  )
+  
+  
+  out_procedure_counts_by_person <-
+    filter(
+      arrange(
+        summarize(
+          group_by(out_procedure_visit_join_tbl, concept_id)
+          , count=n())
+        , desc(count))
+      , row_number()>=1 & row_number()<=20) ## look at top 20
+  
+  df_out_procedure_counts_by_person<-as.data.frame(
+    select(
+      inner_join(out_procedure_counts_by_person, procedure_concept_tbl,
+                 by=c("concept_id"="concept_id"))
+      , concept_id, concept_name, count)
+  )
+  
+  ## create a list to be compared with.
+  all_top_procedures<-read.csv(g_top50_outpatient_procedures_path)
+  #print(all_top_procedures)
+  colnames(all_top_procedures)<-tolower(colnames(all_top_procedures))
+  site_column_number<-which(colnames(all_top_procedures)==tolower(config$reporting$site))
+  top_procedures_other_sites<-all_top_procedures[-c(1,site_column_number)]
+  top_cond_other_sites_list <- unique(c(top_procedures_other_sites[,1]
+                                        , top_procedures_other_sites[,2], top_procedures_other_sites[,3]
+                                        , top_procedures_other_sites[,4], top_procedures_other_sites[,5]))
+  #print(top_cond_other_sites_list)
+  extended_list<-list()
+  for (list_index in 1:length(top_cond_other_sites_list))
+  {
+    
+    parent_child_table<- as.data.frame(union(
+      select(
+        filter(concept_ancestor_tbl, ancestor_concept_id==top_cond_other_sites_list[list_index]
+        ), descendant_concept_id)
+      ,
+      select(
+        filter(concept_ancestor_tbl, descendant_concept_id==top_cond_other_sites_list[list_index]
+        ), ancestor_concept_id)
+    ))
+    extended_list<-(c(extended_list, unique(parent_child_table$descendant_concept_id)))
+    #if(list_index==2)
+    #break;
+  }
+  
+  extended_list<-unique(extended_list)
+  #print(match(254761,extended_list)
+  #      )
+  #print(extended_list)
+  
+  ## further extend by including siblings of those concepts 
+  for (list_index in 1:length(top_cond_other_sites_list))
+  {
+    temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x==top_cond_other_sites_list[list_index])
+    sibling_table<- as.data.frame(select(temp3, descendant_concept_id.y))
+    extended_list<-(c(extended_list, unique(sibling_table$descendant_concept_id.y))) 
+    
+  }  
+  extended_list<-unique(extended_list)
+  #print(match(254761,extended_list)
+  #)
+  
+  fileContent<-c(fileContent,"##Outpatient procedures")
+  for(row in 1:20)
+  {
+    ## add to descriptive report
+    fileContent<-c(fileContent,paste(
+      df_out_procedure_counts_by_person[row,1],
+      df_out_procedure_counts_by_person[row,2],"(count=",
+      df_out_procedure_counts_by_person[row,3],")","\n"))
+    ## match with lists from other sites.
+    # flog.info("Testing for : ")
+    # flog.info(df_procedure_counts_by_visit[row,1])
+    if(is.element(df_out_procedure_counts_by_person[row,1],extended_list)==FALSE
+       && df_out_procedure_counts_by_person[row,1]!=444093) # filter out "patient status finding" concept
+    {
+      # flog.info("HERE")
+      ### open the person log file for appending purposes.
+      log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
+      log_entry_content<-(read.csv(log_file_name))
+      
+      log_entry_content<-custom_rbind(log_entry_content,
+                                      apply_check_type_1('CB-002', "procedure_concept_id",
+                                                         paste("outlier outpatient procedure:",
+                                                               df_out_procedure_counts_by_person[row,1],
+                                                               df_out_procedure_counts_by_person[row,2]), 
+                                                         table_name, g_data_version)
+      )
+      # flog.info(df_procedure_counts_by_visit[row,1])
+      write.csv(log_entry_content, file = log_file_name
+                ,row.names=FALSE)
+      
+      #break;
+    }
+    
+  }
   
   
   fileContent<-c(fileContent,"##Implausible Events")
@@ -187,19 +429,19 @@ generateLevel2Procedure <- function () {
     log_entry_content<-(read.csv(log_file_name))
     log_entry_content<-custom_rbind(log_entry_content,
                                     apply_check_type_2_diff_tables('CA-003',"Person","time_of_birth",table_name, "procedure_date", message)
-          )
+    )
     write.csv(log_entry_content, file = log_file_name
               ,row.names=FALSE)
   }
-
-
+  
+  
   table_name<-"procedure_occurrence"
   df_proc_after_death<-as.data.frame(
     select(
       filter(inner_join(procedure_tbl,death_tbl, by =c("person_id"="person_id")),procedure_date>death_date)
       ,person_id
     ))
-
+  
   if(nrow(df_proc_after_death)>0)
   {
     message<-paste(nrow(df_proc_after_death),"procedures after death")
@@ -213,12 +455,12 @@ generateLevel2Procedure <- function () {
     write.csv(log_entry_content, file = log_file_name
               ,row.names=FALSE)
   }
-
-
+  
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
-
+  
   #close the connection
   #close_database_connection_OHDSI(con,config)
 }
