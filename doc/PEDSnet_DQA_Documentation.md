@@ -25,10 +25,10 @@ db:
 reporting:
  site_directory     : ~/Documents/test_directory (Temporary location for output of DQA reports)
  etl_script_version : v10
- dqa_script_version : 2.4.0_1 (See note)
+ dqa_script_version : 2.5.0_1 (See note)
  site               : SiteName 
  cdm                : PEDSnet
- conventions_version : 2.4.0 (the PEDSnet CDM ETL conventions version)
+ conventions_version : 2.5.0 (the PEDSnet CDM ETL conventions version)
 ```
 
 **Notes**:
