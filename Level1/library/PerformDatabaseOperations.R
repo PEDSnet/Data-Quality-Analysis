@@ -227,7 +227,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
     table_name<-toupper(table_name)
     query<-paste("select * from (select ",field_name,", count(*) as count from ",
                  config$db$schema,".",table_name, " where ",
-                 field_name," is not null group by ",
+                 clause," and ",field_name," is not null group by ",
                  field_name ," order by 2 desc) where rownum<=20"
                  ,sep="");
     df<-sqlQuery(con, query)
@@ -239,7 +239,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
       table_name<-toupper(table_name)
       query<-paste("select * from (select ",field_name,", count(*) as count from ",
                    config$db$schema,".",table_name, " where ",
-                   field_name," is not null group by ",
+                   clause," and ",field_name," is not null group by ",
                    field_name ," order by 2 desc) where rownum<=20"
                    ,sep="");
       df<-dbGetQuery(con, query)
