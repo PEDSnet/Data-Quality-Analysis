@@ -1,1 +1,1 @@
-(domain_id='Race' and vocabulary_id = 'Race') and (invalid_reason is null or invalid_reason='') or (vocabulary_id = 'PCORNet' and concept_class_id='Race') and (invalid_reason is null or invalid_reason='') or (vocabulary_id = 'PCORNet') and (concept_class_id = 'Undefined')
+((domain_id='Race' and vocabulary_id = 'Race') or (vocabulary_id='PCORNet' and concept_class_id='Undefined') or concept_id in (44814659,44814660)) and invalid_reason is null

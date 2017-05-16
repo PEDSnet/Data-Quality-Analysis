@@ -1,0 +1,15 @@
+concept_code,concept_id,concept_name
+No matching concept,0,No matching concept
+49,8716,Independent Clinic
+21,8717,Inpatient Hospital
+22,8756,Outpatient Hospital
+72,8761,Rural Health Clinic
+20,8782,Urgent Care Facility
+99,8844,Other Place of Service
+23,8870,Emergency Room - Hospital
+28,8892,Other Inpatient Care
+11,8940,Office
+51,8971,Inpatient Psychiatric Facility
+Generic-OT,44814649,Other
+Generic-NI,44814650,No information
+Generic-UN,44814653,Unknown

@@ -1,0 +1,1 @@
+vocabulary_id ='Ethnicity' or (vocabulary_id= 'PCORNet' and concept_class_id='Undefined')

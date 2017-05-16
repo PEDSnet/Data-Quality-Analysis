@@ -1,0 +1,1 @@
+((domain_id='Gender' and concept_class_id='Gender')or (domain_id='Observation' and vocabulary_id='PCORNet' and concept_class_id in ('Gender','Undefined'))) and concept_code not in ('Sex-F','Sex-M') and invalid_reason is null

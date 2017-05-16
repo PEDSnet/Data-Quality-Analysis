@@ -70,14 +70,17 @@ generatePersonReport <- function() {
   
   field_name = "gender_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  order_bins <-c("8507","8532","44814664","44814653","44814649","44814650")
   label_bins<-c("Male (8507)","Female (8532)","Ambiguous (44814664)","Unknown (44814653)","Other (44814649)","No Information (44814650 )","NULL")
   color_bins <-c("8507"="lightcoral","8532"="steelblue1","44814664"="red","44814653"="grey64","44814649"="grey64","44814650 "="grey64")
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+ 
   
   ###########DQA CHECKPOINT############## For gender only 
-  acceptable_genders<- read.csv(paste(getwd(), "/Data/PEDSnet_gender_list.csv", sep= ""))$concept_id ## read from gender list
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_genders,big_data_flag)
+  file_txt <- "Data/PEDSnet_gender.txt"
+  gender_clause <- readChar(file_txt, file.info(file_txt)$size)
+  gender_clause_trunc <- gsub("\n", '', noquote(gender_clause), fixed = T) # takes off extra characters
+  df_gender <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", gender_clause_trunc)
+  order_bins <-c(df_gender$concept_id,NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
   
 
@@ -85,6 +88,7 @@ generatePersonReport <- function() {
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                            extract_ni_missing_percent( null_message), table_name, g_data_version))
   ###########DQA CHECKPOINT##############
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
@@ -132,14 +136,11 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   
   ###########DQA CHECKPOINT##############
-  file_txt <- "Data/PEDSnet_race.txt"
-  race_clause <- readChar(file_txt, file.info(file_txt)$size)
-  race_clause_trunc <- gsub("\n", '', noquote(race_clause), fixed = T) # takes off extra characters
-  df_race <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", race_clause_trunc)
-  order_bins <-c(df_race$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  acceptable_race<- read.csv(paste(getwd(), "/Data/PEDSnet_race.csv", sep= ""))$concept_id ## read from gender list
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_race,big_data_flag)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
-
+  df_race <- as.data.frame(acceptable_race)
+  
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                          extract_ni_missing_percent( null_message), table_name, g_data_version))
@@ -188,23 +189,26 @@ generatePersonReport <- function() {
 
 
   #Ethnicity Concept Id
-  order_bins <-c("38003563","38003564","44814653","44814649","44814650",NA)
-  label_bins<-c("HISPANIC OR LATINO(38003563)","NOT HISPANIC OR LATINO(38003564)","UNKNOWN(44814653)","OTHERS(44814649)","NO INFORMATION (44814650)","NULL")
-  color_bins <-c("38003563"="lightcoral","38003564"="steelblue1","44814653"="grey64","44814649"="grey64","44814650"="grey64")
   field_name="ethnicity_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+
 
   ###########DQA CHECKPOINT############## For ethinicity only 
-  acceptable_ethnicities<- read.csv(paste(getwd(), "/Data/PEDSnet_ethnicity_list.csv", sep= ""))$concept_id ## read from ethnicity list
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_ethnicities,big_data_flag)
+  file.txt <- "Data/PEDSnet_ethnicity.txt"
+  ethnicity_clause <- readChar(file.txt, file.info(file.txt)$size) # call in where statement from txt file
+  ethnicity_clause_trunc <- gsub("\n", '', noquote(ethnicity_clause), fixed = T) #remove extra characters
+  df_ethnicity<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",ethnicity_clause_trunc)
+  order_bins <-c(df_ethnicity$concept_id,NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
   
+
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                          extract_ni_missing_percent( null_message), table_name, g_data_version))
   # flog.info( null_message)
   ###########DQA CHECKPOINT##############
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
@@ -251,6 +255,7 @@ generatePersonReport <- function() {
   ## reading specific subset of the concept table to retrieve language concepts
   field_name="language_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
   ###########DQA CHECKPOINT##############
   file.txt <- "Data/PEDSnet_language.txt"
   language_clause <- readChar(file.txt, file.info(file.txt)$size) # call in where statement from txt file
@@ -267,7 +272,7 @@ generatePersonReport <- function() {
   # flog.info(unexpected_message)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
-  df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_race);
+  df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_language);
   describeNominalField_basic(df_table_language_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)

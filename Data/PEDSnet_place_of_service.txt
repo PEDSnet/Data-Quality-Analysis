@@ -1,0 +1,1 @@
+concept_class_id = 'Place of Service' and invalid_reason is null
