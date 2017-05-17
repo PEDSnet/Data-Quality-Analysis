@@ -25,10 +25,10 @@ db:
 reporting:
  site_directory     : ~/Documents/test_directory (Temporary location for output of DQA reports)
  etl_script_version : v10
- dqa_script_version : 2.4.0_1 (See note)
+ dqa_script_version : 2.5.0_1 (See note)
  site               : SiteName 
  cdm                : PEDSnet
- conventions_version : 2.4.0 (the PEDSnet CDM ETL conventions version)
+ conventions_version : 2.5.0 (the PEDSnet CDM ETL conventions version)
 ```
 
 **Notes**:
@@ -57,7 +57,7 @@ runDQA(level=1)
 
 #### Single Table
 ```R
-generateSingleReport(level=1, table="table_name")
+generateSingleReport(level=1, report="table_name")
 
 "table_name" examples include: "person", "fact_relationship", "visit_occurrence", etc
 ```
@@ -71,7 +71,7 @@ runDQA(level=2)
 
 #### Single Table: Postgres
 ```R
-generateSingleReport(level=2, table="table_name")
+generateSingleReport(level=2, report="table_name")
 
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```

@@ -56,7 +56,7 @@ generateCareSiteReport <- function() {
 
 
   #place of service concept id
-                                  
+
   field_name="place_of_service_concept_id"
   
   ###########DQA CHECKPOINT##############
