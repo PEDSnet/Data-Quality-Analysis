@@ -19,19 +19,19 @@ establish_database_connection<-function(config)
     dbport <- config$db$dbport;
 
     #special handling for ODBC drivers
-    if (driver == "ODBC")
+    if (grepl(driver,"ODBC",ignore.case=TRUE))
     {
         con <- odbcConnect(dbname, uid=dbuser, pwd=dbpass)
     }
     else
     {
-       if(driver=="Oracle") # special handling for Oracle drivers
+      if (grepl(driver,"Oracle",ignore.case=TRUE)) # special handling for Oracle drivers
          con <- dbConnect(dbDriver(driver), host=dbhost, port=dbport, dbname=dbname, user=dbuser, password=dbpass)
         else
           con <- dbConnect(driver, host=dbhost, port=dbport, dbname=dbname, user=dbuser, password=dbpass)
     }
 
-
+      
 	return(con)
 }
 establish_database_connection_OHDSI<-function(config)
@@ -70,8 +70,8 @@ establish_database_connection_OHDSI<-function(config)
 close_database_connection <- function(con,config)
 {
     #special handling for ODBC drivers
-    if(config$db$driver =="ODBC")
-    {
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+  {
         dbDisconnect <- close
     }
     # close connection
@@ -89,15 +89,15 @@ close_database_connection_OHDSI <- function(con,config)
 retrieve_dataframe<-function(con,config,table_name)
 {
     #special handling for ODBC drivers
-    if (config$db$driver =="ODBC")
+    if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
     {
         table_name<-toupper(table_name)
         df<-sqlFetch(con, paste(config$db$schema, table_name, sep="."))
     }
     else
     {
-        if(config$db$driver =="Oracle")
-        {
+      if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+      {
           table_name<-toupper(table_name)
           df<-dbReadTable(con, table_name, schema = config$db$schema)
         }
@@ -118,7 +118,7 @@ retrieve_dataframe_count<-function(con,config,table_name,column_list)
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     column_list<-toupper(column_list)
@@ -127,7 +127,7 @@ retrieve_dataframe_count<-function(con,config,table_name,column_list)
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       column_list<-toupper(column_list)
@@ -150,7 +150,7 @@ retrieve_dataframe_count_group<-function(con,config,table_name,column_list, fiel
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     column_list<-toupper(column_list)
@@ -159,7 +159,7 @@ retrieve_dataframe_count_group<-function(con,config,table_name,column_list, fiel
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       column_list<-toupper(column_list)
@@ -182,7 +182,7 @@ retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     query<-paste("select * from (select ",field_name,", count(*) as count from ",
@@ -194,7 +194,7 @@ retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       query<-paste("select * from (select ",field_name,", count(*) as count from ",
@@ -222,7 +222,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     query<-paste("select * from (select ",field_name,", count(*) as count from ",
@@ -234,7 +234,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       query<-paste("select * from (select ",field_name,", count(*) as count from ",
@@ -262,7 +262,7 @@ retrieve_dataframe_clause<-function(con,config,schema,table_name,column_list,cla
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     column_list<-toupper(column_list)
@@ -271,7 +271,7 @@ retrieve_dataframe_clause<-function(con,config,schema,table_name,column_list,cla
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       column_list<-toupper(column_list)
@@ -295,7 +295,7 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
   table_name1<-toupper(table_name1)
   table_name2<-toupper(table_name2)
@@ -308,8 +308,8 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
   }
   else
   {
-  if(config$db$driver =="Oracle")
-  {
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+    {
     table_name1<-toupper(table_name1)
     table_name2<-toupper(table_name2)
     column_list<-toupper(column_list)
@@ -337,7 +337,7 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name1<-toupper(table_name1)
     table_name2<-toupper(table_name2)
@@ -352,7 +352,7 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name1<-toupper(table_name1)
       table_name2<-toupper(table_name2)
@@ -386,7 +386,7 @@ retrieve_dataframe_group<-function(con,config,table_name,field_name)
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     field_name<-toupper(field_name)
@@ -395,7 +395,7 @@ retrieve_dataframe_group<-function(con,config,table_name,field_name)
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       field_name<-toupper(field_name)
@@ -417,7 +417,7 @@ retrieve_dataframe_group_clause<-function(con,config,table_name,field_name, clau
 {
 
   #special handling for ODBC drivers
-  if (config$db$driver =="ODBC")
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
     table_name<-toupper(table_name)
     field_name<-toupper(field_name)
@@ -426,7 +426,7 @@ retrieve_dataframe_group_clause<-function(con,config,table_name,field_name, clau
   }
   else
   {
-    if(config$db$driver =="Oracle")
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
     {
       table_name<-toupper(table_name)
       field_name<-toupper(field_name)
@@ -448,8 +448,8 @@ retrieve_dataframe_ratio_group<-function(con,config,table_name,column_list, fiel
   {
 
         #special handling for ODBC drivers
-        if (config$db$driver =="ODBC")
-          {
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+  {
               table_name<-toupper(table_name)
               column_list<-toupper(column_list)
               query<-paste("select ",field_name,", ",column_list," from ",config$db$schema,".",table_name," group by ",field_name,sep="");
@@ -457,8 +457,8 @@ retrieve_dataframe_ratio_group<-function(con,config,table_name,column_list, fiel
             }
     else
        {
-          if(config$db$driver =="Oracle")
-              {
+         if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+         {
                   table_name<-toupper(table_name)
                   column_list<-toupper(column_list)
                   query<-paste("select ",field_name,", ",column_list," from ",config$db$schema,".",table_name," group by ",field_name,sep="");
@@ -478,8 +478,8 @@ retrieve_dataframe_ratio_group<-function(con,config,table_name,column_list, fiel
 retrieve_dataframe_ratio_group_join<-function(con,config,table_name_1, table_name_2,ratio_formula, group_by_field,join_field)
   {
        #special handling for ODBC drivers
-        if (config$db$driver =="ODBC")
-          {
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+  {
               table_name_1<-toupper(table_name_1)
               table_name_2<-toupper(table_name_2)
               ratio_formula<-toupper(ratio_formula)
@@ -492,8 +492,8 @@ retrieve_dataframe_ratio_group_join<-function(con,config,table_name_1, table_nam
             }
      else
         {
-            if(config$db$driver =="Oracle")
-              {
+          if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+          {
                 table_name_1<-toupper(table_name_1)
                   table_name_2<-toupper(table_name_2)
                   ratio_formula<-toupper(ratio_formula)
