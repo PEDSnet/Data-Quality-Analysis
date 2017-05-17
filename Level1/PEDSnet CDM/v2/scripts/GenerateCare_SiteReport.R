@@ -56,12 +56,14 @@ generateCareSiteReport <- function() {
 
 
   #place of service concept id
-  df_place_of_service <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                           ,"concept_id in (8782, 8761, 8756, 8940, 8971, 8717, 8716, 8870, 8844, 8892, 44814653, 44814649,44814650)")
-  order_bins <-c(df_place_of_service$concept_id,0,NA)
-  
 
   field_name="place_of_service_concept_id"
+  
+  ###########DQA CHECKPOINT##############
+  acceptable_PLOS<- c(read.csv(paste(getwd(), "/Data/PEDSnet_place_of_service.csv", sep= ""))$concept_id, NA) ## read from gender list
+  unexpected_message<- reportUnexpected(df_care_site,table_name,field_name,acceptable_PLOS,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  
   null_message<-reportNullFlavors(df_care_site,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   # flog.info( null_message)
   missing_percent_message<-reportMissingCount(df_care_site,table_name,field_name,big_data_flag)
@@ -73,12 +75,10 @@ generateCareSiteReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_concept_message), table_name, g_data_version));
-
-  unexpected_message<- reportUnexpected(df_care_site,table_name,field_name,order_bins,big_data_flag)
+  
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  df_place_of_service <- as.data.frame(acceptable_PLOS)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
   df_table_place_of_service_enhanced<-EnhanceFieldValues(df_care_site,field_name,df_place_of_service);
   describeNominalField_basic(df_table_place_of_service_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
@@ -120,11 +120,10 @@ generateCareSiteReport <- function() {
                                                            (missing_percent_source_value -
                                                             extract_ni_missing_percent( null_message)), table_name, g_data_version))
   ##########DQA CHECKPOINT##############
-  df_specialty <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name","domain_id = 'Provider Specialty' and concept_class_id = 'Specialty' and standard_concept = 'S'")
-  order_bins <-c(df_specialty$concept_id,44814650,44814653, 44814649, 0,NA)
-  unexpected_message<- reportUnexpected(df_care_site,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
 
+  acceptable_specialty<- read.csv(paste(getwd(), "/Data/PEDSnet_specialty.csv", sep= ""))$concept_id ## read from specialty list
+  unexpected_message<- reportUnexpected(df_care_site,table_name,field_name,acceptable_specialty,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
 
   ## check for caresites with specific specialties
   ## for nephrology

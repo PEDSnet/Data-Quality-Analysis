@@ -60,23 +60,26 @@ generateDeathReport <- function() {
 
 
   #death type concept id
-  df_death_type <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                      ,"(concept_class_id ='Death Type')
-                                      or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))")
-  order_bins <-c(df_death_type$concept_id,0,NA)
 
   field_name="death_type_concept_id"
-
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
+  
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  
+  file_txt <- "Data/PEDSnet_death_type.txt"
+  dt_clause <- readChar(file_txt, file.info(file_txt)$size)
+  dt_clause_trunc <- gsub("\n", '', noquote(dt_clause), fixed = T) # takes off extra characters
+  df_dt <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", dt_clause_trunc)
+  order_bins <-c(df_dt$concept_id,NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+
+  ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
-
+  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #cause of death source valueapply_check_type_1("BA-002"
   field_name="cause_source_value"
@@ -135,18 +138,21 @@ generateDeathReport <- function() {
 
 
   #death impute concept id
-  df_impute_type <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                            ,"(concept_class_id ='Death Imput Type')
-                                            or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))
-                                            and invalid_reason is null")
-  order_bins <-c(df_impute_type$concept_id,0,NA)
+
 
   field_name="death_impute_concept_id"
+  ###########DQA CHECKPOINT##############
+  file_txt <- "Data/PEDSnet_death_impute.txt"
+  di_clause <- readChar(file_txt, file.info(file_txt)$size)
+  di_clause_trunc <- gsub("\n", '', noquote(di_clause), fixed = T) # takes off extra characters
+  df_di <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", di_clause_trunc)
+  order_bins <-c(df_di$concept_id,NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
 
   # flog.info( null_message)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
