@@ -63,58 +63,61 @@ generateConditionOccurrenceReport <- function() {
 
 
   #NOMINAL Fields
- # df_condition_type_concept_id<-retrieve_dataframe_clause(con,g_config,g_config$db$vocab_schema,
-  #                                                        "concept","concept_id,concept_name",
-   #                                                       "domain_id ='Condition Type'
-    #                                                      and vocabulary_id='PEDSnet'")
-  order_bins <-c(2000000095, 2000000096, 2000000097, 
-                 2000000092, 2000000093, 2000000094, 
-                 2000000098, 2000000099, 2000000100, 
-                 2000000101, 2000000102, 2000000103, 
-                 2000000089, 2000000090, 2000000091,0,NA)
+  df_condition_type_concept_id<-retrieve_dataframe_clause(con,g_config,g_config$db$vocab_schema,
+                                                          "concept","concept_id,concept_name",
+                                                          "concept_class_id ='Condition Type'
+                                                          and vocabulary_id='PEDSnet'")
+
 
 
   # this is a nominal field - work on it
   field_name<-"condition_type_concept_id" #
   df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
-  order_bins <-c("38000199","38000230","38000201","38000231","38000245","0",NA)
-  label_bins<-c("Inpatient header - primary (38000199)","Outpatient header - 1st position (38000230)","Inpatient header - 2nd position (38000201)"
-                ,"Outpatient header - 2nd position (38000231)","EHR problem list entry (38000245)","Other (0)","NULL")
-  color_bins <-c("38000199"="lightcoral","38000230"="steelblue1","38000201"="red","38000231"="grey64","38000245"="grey64","0"="grey64")
+  order_bins <-c(df_condition_type_concept_id$concept_id,NA)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent<-c(fileContent,unexpected_message)
-  describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
+  df_table_condition_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_condition_type_concept_id);
+  describeNominalField_basic(df_table_condition_type_enhanced,table_name,field_name, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==38000199))==0)
+  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000092
+                 |df_table$condition_type_concept_id==2000000093
+                 |df_table$condition_type_concept_id==2000000094))==0)
   {
     fileContent<-c(fileContent,"DQA WARNING: No Inpatient header primary Records","\n");
     logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No inpatient header primary records found", table_name, g_data_version));
 
   }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==38000230))==0)
+  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000095
+                 |df_table$condition_type_concept_id==2000000096
+                 |df_table$condition_type_concept_id==2000000097))==0)
   {
     fileContent<-c(fileContent,"DQA WARNING: No Outpatient header 1st position Records","\n");
     logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No outpatient header 1st position records found", table_name, g_data_version));
 
   }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==38000201))==0)
+  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000098
+                 |df_table$condition_type_concept_id==2000000099
+                 |df_table$condition_type_concept_id==2000000100))==0)
   {
     fileContent<-c(fileContent,"DQA WARNING: No Inpatient header - 2nd position Records","\n");
     logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Inpatient header - 2nd position records found", table_name, g_data_version));
 
   }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==38000231))==0)
+  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000101
+                 |df_table$condition_type_concept_id==2000000102
+                 |df_table$condition_type_concept_id==2000000103))==0)
   {
     fileContent<-c(fileContent,"DQA WARNING: No Outpatient header - 2nd position Records","\n");
     logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Outpatient header - 2nd position records found", table_name, g_data_version));
 
   }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==38000245))==0)
+  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000089
+                 |df_table$condition_type_concept_id==2000000090
+                 |df_table$condition_type_concept_id==2000000091))==0)
   {
     fileContent<-c(fileContent,"DQA WARNING: No EHR problem list entry Records","\n");
     logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No EHR problem list entry records found", table_name, g_data_version));
@@ -321,7 +324,8 @@ generateConditionOccurrenceReport <- function() {
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+    ## not creating for optional fields
+    #logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
     
     order_bins <-c(df_condition_type_concept_id$concept_id,NA)
     
@@ -337,7 +341,8 @@ generateConditionOccurrenceReport <- function() {
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+    ## not creating for optional fields
+    #logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
     unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
     ###########DQA CHECKPOINT##############
     logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
