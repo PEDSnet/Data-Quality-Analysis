@@ -8,6 +8,7 @@ generateLevel2Drug <- function() {
 
   big_data_flag<-TRUE
 
+  table_name<-"drug_exposure"
   # load the configuration file
   #get path for current script
 
@@ -48,6 +49,51 @@ generateLevel2Drug <- function() {
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
 
+  ##AA009 date time inconsistency 
+  mismatch_drug_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
+                                                              " WHERE cast(drug_exposure_start_time as date) <> drug_exposure_start_date",sep=''))
+  )
+  
+  df_incon<-as.data.frame(mismatch_drug_start_date_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," drug exposures with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"drug_exposure_start_time", "drug_exposure_start_date",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
+  
+  mismatch_drug_end_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
+                                                              " WHERE cast(drug_exposure_end_time as date) <> drug_exposure_end_date",sep=''))
+  )
+  
+  df_incon<-as.data.frame(mismatch_drug_end_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," drug exposures with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"drug_exposure_end_time", "drug_exposure_end_date",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
+  
+  
+  
   #filter by inpatient and outpatient visits and select visit occurrence id column
   inpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9201),visit_occurrence_id)
   outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202),visit_occurrence_id)

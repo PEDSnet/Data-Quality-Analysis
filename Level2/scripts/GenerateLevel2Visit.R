@@ -7,6 +7,8 @@ generateLevel2Visit <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
   
   big_data_flag<-TRUE
+  table_name<-"visit_occurrence"
+  
   
   # load the configuration file
   #get path for current script
@@ -50,10 +52,52 @@ generateLevel2Visit <- function () {
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
   
   
+  mismatch_visit_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
+                                                              " WHERE cast(visit_start_time as date) <> visit_start_date",sep=''))
+  )
+  
+  df_incon<-as.data.frame(mismatch_visit_start_date_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," visits with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"visit_start_time", "visit_start_date",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
+  
+  
+  mismatch_visit_end_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
+                                                               " WHERE cast(visit_end_time as date) <> visit_end_date",sep=''))
+  )
+  
+  df_incon<-as.data.frame(mismatch_visit_end_date_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," visits with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"visit_end_time", "visit_end_date",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
+  
   
   fileContent<-c(fileContent,"##Implausible Events")
   
-  table_name<-"visit_occurrence"
   log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
   
   ## Temporal checks --- facts before birth date

@@ -7,7 +7,7 @@ generateLevel2Patient <- function() {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
   
   big_data_flag<-TRUE
-  
+  table_name<-"person"
   config = yaml.load_file(g_config_path)
   
   #establish connection to database
@@ -37,8 +37,70 @@ generateLevel2Patient <- function() {
   concept_tbl <- tbl(my_db, dplyr::sql('SELECT * FROM vocabulary.concept'))
   
   patient_dob_tbl <- tbl(my_db, dplyr::sql
-                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
+                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob
+                            FROM person'))
+  ##AA009 date time inconsistency 
+  mismatch_dob_yr_tbl <- tbl(my_db, 
+                      dplyr::sql('SELECT * FROM person where year_of_birth <> extract( year from time_of_birth)'))
   
+  df_incon<-as.data.frame(mismatch_dob_yr_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," observations with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/person_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"time_of_birth", "year_of_birth",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
+  
+  
+  mismatch_dob_month_tbl <- tbl(my_db, 
+                             dplyr::sql('SELECT * FROM person where month_of_birth <> extract(month from time_of_birth)'))
+  
+  df_incon<-as.data.frame(mismatch_dob_month_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," observations with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/person_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"time_of_birth", "month_of_birth",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
+  
+  
+  mismatch_dob_day_tbl <- tbl(my_db, 
+                                dplyr::sql('SELECT * FROM person where day_of_birth <> extract( day from time_of_birth)'))
+  
+  df_incon<-as.data.frame(mismatch_dob_day_tbl)
+  if(nrow(df_incon)>0)
+  {
+    
+    message<-paste(nrow(df_incon)," observations with inconsistency between date and date/time fields")
+    fileContent<-c(fileContent,"\n",message)
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/person_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-custom_rbind(log_entry_content,
+                                    apply_check_type_2('AA-009',"time_of_birth", "day_of_birth",nrow(df_incon), 
+                                                       table_name, g_data_version)
+    )
+    write.csv(log_entry_content, file = log_file_name
+              ,row.names=FALSE)
+  }
   ## log file
   log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/person_issue.csv",sep="")
   log_entry_content<-(read.csv(log_file_name))

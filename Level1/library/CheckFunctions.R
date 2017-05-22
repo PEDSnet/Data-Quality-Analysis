@@ -43,12 +43,19 @@ get_check_entry_two_variables<-function(check_code, table_name, field1,field2)
   ## read specific checklist file for the given check code.
   file_list<-list.files(g_catalog_folder_path)
   check_filename<-file_list[grep(check_code,file_list)]
+  
   # flog.info()
   # flog.info(check_filename)
   df_check_list<-read.csv(paste(g_catalog_folder_path,check_filename,sep=""), header = TRUE, sep = ",", quote = "\"",
                           dec = ".", fill = TRUE, comment.char = "")
 
-  return(
+  #print(df_check_list)
+  #print(table_name)
+  #print(field1)
+  #print(field2)
+  #print(subset(df_check_list,
+  #             tolower(df_check_list$PEDSnet_Table)==tolower(table_name)))
+    return(
     subset(df_check_list,
            tolower(df_check_list$PEDSnet_Table)==tolower(table_name)
            & tolower(df_check_list$PEDSnet_Field_1)==tolower(field1)
@@ -237,14 +244,19 @@ apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_dat
 {
   # flog.info("here")
   # read check code from catalogue
+  #print("here")
+  #print(get_catalog_entry(check_code))
+  #print(get_check_entry_two_variables(check_code, table_name, field1, field2))
+  
   check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_two_variables(check_code, table_name, field1, field2))
 
+  #print("here")
   # flog.info(get_catalog_entry(check_code))
   if(diff<check_entry$Lower_Threshold || diff>check_entry$Upper_Threshold)
   {
     # create issue
-    if(any(check_entry$check_code=='AA-003' ))
+    if(any(check_entry$check_code=='AA-003' )||check_entry$check_code=='AA-009')
     {
          log_file_entry<-c(as.character(g_data_version), as.character(table_name),
                            paste(as.character(field1),",",as.character(field2)), as.character(check_entry$check_code),
