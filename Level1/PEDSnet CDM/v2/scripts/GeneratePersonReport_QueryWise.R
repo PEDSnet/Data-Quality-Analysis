@@ -255,15 +255,12 @@ generatePersonReport <- function() {
   ## reading specific subset of the concept table to retrieve language concepts
   field_name="language_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  
   ###########DQA CHECKPOINT##############
-  file.txt <- "Data/PEDSnet_language.txt"
-  language_clause <- readChar(file.txt, file.info(file.txt)$size) # call in where statement from txt file
-  language_clause_trunc <- gsub("\n", '', noquote(language_clause), fixed = T) #remove extra characters
-  df_language<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",language_clause_trunc)
-  order_bins <-c(df_language$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  acceptable_lang<- read.csv(paste(getwd(), "/Data/PEDSnet_language.csv", sep= ""))$concept_id ## read from gender list
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_lang,big_data_flag)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  df_lang <- as.data.frame(acceptable_lang)
+  ###########DQA CHECKPOINT##############
   
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
@@ -272,7 +269,7 @@ generatePersonReport <- function() {
   # flog.info(unexpected_message)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
-  df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_language);
+  df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_lang);
   describeNominalField_basic(df_table_language_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)

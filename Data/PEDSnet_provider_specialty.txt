@@ -1,0 +1,1 @@
+domain_id ='Provider Specialty' and vocabulary_id in ('Specialty', 'ABMS','NUCC','PEDsnet')

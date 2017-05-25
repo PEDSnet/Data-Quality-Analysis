@@ -1,0 +1,12 @@
+concept_id,concept_name
+42898160,Long Term Care Visit
+9203,Emergency Room Visit
+9202,Outpatient Visit
+9201,Inpatient Visit
+44814653,Unknown
+44814649,Other
+44814710,Non-acute institutional stay
+44814650,No information
+44814711,Other ambulatory visit
+2000000088,Observation Stay - PCORNet
+2000000048,Emergency Department Admit to Inpatient Hospital Stay- PCORNet

@@ -1,0 +1,1 @@
+domain_id='Visit' or (vocabulary_id='PCORNet' and concept_class_id='Encounter Type' and (concept_code not like  '%-ED' and concept_code not like '%-IP' and concept_code not like '%-AV')) or (vocabulary_id='PCORNet' and concept_class_id='Undefined' and (concept_code not like  '%-ED' and concept_code not like '%-IP' and concept_code not like '%-AV')) and invalid_reason is null
