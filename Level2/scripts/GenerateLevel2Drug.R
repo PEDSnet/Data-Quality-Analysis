@@ -50,7 +50,7 @@ generateLevel2Drug <- function() {
 
 
   ##AA009 date time inconsistency 
-  mismatch_drug_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
+  mismatch_drug_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                               " WHERE cast(drug_exposure_start_time as date) <> drug_exposure_start_date",sep=''))
   )
   
@@ -71,7 +71,7 @@ generateLevel2Drug <- function() {
               ,row.names=FALSE)
   }
   
-  mismatch_drug_end_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
+  mismatch_drug_end_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                               " WHERE cast(drug_exposure_end_time as date) <> drug_exposure_end_date",sep=''))
   )
   
