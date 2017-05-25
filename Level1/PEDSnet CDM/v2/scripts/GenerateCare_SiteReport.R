@@ -23,14 +23,14 @@ generateCareSiteReport <- function() {
   #PRIMARY FIELD(s)
   field_name<-"care_site_id"
   current_total_count<-as.numeric(describeIdentifier(df_care_site,field_name))
+  print(current_total_count)
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
   prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
+  print(prev_total_count)
   percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
   fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
   ### DQA CHECKPOINT ####################
-  check_result<-apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version)
-  logFileData<-custom_rbind(logFileData,check_result);
-
+  logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version))
 
   #add care site identifier
   field_name<-"care_site_name"
@@ -40,7 +40,7 @@ generateCareSiteReport <- function() {
   field_name<-"care_site_source_value"
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ", describeIdentifier(df_care_site,field_name),"\n"))
   ### DQA CHECKPOINT ####################
-  logFileData<-rbind(logFileData,apply_check_type_2("AA-003", "care_site_id",field_name, (current_total_count
+  logFileData<-custom_rbind(logFileData,apply_check_type_2("AA-003", "care_site_id",field_name, (current_total_count
                                                                                           - describeIdentifier(df_care_site,field_name)), table_name, g_data_version));
   # ORDINAL Fields
   #place of service source value

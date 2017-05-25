@@ -26,11 +26,11 @@ field_name<-"adt_occurrence_id"
 df_total_visit_count<-retrieve_dataframe_count(con, g_config,table_name,field_name)
 current_total_count<-as.numeric(df_total_visit_count[1][1])
 fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
-#prev_total_count<-get_previous_cycle_total_count(config$reporting$site, table_name)
-#percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
-#fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
+prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
+percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
+fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
 ###########DQA CHECKPOINT############## difference from previous cycle
-#logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff));
+logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version));
 
 
   #df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
