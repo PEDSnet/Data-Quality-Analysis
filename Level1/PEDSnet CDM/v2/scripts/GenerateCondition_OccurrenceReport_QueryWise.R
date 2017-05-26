@@ -279,9 +279,9 @@ generateConditionOccurrenceReport <- function() {
   field_name<-"visit_occurrence_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
  
-    df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
-    message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-    fileContent<-c(fileContent,message)
+    #df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
+    #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+    #fileContent<-c(fileContent,message)
     ## compute missing % for visits stratified by condition_type_concept_id (problem list vs non-problem list)
     ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
     count_nonproblemlist_novisit<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
@@ -294,10 +294,10 @@ generateConditionOccurrenceReport <- function() {
     fileContent<-c(fileContent,message_visit_percent_nonproblemlist)
 
     ###########DQA CHECKPOINT -- missing information##############
-    missing_percent<-extract_numeric_value(message)
+    #missing_percent<-extract_numeric_value(message)
     logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_visit_percent_nonproblemlist, table_name, g_data_version));
 
-    message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
+    #message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
   
  

@@ -36,12 +36,9 @@ generateVisitPayerReport <- function() {
 
   field_name<-"visit_occurrence_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-
-    df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-    message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
-    fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
+  # not showing dut to memory issues
+  flog.info(Sys.time())
   
-
 
   field_name = "plan_type"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
