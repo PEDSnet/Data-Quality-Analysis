@@ -99,14 +99,17 @@ generateVisitOccurrenceReport <- function() {
 
 
   # visit type concept id
-  df_visit_type <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                       ,"concept_class_id='Visit Type'")
-  order_bins <-c(df_visit_type$concept_id,0,NA)
   field_name="visit_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  file_txt <- "Data/PEDSnet_visit_type.txt"
+  visit_type_clause <- readChar(file_txt, file.info(file_txt)$size)
+  visit_type_clause_trunc <- gsub("\n", '', noquote(visit_type_clause), fixed = T) # takes off extra characters
+  df_visit_type <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", visit_type_clause_trunc)
+  order_bins <-c(df_visit_type$concept_id,0,NA)
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
@@ -150,31 +153,24 @@ generateVisitOccurrenceReport <- function() {
 
 
   # visit concept id
-  df_visit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",
-                              "
-                              domain_id='Visit' or (vocabulary_id='PCORNet' and concept_class_id='Encounter Type' and
-  	                        	(concept_code not like  '%-ED'
-                              and concept_code not like '%-IP'
-                              and concept_code not like '%-AV'))
-                              or
-                              (vocabulary_id='PCORNet' and concept_class_id='Undefined' and
-                              (concept_code not like  '%-ED'
-                              and concept_code not like '%-IP'
-                              and concept_code not like '%-AV')
-                              ) and invalid_reason is null
-                              "
-                                       )
-  order_bins <-c(df_visit$concept_id,2000000088,0,NA)
   field_name="visit_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
+  ###########DQA CHECKPOINT##############
+  file_txt <- "Data/PEDSnet_visit_concept_id.txt"
+  visit_clause <- readChar(file_txt, file.info(file_txt)$size)
+  visit_clause_trunc <- gsub("\n", '', noquote(visit_clause), fixed = T) # takes off extra characters
+  df_visit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", visit_clause_trunc)
+  order_bins <-c(df_visit$concept_id, 2000000088, 0, NA)
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  ###########DQA CHECKPOINT##############
+  null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"visit_source_value",
                                                            (missing_percent_source_value -
                                                             extract_ni_missing_percent( null_message)), table_name, g_data_version))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
