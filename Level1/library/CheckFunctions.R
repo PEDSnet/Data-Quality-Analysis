@@ -73,6 +73,7 @@ get_check_entry_two_variables_diff_tables<-function(check_code, table1, field1,t
   df_check_list<-read.csv(paste(g_catalog_folder_path,check_filename,sep=""), header = TRUE, sep = ",", quote = "\"",
                           dec = ".", fill = TRUE, comment.char = "")
 
+  #print(df_check_list)
   return(
     subset(df_check_list,
            tolower(df_check_list$PEDSnet_Table_1)==tolower(table1)
@@ -301,6 +302,7 @@ apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_dat
 # two variables from diff tables
 apply_check_type_2_diff_tables<-function(check_code,table1, field1, table2, field2, message)
 {
+  #print(get_check_entry_two_variables_diff_tables(check_code, table1, field1,table2, field2))
  check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_two_variables_diff_tables(check_code, table1, field1,table2, field2))
 
@@ -320,7 +322,8 @@ apply_check_type_2_diff_tables<-function(check_code,table1, field1, table2, fiel
       return (log_file_entry);
     } else
       {
-        if ( any(check_entry$check_code=='BA-004')) {
+        if ( any(check_entry$check_code=='BA-004')
+             ||  any(check_entry$check_code=='CA-013')) {
           log_file_entry<-c(as.character(g_data_version),
                             #as.character(paste(table1,",",table2)), # causes error during merging of issues so picking only the first table
                             as.character(table1),
