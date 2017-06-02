@@ -57,7 +57,22 @@ logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_di
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
 
-
+  ### DQA checkpoint --- incosnistent visit types
+  df_outpatient_adts_count<-retrieve_dataframe_join_clause(con,g_config,g_config$db$schema,table_name, 
+                                   g_config$db$schema,"visit_occurrence","count(*)",
+                                   "adt_occurrence.visit_occurrence_id = visit_occurrence.visit_occurrence_id
+                                      and visit_concept_id in (9202, 44814711)") 
+  
+  ###########DQA CHECKPOINT############## difference from previous cycle
+  if(df_outpatient_adts_count[1,1]>0)
+  {
+    logFileData<-custom_rbind(logFileData,
+                              apply_check_type_2_diff_tables("CA-013",table_name, "visit_occurrence_id", 
+                                                             "visit_occurrence", "visit_concept_id", 
+                                                             paste(df_outpatient_adts_count[1,1], "adts are outpatient visits"))
+                              );
+  }
+  
   #NOMINAL Fields
 
   # ORDINAL Fields
