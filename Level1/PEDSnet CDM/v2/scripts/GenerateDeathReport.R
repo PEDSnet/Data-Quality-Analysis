@@ -12,7 +12,8 @@ generateDeathReport <- function() {
   fileContent <-get_report_header(table_name, g_config)
 
   ## writing to the issue log file
-  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), issue_description=character(0)
+  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
+                          issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
 
 
@@ -20,12 +21,9 @@ generateDeathReport <- function() {
   field_name<-"death_cause_id"
   current_total_count<-as.numeric(describeIdentifier(df_table,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
-  prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
-  percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
-  fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
-  ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version));
-
+   ###########DQA CHECKPOINT############## difference from previous cycle
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), table_name,current_total_count)) 
+  
   field_name<-"person_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-describeForeignKeyIdentifiers(df_table, "death_cause",field_name,big_data_flag)
@@ -165,7 +163,7 @@ generateDeathReport <- function() {
   close(fileConn)
 
 
-  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","finding", "prevalence")
+  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
