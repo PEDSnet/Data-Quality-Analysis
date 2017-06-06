@@ -14,7 +14,8 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-get_report_header(table_name, g_config)
 
   ## writing to the issue log file
-  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), issue_description=character(0)
+  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0),
+                          issue_description=character(0), alias=character()
                           , finding=character(0), prevalence=character(0))
 
 
@@ -23,12 +24,9 @@ generateProcedureOccurrenceReport <- function() {
   df_total_procedure_count<-retrieve_dataframe_count(con, g_config,table_name,field_name)
   current_total_count<-as.numeric(df_total_procedure_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
-  prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
-  percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
-  fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
   ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
+  
   df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
   fileContent<-c(fileContent,paste("The procedure to patient ratio is ",round(df_total_procedure_count[1][1]/df_total_patient_count[1][1],2),"\n"))
   df_total_visit_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct visit_occurrence_id")
@@ -101,7 +99,7 @@ generateProcedureOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   # some fields can have multiple vocabularies
   used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "PROCEDURE")
   fileContent<-c(fileContent,paste("\n The source vocabulary is",used_vocabulary,"\n"))
@@ -203,7 +201,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
     message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
@@ -232,7 +230,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if not 100% missing
   {
     describeNominalField_basic(df_table_modifier_enhanced,table_name,field_name,big_data_flag);
@@ -257,7 +255,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
     message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
@@ -272,7 +270,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
@@ -306,7 +304,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -317,7 +315,7 @@ generateProcedureOccurrenceReport <- function() {
   close(fileConn)
 
 
-  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","finding", "prevalence")
+  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)

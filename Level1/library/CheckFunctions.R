@@ -95,26 +95,6 @@ apply_check_type_0<-function(check_code, value,table_name, g_data_version)
                        get_check_entry_table_level(check_code, table_name))
   #print(check_entry)
   
-  if(any(check_entry$check_code=='CA-005'))
-  {
-    if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
-    {
-      log_file_entry<-c(as.character(g_data_version),
-                        as.character(table_name),
-                        "",
-                        as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),
-                        as.character(paste(value,'%'))  ,
-                        as.character(normalize_prevalence(value))
-      )
-      # flog.info(log_file_entry)
-      return (log_file_entry);
-    }
-    else
-    {
-      return(c()); # i.e. no issue
-    }
-  }
 
   if(check_entry$check_code=='AA-006'
      )
@@ -180,6 +160,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
 	                      as.character(field),
 	                      as.character(check_entry$check_code),
 	                      as.character(check_entry$check_type),
+	                      ' ',
 	                      as.character(paste(value,'%'))  ,
 	                      as.character(normalize_prevalence(value))
 	                      )
@@ -227,6 +208,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
                         as.character(field),
                         as.character(check_entry$check_code),
                         as.character(check_entry$check_type),
+                        ' ', 
                         as.character(value)
                             ,as.character('unknown'))
       # flog.info(log_file_entry)
@@ -261,7 +243,7 @@ apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_dat
     {
          log_file_entry<-c(as.character(g_data_version), as.character(table_name),
                            paste(as.character(field1),",",as.character(field2)), as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),
+                        as.character(check_entry$check_type), ' ',
                         as.character(diff),
                         as.character(normalize_prevalence(diff)))
         #  flog.info(log_file_entry)
@@ -273,7 +255,7 @@ apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_dat
                         as.character(table_name),
                         paste(as.character(field1),",",as.character(field2)),
                         as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),
+                        as.character(check_entry$check_type), ' ',
                         paste(as.character(diff),"%"),
                         as.character(normalize_prevalence(diff)))
       #  flog.info(log_file_entry)
@@ -329,7 +311,7 @@ apply_check_type_2_diff_tables<-function(check_code,table1, field1, table2, fiel
                             as.character(table1),
                             paste(as.character(field1),",",as.character(field2)),
                             as.character(check_entry$check_code),
-                            as.character(check_entry$check_type),
+                            as.character(check_entry$check_type), ' ',
                             message,
                             "unknown")
           # flog.info(log_file_entry)
@@ -356,11 +338,14 @@ custom_rbind<-function(data_frame_x, row_y)
 {
   # flog.info(row_y)
   if(class(row_y)!="NULL") {
-    colnames(data_frame_x)<-c("g_data_version", "table","field", "issue_code", "issue_description","finding", "prevalence")
+    colnames(data_frame_x)<-c("g_data_version", "table","field", "issue_code", "issue_description",
+                              "alias", "finding", "prevalence")
+    data_frame_x$g_data_version<-as.character(data_frame_x$g_data_version)
     data_frame_x$table<-as.character(data_frame_x$table)
     data_frame_x$field<-as.character(data_frame_x$field)
     data_frame_x$issue_code<-as.character(data_frame_x$issue_code)
     data_frame_x$issue_description<-as.character(data_frame_x$issue_description)
+    data_frame_x$alias<-as.character(data_frame_x$alias)
     data_frame_x$finding<-as.character(data_frame_x$finding)
     data_frame_x$prevalence<-as.character(data_frame_x$prevalence)
 

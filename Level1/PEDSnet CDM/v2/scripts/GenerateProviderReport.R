@@ -13,7 +13,8 @@ generateProviderReport <- function() {
   fileContent <-get_report_header(table_name, g_config)
 
   ## writing to the issue log file
-  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), issue_description=character(0)
+  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
+                          issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
 
 
@@ -21,13 +22,9 @@ generateProviderReport <- function() {
   field_name<-"provider_id"
   current_total_count<-as.numeric(describeIdentifier(df_provider,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
-  prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
-  percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
-  fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
   ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version));
-
-
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
+  
   field_name<-"provider_source_value"
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ", describeIdentifier(df_provider,field_name),"\n"))
   ###########DQA CHECKPOINT##############  total id different from source value
@@ -43,7 +40,7 @@ generateProviderReport <- function() {
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   describeNominalField_basic(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -54,7 +51,7 @@ generateProviderReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
@@ -72,7 +69,7 @@ generateProviderReport <- function() {
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
@@ -121,7 +118,7 @@ generateProviderReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   describeOrdinalField(df_provider, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -132,7 +129,7 @@ generateProviderReport <- function() {
   missing_percent_source_value<-extract_numeric_value(message)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   describeOrdinalField(df_provider, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -143,7 +140,7 @@ generateProviderReport <- function() {
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
@@ -163,7 +160,7 @@ generateProviderReport <- function() {
   missing_percent_message<-reportMissingCount(df_provider,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   
   ##########DQA CHECKPOINT##############
   acceptable_specialty<- read.csv(paste(getwd(), "/Data/PEDSnet_specialty.csv", sep= ""))$concept_id ## read from specialty list
@@ -211,7 +208,7 @@ generateProviderReport <- function() {
   close(fileConn)
 
 
-  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","finding", "prevalence")
+  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)

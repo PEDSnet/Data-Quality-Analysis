@@ -15,7 +15,8 @@ generateMeasurementReport <- function() {
   fileContent <-get_report_header(table_name, g_config)
 
   ## writing to the issue log file
-  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), issue_description=character(0)
+  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
+                          issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
 
   test <-1
@@ -25,12 +26,10 @@ generateMeasurementReport <- function() {
   df_total_measurement_count<-retrieve_dataframe_count(con, g_config,table_name,field_name)
   current_total_count<-as.numeric(df_total_measurement_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
-  prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
-  percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
-  fileContent<-c(fileContent, get_percentage_diff_message(percentage_diff))
   ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,apply_check_type_0("CA-005", percentage_diff, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL, current_total_count)) 
+  
+  
   df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
   fileContent<-c(fileContent,paste("The measurement to patient ratio is ",round(df_total_measurement_count[1][1]/df_total_patient_count[1][1],2),"\n"))
   df_total_visit_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct visit_occurrence_id")
@@ -71,11 +70,8 @@ generateMeasurementReport <- function() {
   field_name<-"provider_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -83,11 +79,8 @@ generateMeasurementReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
 
     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-    message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-    fileContent<-c(fileContent,message)
     ###########DQA CHECKPOINT -- missing information##############
-    missing_percent<-extract_numeric_value(message)
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+    logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
     message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -115,11 +108,8 @@ generateMeasurementReport <- function() {
   field_name<-"measurement_result_date" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   ###########DQA CHECKPOINT -- future dates##############
   if(grepl("future",message[3]))
@@ -145,11 +135,8 @@ generateMeasurementReport <- function() {
   field_name<-"measurement_order_date" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   ###########DQA CHECKPOINT -- future dates##############
   if(grepl("future",message[3]))
@@ -188,22 +175,16 @@ generateMeasurementReport <- function() {
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeOrdinalField(df_table,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   field_name<-"specimen_source_value" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
 
 
 
@@ -211,11 +192,11 @@ generateMeasurementReport <- function() {
   field_name<-"unit_source_value" # 3 minutes
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+ ###########DQA CHECKPOINT -- missing information##############
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
-  ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
@@ -227,11 +208,8 @@ generateMeasurementReport <- function() {
   order_bins <-c(df_unit$concept_id,0,44814650,NA)
   field_name="unit_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
@@ -263,11 +241,8 @@ generateMeasurementReport <- function() {
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
@@ -282,11 +257,11 @@ generateMeasurementReport <- function() {
   field_name<-"priority_source_value" # 3 minutes
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  ###########DQA CHECKPOINT -- missing information##############
   missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,missing_message)
-  ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
     message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
@@ -306,14 +281,14 @@ generateMeasurementReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   fileContent<-c(fileContent,unexpected_message)
   df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
+  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  fileContent<-c(fileContent,missing_message)
   missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if not 100% missing
   {
     describeNominalField_basic(df_table_unit_enhanced,table_name,field_name,big_data_flag);
@@ -374,14 +349,11 @@ generateMeasurementReport <- function() {
   field_name<-"measurement_source_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   new_message<-""
   if(length(message)>0)
@@ -481,33 +453,24 @@ generateMeasurementReport <- function() {
   field_name<-"range_high" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
 
   field_name<-"range_high_source_value" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
   field_name<-"range_high_operator_concept_id" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT######################
   order_bins <-c("4171754","4171755","4171756","4172703","4172704","0",NA)
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
@@ -519,32 +482,23 @@ generateMeasurementReport <- function() {
   field_name<-"range_low" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
   field_name<-"range_low_source_value" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
   field_name<-"range_low_operator_concept_id" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,missing_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT################
   order_bins <-c("4171754","4171755","4171756","4172703","4172704","0",NA)
   unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
@@ -557,7 +511,7 @@ generateMeasurementReport <- function() {
   close(fileConn)
 
   # write to log file
-  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","finding", "prevalence")
+  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
