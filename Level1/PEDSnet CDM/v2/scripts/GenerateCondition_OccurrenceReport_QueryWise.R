@@ -30,7 +30,7 @@ generateConditionOccurrenceReport <- function() {
   current_total_count<-as.numeric(df_total_condition_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
   ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), table_name,current_total_count)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
   
 
   df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
@@ -141,7 +141,7 @@ generateConditionOccurrenceReport <- function() {
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   # some fields can have multiple vocabularies
   used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "CONDITION")
   fileContent<-c(fileContent,paste("\n The source vocabulary is",used_vocabulary,"\n"))
@@ -223,7 +223,7 @@ generateConditionOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   if(missing_percent<100)
   {
@@ -254,7 +254,7 @@ generateConditionOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent, paste_image_name(table_name,field_name),message);
   #print (fileContent)
@@ -308,7 +308,7 @@ generateConditionOccurrenceReport <- function() {
     fileContent<-c(fileContent,message)
     ###########DQA CHECKPOINT -- missing information##############
     missing_percent<-extract_numeric_value(message)
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+    logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
     message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -322,10 +322,7 @@ generateConditionOccurrenceReport <- function() {
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-    ## not creating for optional fields
-    #logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-    
-    order_bins <-c(df_condition_type_concept_id$concept_id,NA)
+     order_bins <-c(df_condition_type_concept_id$concept_id,NA)
     
     
     # this is a nominal field - work on it
@@ -339,8 +336,6 @@ generateConditionOccurrenceReport <- function() {
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-    ## not creating for optional fields
-    #logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
     unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
     ###########DQA CHECKPOINT##############
     logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));

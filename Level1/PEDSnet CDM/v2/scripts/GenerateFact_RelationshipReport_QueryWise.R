@@ -30,7 +30,7 @@ generateFactRelationshipReport <- function() {
   current_total_count<-as.numeric(df_total_relationship_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",table_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
   ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), table_name,current_total_count)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL, current_total_count)) 
   
 
   #NOMINAL Fields

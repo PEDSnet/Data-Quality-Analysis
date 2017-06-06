@@ -28,7 +28,7 @@ df_total_visit_count<-retrieve_dataframe_count(con, g_config,table_name,field_na
 current_total_count<-as.numeric(df_total_visit_count[1][1])
 fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
 ###########DQA CHECKPOINT############## difference from previous cycle
-logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), table_name,current_total_count)) 
+logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
 
   #df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
   #fileContent<-c(fileContent,paste("The visit to patient ratio is ",round(df_total_visit_count[1][1]/df_total_patient_count[1][1],2),"\n"))
@@ -102,11 +102,8 @@ if(length(message)==3)
     field_name<-"care_site_id" # 8 minutes
     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-    message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-    fileContent<-c(fileContent,message)
-    ###########DQA CHECKPOINT -- missing information##############
-    missing_percent<-extract_numeric_value(message)
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+     ###########DQA CHECKPOINT -- missing information##############
+    logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
     message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -137,9 +134,7 @@ if(length(message)==3)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  #print(missing_percent)
-  #print(apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version))
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   #print(logFileData)
   if(missing_percent<100)
   {
@@ -163,7 +158,7 @@ if(length(message)==3)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -175,7 +170,7 @@ if(length(message)==3)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -189,7 +184,7 @@ if(length(message)==3)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   describeNominalField_basic(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -197,18 +192,12 @@ if(length(message)==3)
   field_name<-"adt_type_source_value"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent_source_value<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   describeNominalField_basic(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-
-
-
-   flog.info(Sys.time())
+  flog.info(Sys.time())
 
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)

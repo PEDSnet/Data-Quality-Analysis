@@ -26,7 +26,7 @@ generateCareSiteReport <- function() {
   current_total_count<-as.numeric(describeIdentifier(df_care_site,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
    ### DQA CHECKPOINT ####################
-   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), table_name,current_total_count)) 
+   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
   
   #add care site identifier
   field_name<-"care_site_name"
@@ -48,8 +48,8 @@ generateCareSiteReport <- function() {
   describeNominalField_basic(df_care_site, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
 
   #place of service concept id
 
@@ -69,7 +69,7 @@ generateCareSiteReport <- function() {
   fileContent<-c(fileContent,no_matching_concept_message)
   no_matching_concept_number<-extract_numeric_value(no_matching_concept_message)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_concept_message), table_name, g_data_version));
   
   ###########DQA CHECKPOINT##############
@@ -92,7 +92,7 @@ generateCareSiteReport <- function() {
   missing_percent_source_value<-extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_source_value)
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   describeNominalField_basic(df_care_site, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -106,7 +106,7 @@ generateCareSiteReport <- function() {
   fileContent<-c(fileContent,no_matching_concept_message)
   no_matching_concept_number<-extract_numeric_value(no_matching_concept_message)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_concept_message), table_name, g_data_version));
 
   describeNominalField_basic(df_care_site, table_name,field_name,big_data_flag)
@@ -149,9 +149,8 @@ generateCareSiteReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  # flog.info(missing_percent)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
   message<-describeForeignKeyIdentifiers(df_care_site,table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 

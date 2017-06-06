@@ -25,7 +25,7 @@ generateProcedureOccurrenceReport <- function() {
   current_total_count<-as.numeric(df_total_procedure_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC(current_total_count, format="d", big.mark=','),"\n"))
   ###########DQA CHECKPOINT############## difference from previous cycle
-  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), table_name,current_total_count)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
   df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
   fileContent<-c(fileContent,paste("The procedure to patient ratio is ",round(df_total_procedure_count[1][1]/df_total_patient_count[1][1],2),"\n"))
@@ -99,7 +99,7 @@ generateProcedureOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   # some fields can have multiple vocabularies
   used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "PROCEDURE")
   fileContent<-c(fileContent,paste("\n The source vocabulary is",used_vocabulary,"\n"))
@@ -201,7 +201,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent_source_value, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
     message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
@@ -230,7 +230,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if not 100% missing
   {
     describeNominalField_basic(df_table_modifier_enhanced,table_name,field_name,big_data_flag);
@@ -255,7 +255,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
     message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
@@ -270,7 +270,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
@@ -304,7 +304,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 

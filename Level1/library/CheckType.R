@@ -12,3 +12,13 @@ CheckType <- function(check_code,check_name, check_alias)
   class(me) <- append(class(me),"CheckType")
   return(me)
 }
+applyCheck <- function(theObject, table_list, field_list, current_total_count)
+{
+  #print("Calling the base applyCheck function")
+  UseMethod("applyCheck",theObject)
+}
+
+applyCheck.default <- function(theObject, table_list, field_list, current_total_count)
+{
+  return(theObject)
+}

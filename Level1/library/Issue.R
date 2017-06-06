@@ -1,15 +1,13 @@
 ### implementation of the checktype class 
-Issue <- function(check_type_obj, table1, table2, field1, field2, message)
+Issue <- function(check_type_obj, table_list, field_list, message)
 {
   
   me <- list(
     check_code = check_type_obj$check_code,
     check_name = check_type_obj$check_name, 
     check_alias = check_type_obj$check_alias, 
-    table1 = table1, 
-    table2=table2, 
-    field1=field1, 
-    field2=field2, 
+    table_list= table_list, 
+    field_list = field_list,
     message = message
   )
   
@@ -34,9 +32,24 @@ logIssue.default <- function(theObject)
 
 logIssue.Issue <- function(theObject)
 {
+  table_name<-theObject$table_list[1]
+  if(length(theObject$field_list)==0)
+  {
+  field_list_character<-""
+  } else {
+    for(i in length(theObject$field_list))
+  {
+      if(i==1)
+        field_list_character<-(theObject$field_list)[i]
+      else
+        field_list_character<-paste(field_list_character,(theObject$field_list)[i],sep=",")
+    }
+  }
+  
+  
   log_file_entry<-c(as.character(g_data_version),
-                    as.character(theObject$table1),
-                    "",
+                    as.character(table_name),
+                    as.character(field_list_character),
                     as.character(theObject$check_code),
                     as.character(theObject$check_name),
                     as.character(theObject$check_alias),

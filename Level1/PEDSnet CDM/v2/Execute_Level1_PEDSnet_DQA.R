@@ -2,6 +2,10 @@ source("../../library/CreatePlots.R", chdir = T)
 source("../../library/PerformDatabaseOperations.R", chdir = T)
 source("../../library/DocumentationModules.R", chdir = T)
 source("../../library/CheckFunctions.R", chdir = T)
+source("../../library/CheckType.R", chdir = T)
+source("../../library/UnexDiff.R", chdir = T)
+source("../../library/Issue.R", chdir = T)
+source("../../library/MissData.R", chdir = T)
 
 executeLevel1DQA <- function() {
   dir.create(file.path(normalize_directory_path(
