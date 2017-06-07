@@ -1,0 +1,1 @@
+concept_class_id='Organism' and vocabulary_id ='SNOMED' and standard_concept='S'

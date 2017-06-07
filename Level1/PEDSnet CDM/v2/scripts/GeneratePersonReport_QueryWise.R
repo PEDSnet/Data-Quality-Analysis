@@ -69,20 +69,17 @@ generatePersonReport <- function() {
   
   field_name = "gender_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
   label_bins<-c("Male (8507)","Female (8532)","Ambiguous (44814664)","Unknown (44814653)","Other (44814649)","No Information (44814650 )","NULL")
   color_bins <-c("8507"="lightcoral","8532"="steelblue1","44814664"="red","44814653"="grey64","44814649"="grey64","44814650 "="grey64")
  
   
   ###########DQA CHECKPOINT############## For gender only 
-  file_txt <- "Data/PEDSnet_gender.txt"
-  gender_clause <- readChar(file_txt, file.info(file_txt)$size)
-  gender_clause_trunc <- gsub("\n", '', noquote(gender_clause), fixed = T) # takes off extra characters
-  df_gender <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", gender_clause_trunc)
+  df_gender <-generate_df_concepts(con, table_name,"gender.txt")
   order_bins <-c(df_gender$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "gender.txt")) 
   
-
   ############DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                            extract_ni_missing_percent( null_message), table_name, g_data_version))
@@ -135,10 +132,9 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   
   ###########DQA CHECKPOINT##############
-  acceptable_race<- read.csv(paste(getwd(), "/Data/PEDSnet_race.csv", sep= ""))$concept_id ## read from gender list
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_race,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
-  df_race <- as.data.frame(acceptable_race)
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "race.txt")) 
+  df_race <- generate_df_concepts(con, table_name,"race.txt")
   
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
@@ -193,13 +189,10 @@ generatePersonReport <- function() {
 
 
   ###########DQA CHECKPOINT############## For ethinicity only 
-  file.txt <- "Data/PEDSnet_ethnicity.txt"
-  ethnicity_clause <- readChar(file.txt, file.info(file.txt)$size) # call in where statement from txt file
-  ethnicity_clause_trunc <- gsub("\n", '', noquote(ethnicity_clause), fixed = T) #remove extra characters
-  df_ethnicity<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name",ethnicity_clause_trunc)
+  df_ethnicity<-generate_df_concepts(con, table_name,"ethnicity.txt")
   order_bins <-c(df_ethnicity$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "ethnicity.txt")) 
   
 
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
@@ -255,12 +248,10 @@ generatePersonReport <- function() {
   field_name="language_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   ###########DQA CHECKPOINT##############
-  acceptable_lang<- read.csv(paste(getwd(), "/Data/PEDSnet_language.csv", sep= ""))$concept_id ## read from gender list
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,acceptable_lang,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
-  df_lang <- as.data.frame(acceptable_lang)
-  ###########DQA CHECKPOINT##############
-  
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "language.csv")) 
+  df_lang <-generate_list_concepts(table_name,"language.csv")
+
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   #logFileData<-custom_rbind(logFileData,apply_check_type_2("G1-002", field_name, missing_percent_source_value,
   #                                                          extract_ni_missing_percent( null_message), table_name, g_data_version))

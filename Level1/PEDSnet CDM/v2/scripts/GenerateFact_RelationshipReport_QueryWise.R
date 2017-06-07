@@ -34,58 +34,54 @@ generateFactRelationshipReport <- function() {
   
 
   #NOMINAL Fields
-  df_relationship_concept_id<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name","vocabulary_id ='Relationship'")
+  df_relationship_concept_id <-generate_df_concepts(con, table_name,"relationship_concept_id.txt")
+  
   order_bins <-c(df_relationship_concept_id$concept_id,0,NA)
 
   # this is a nominal field - work on it
   field_name<-"relationship_concept_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  unexpected_message<-reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  fileContent<-c(fileContent,unexpected_message)
-  #no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  #fileContent<-c(fileContent,no_matching_message)
-  #logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "relationship_concept_id.txt")) 
+  
   df_table_relationship_enhanced<-EnhanceFieldValues(df_table,field_name,df_relationship_concept_id);
   describeNominalField_basic(df_table_relationship_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
   #NOMINAL Fields
-  df_domain_concept_id_1<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name","vocabulary_id ='Domain'")
+  df_domain_concept_id_1<-generate_df_concepts(con, table_name,"domain_id.txt")
   order_bins <-c(df_domain_concept_id_1$concept_id,NA)
   # this is a nominal field - work on it
   field_name<-"domain_concept_id_1" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  unexpected_message<-reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "domain_id.txt")) 
   df_table_domain_concept_id_1_enhanced<-EnhanceFieldValues(df_table,field_name,df_domain_concept_id_1);
   describeNominalField_basic(df_table_domain_concept_id_1_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
-  df_domain_concept_id_2<-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name","vocabulary_id ='Domain'")
+  df_domain_concept_id_2<-generate_df_concepts(con, table_name,"domain_id.txt")
   order_bins <-c(df_domain_concept_id_2$concept_id,NA)
   # this is a nominal field - work on it
   field_name<-"domain_concept_id_2" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  unexpected_message<-reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  df_table_domain_concept_id_2_enhanced<-EnhanceFieldValues(df_table,field_name,df_domain_concept_id_1);
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "domain_id.txt")) 
+  df_table_domain_concept_id_2_enhanced<-EnhanceFieldValues(df_table,field_name,df_domain_concept_id_2);
   describeNominalField_basic(df_table_domain_concept_id_2_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 

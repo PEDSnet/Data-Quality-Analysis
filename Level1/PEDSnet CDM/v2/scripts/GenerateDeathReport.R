@@ -62,15 +62,10 @@ generateDeathReport <- function() {
   field_name="death_type_concept_id"
   
   ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "death_type.txt")) 
+  df_death_type_concept_id <-generate_df_concepts(con, table_name, "death_type.txt")
   
-  file_txt <- "Data/PEDSnet_death_type.txt"
-  dt_clause <- readChar(file_txt, file.info(file_txt)$size)
-  dt_clause_trunc <- gsub("\n", '', noquote(dt_clause), fixed = T) # takes off extra characters
-  df_dt <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", dt_clause_trunc)
-  order_bins <-c(df_dt$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
-
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
@@ -140,14 +135,10 @@ generateDeathReport <- function() {
 
   field_name="death_impute_concept_id"
   ###########DQA CHECKPOINT##############
-  file_txt <- "Data/PEDSnet_death_impute.txt"
-  di_clause <- readChar(file_txt, file.info(file_txt)$size)
-  di_clause_trunc <- gsub("\n", '', noquote(di_clause), fixed = T) # takes off extra characters
-  df_di <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", di_clause_trunc)
-  order_bins <-c(df_di$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "death_impute.txt")) 
+  df_death_impute_concept_id <-generate_df_concepts(con, table_name, "death_impute.txt")
+  
   # flog.info( null_message)
   ###########DQA CHECKPOINT##############
 

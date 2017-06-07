@@ -99,20 +99,18 @@ generateVisitOccurrenceReport <- function() {
   # visit type concept id
   field_name="visit_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  file_txt <- "Data/PEDSnet_visit_type.txt"
-  visit_type_clause <- readChar(file_txt, file.info(file_txt)$size)
-  visit_type_clause_trunc <- gsub("\n", '', noquote(visit_type_clause), fixed = T) # takes off extra characters
-  df_visit_type <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", visit_type_clause_trunc)
+  df_visit_type <-generate_df_concepts(con, table_name,"visit_type.txt")
   order_bins <-c(df_visit_type$concept_id,0,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "visit_type.txt")) 
+  
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   df_table_visit_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_visit_type);
   describeNominalField_basic(df_table_visit_type_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
@@ -154,13 +152,11 @@ generateVisitOccurrenceReport <- function() {
   field_name="visit_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   ###########DQA CHECKPOINT##############
-  file_txt <- "Data/PEDSnet_visit_concept_id.txt"
-  visit_clause <- readChar(file_txt, file.info(file_txt)$size)
-  visit_clause_trunc <- gsub("\n", '', noquote(visit_clause), fixed = T) # takes off extra characters
-  df_visit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", visit_clause_trunc)
+  df_visit <-generate_df_concepts(con, table_name,"visit_concept_id.txt")
   order_bins <-c(df_visit$concept_id, 2000000088, 0, NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "visit_concept_id.txt")) 
   ###########DQA CHECKPOINT##############
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
@@ -200,7 +196,7 @@ generateVisitOccurrenceReport <- function() {
     
   }
   
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   df_table_visit_enhanced<-EnhanceFieldValues(df_table,field_name,df_visit);
   describeNominalField_basic(df_table_visit_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));

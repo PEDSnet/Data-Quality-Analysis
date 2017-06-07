@@ -75,23 +75,22 @@ generateProviderReport <- function() {
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
 
   ###########DQA CHECKPOINT##############
-  file_txt <- "Data/PEDSnet_gender.txt"
-  gender_clause <- readChar(file_txt, file.info(file_txt)$size)
-  gender_clause_trunc <- gsub("\n", '', noquote(gender_clause), fixed = T) # takes off extra characters
-  df_gender <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name", gender_clause_trunc)
+  df_gender <-generate_df_concepts(con, table_name,"gender.txt")
   order_bins <-c(df_gender$concept_id,NA)
-  unexpected_message<- reportUnexpected(df_provider,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  #unexpected_message<- reportUnexpected(df_provider,table_name,field_name,order_bins,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "gender.txt")) 
+  
   
   # flog.info( null_message)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name, "gender_source_value",(missing_percent_source_value -
                                                             extract_ni_missing_percent( null_message)), table_name, g_data_version))
-  unexpected_message<- reportUnexpected(df_provider,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_provider,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   
   # flog.info(unexpected_message)
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_provider,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
@@ -163,14 +162,14 @@ generateProviderReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   
   ##########DQA CHECKPOINT##############
-  acceptable_specialty<- read.csv(paste(getwd(), "/Data/PEDSnet_specialty.csv", sep= ""))$concept_id ## read from specialty list
-  unexpected_message<- reportUnexpected(df_provider,table_name,field_name,acceptable_specialty,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste(unexpected_message), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "specialty.csv")) 
+  
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));

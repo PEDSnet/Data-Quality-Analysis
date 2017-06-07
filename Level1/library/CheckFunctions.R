@@ -1,3 +1,31 @@
+## generate concept_id from clause 
+generate_df_concepts<-function(con,table_name, filename)
+{
+  file_txt<-as.character(paste("Data/PEDSnet",table_name,filename, sep="/"))
+  #print(file_txt)
+  clause <- readChar(file_txt, file.info(file_txt)$size)
+  clause_trunc <- gsub("\n", '', noquote(clause), fixed = T) # takes off extra characters
+  clause_trunc<-as.character(clause_trunc)
+
+  #check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
+
+  #print(clause_trunc)
+  #print(class(clause_trunc))
+  concept_id_list <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept"
+                                            ,"concept_id,concept_name"
+ 
+                                                                                       ,clause_trunc)
+return(concept_id_list)
+}
+
+generate_list_concepts<-function(table_name, filename)
+{
+  #print(getwd());
+  df_csv<-read.csv(paste(getwd(),"Data/PEDSnet", table_name,filename, sep= "/"))
+  #print(df_csv$concept_id)
+  return(df_csv)##
+
+}
 # read the master catalog
 get_catalog_entry<-function(check_code_value)
 {

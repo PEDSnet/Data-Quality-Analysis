@@ -41,7 +41,7 @@ applyCheck.MissData <- function(theObject, table_list, field_list, con)
   if(missing_percent<check_list_entry$Lower_Threshold || missing_percent>check_list_entry$Upper_Threshold)
   {
     # create an issue 
-    issue_obj<-Issue(theObject, table_list, field_list, paste(missing_percent,'%',sep=""))
+    issue_obj<-Issue(theObject, table_list, field_list, missing_percent)
     #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))

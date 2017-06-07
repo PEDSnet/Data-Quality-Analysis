@@ -73,10 +73,12 @@ generateConditionOccurrenceReport <- function() {
   df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
   order_bins <-c(df_condition_type_concept_id$concept_id,NA)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+ 
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "condition_type_concept_id.txt")) 
+  df_condition_type_concept_id <-generate_df_concepts(con, table_name, "condition_type_concept_id.txt")
+  
   df_table_condition_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_condition_type_concept_id);
   describeNominalField_basic(df_table_condition_type_enhanced,table_name,field_name, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
@@ -277,9 +279,6 @@ generateConditionOccurrenceReport <- function() {
   field_name<-"visit_occurrence_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
  
-    #df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
-    #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-    #fileContent<-c(fileContent,message)
     ## compute missing % for visits stratified by condition_type_concept_id (problem list vs non-problem list)
     ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
     count_nonproblemlist_novisit<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
@@ -336,10 +335,12 @@ generateConditionOccurrenceReport <- function() {
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-    unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-    ###########DQA CHECKPOINT##############
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-    fileContent<-c(fileContent,unexpected_message)
+  
+    logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                     ,con,  "condition_status_concept_id.csv")) 
+    df_condition_status_concept_id <-generate_list_concepts(table_name, "condition_status_concept_id.csv")
+    
+    
     describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
     

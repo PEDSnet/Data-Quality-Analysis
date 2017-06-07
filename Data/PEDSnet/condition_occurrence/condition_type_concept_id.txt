@@ -1,0 +1,1 @@
+concept_class_id ='Condition Type' and vocabulary_id='PEDSnet'
