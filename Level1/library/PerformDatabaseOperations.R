@@ -282,6 +282,7 @@ retrieve_dataframe_clause<-function(con,config,schema,table_name,column_list,cla
     {
       query<-paste("select ",column_list," from ",schema,".",table_name," where ",clauses,sep="");
       # flog.info(query)
+      #print(query)
       df<-dbGetQuery(con, query)
     }
   }

@@ -3,7 +3,7 @@ generateAdtOccurrenceReport <- function() {
 
   #establish connection to database
   con <- establish_database_connection_OHDSI( g_config)
-
+  #print(class(con))
   # read a table into an R dataframe
   table_name<-"adt_occurrence"
 
@@ -110,24 +110,18 @@ if(length(message)==3)
 
 
   # service concept id
-  df_service_concept_id <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                       ,"vocabulary_id ='PEDSnet' and concept_class_id='Service Type' and standard_concept='S'")
-  order_bins <-c(df_service_concept_id$concept_id,0,44814650,44814653, 44814649,NA)
   field_name="service_concept_id"
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
+  ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "service_concept_id.txt")) 
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  df_service_concept_id <-generate_df_concepts(con, table_name,"service_concept_id.txt")
   df_service_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_service_concept_id);
   describeNominalField_basic(df_service_concept_id_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   # adt type concept id
-  df_adt_type_concept_id <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                                    ,"vocabulary_id ='PEDSnet' and domain_id='ADT Event Type'")
-  order_bins <-c(df_adt_type_concept_id$concept_id,0,NA)
   field_name="adt_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -138,16 +132,17 @@ if(length(message)==3)
   #print(logFileData)
   if(missing_percent<100)
   {
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  ###########DQA CHECKPOINT##############
-  #print("line 160")
-  #print(apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version))
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
-  df_adt_type_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_adt_type_concept_id);
-  describeNominalField_basic(df_adt_type_concept_id_enhanced,table_name,field_name,big_data_flag);
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+    ###########DQA CHECKPOINT##############
+    
+    logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                     ,con,  "adt_type_concept_id.txt")) 
+    df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+    df_adt_type_concept_id <-generate_df_concepts(con, table_name, "adt_type_concept_id.txt")
+    
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+    df_adt_type_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_adt_type_concept_id);
+    describeNominalField_basic(df_adt_type_concept_id_enhanced,table_name,field_name,big_data_flag);
+    fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   }
   
    flog.info(Sys.time())

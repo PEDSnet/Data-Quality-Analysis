@@ -14,7 +14,8 @@ generateDrugExposureReport <- function() {
   fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/",table_name,"_Report_Automatic.md",sep=""))
   fileContent <-get_report_header(table_name, g_config)
 
-  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), issue_description=character(0)
+  logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0),
+                          issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
 
 
@@ -60,7 +61,6 @@ generateDrugExposureReport <- function() {
   field_name<-"person_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -75,6 +75,7 @@ generateDrugExposureReport <- function() {
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
+  
   field_name<-"drug_source_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
@@ -82,10 +83,16 @@ generateDrugExposureReport <- function() {
   fileContent<-c(fileContent,message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
+  #print( apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version))
+  #print(logFileData)
+  
+  logFileData<-custom_rbind(logFileData,
+                            apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
+  #print(logFileData)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
   if(nrow(df_table)>1)
   {
     fileContent<-c(fileContent,paste("\n The source vocabulary is",get_vocabulary_name(df_table[2,1],con, g_config),"\n"))
@@ -110,6 +117,9 @@ generateDrugExposureReport <- function() {
   }
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
 
+  
+  #print("Crossed drug source concept id")
+  
    flog.info(Sys.time())
   field_name<-"drug_concept_id" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -299,14 +309,16 @@ generateDrugExposureReport <- function() {
                 ,"Prescription written (38000177)","Other (0)","NULL")
   color_bins <-c("38000175"="lightcoral","38000180"="steelblue1","38000177"="red","0"="grey64")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "drug_type_concept_id.csv")) 
+
+  #fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -426,23 +438,25 @@ generateDrugExposureReport <- function() {
 
   field_name="route_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  df_route <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                           ,"domain_id ='Route' and invalid_reason is null ")
-  order_bins <-c(df_route$concept_id,0,44814650,NA)
+  
+  ######## DQA Checkpoint ####################
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "route_concept_id.txt")) 
+  df_route_concept_id <-generate_df_concepts(con, table_name,"route_concept_id.txt")
+  
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
+  ###########DQA CHECKPOINT -- missing information##############
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
-  ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
-  df_table_route_enhanced<-EnhanceFieldValues(df_table,field_name,df_route);
+  #fileContent<-c(fileContent,unexpected_message)
+  df_table_route_enhanced<-EnhanceFieldValues(df_table,field_name,df_route_concept_id);
   describeNominalField_basic(df_table_route_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -474,25 +488,29 @@ generateDrugExposureReport <- function() {
 
 
   field_name<-"dose_unit_concept_id" #
-  df_unit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                      ,"domain_id='Unit' and vocabulary_id ='UCUM'")
-  order_bins <-c(df_unit$concept_id,0,44814650,NA)
+  ########## DQA checkpoint ################## 
+  
   field_name="dose_unit_concept_id"
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "dose_unit_concept_id.txt")) 
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
+  df_dose_unit_concept_id <-generate_df_concepts(con, table_name,"dose_unit_concept_id.txt")
+
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
+  df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_dose_unit_concept_id);
   describeNominalField_basic(df_table_unit_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   df_table_top_5<-retrieve_dataframe_top_5(con, g_config, table_name, field_name)

@@ -160,17 +160,15 @@ generateMeasurementReport <- function() {
 
 
   # not plotting the value_as_string column as it's a free text field
-  df_value_as_concept_id<- retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                                     ,"domain_id='Meas Value' and concept_class_id='Qualifier Value'
-                                                     and standard_concept='S'")
+  df_value_as_concept_id<- generate_df_concepts(con, table_name,"value_as_concept_id.txt")
   order_bins <-c(df_value_as_concept_id$concept_id,0)
   field_name<-"value_as_concept_id" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   ###########DQA CHECKPOINT##############
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "value_as_concept_id.txt")) 
+  
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
@@ -203,21 +201,20 @@ generateMeasurementReport <- function() {
 
 
   #unit concept id
-  df_unit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                      ,"domain_id='Unit' and vocabulary_id ='UCUM'")
+  df_unit <-generate_df_concepts(con, table_name,"unit_concept_id.txt")
+  
   order_bins <-c(df_unit$concept_id,0,44814650,NA)
   field_name="unit_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "unit_concept_id.txt")) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
   df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
   describeNominalField_basic(df_table_unit_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
@@ -243,11 +240,12 @@ generateMeasurementReport <- function() {
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "operator_concept_id.csv")) 
   # flog.info(unexpected_message)
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -270,16 +268,17 @@ generateMeasurementReport <- function() {
 
 
   #priority concept id
-  df_unit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                      ,"domain_id='Procedure' and vocabulary_id ='PEDSnet' and concept_class_id='Qualifier Value'")
+  df_unit <-generate_df_concepts(con, table_name,"priority_concept_id.txt")
   order_bins <-c(df_unit$concept_id,0,44814650,44814653,44814649,NA)
   field_name="priority_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "priority_concept_id.txt")) 
+  
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
@@ -309,17 +308,20 @@ generateMeasurementReport <- function() {
   field_name = "measurement_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   order_bins <-c("2000000033","2000000032","44818702","44818703","44818704","45754907",NA)
-  label_bins<-c("Vital Sign from healthcare delivery setting (2000000033)","Vital Sign from healthcare device (2000000032)","Lab result (44818702)","Pathology finding (44818703)","Patient reported value (44818704)","Derived Value (45754907)","NULL")
+  label_bins<-c("Vital Sign from healthcare delivery setting (2000000033)","Vital Sign from healthcare device (2000000032)",
+                "Lab result (44818702)","Pathology finding (44818703)","Patient reported value (44818704)",
+                "Derived Value (45754907)","NULL")
   color_bins <-c("2000000033"="lightcoral","2000000032"="steelblue1","44818702"="red","44818703"="grey64","44818704"="grey64","45754907"="grey64")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "measurement_type_concept_id.csv")) 
+  #fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -379,9 +381,10 @@ generateMeasurementReport <- function() {
   
   ###########DQA CHECKPOINT############## FOR LABS only 
   df_labs<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id=44818702")
-  acceptable_labs<- read.csv(paste(getwd(), "/Data/PEDSnet_lab_list.csv", sep= ""))$concept_id ## read from lablist
+  acceptable_labs<-generate_list_concepts(table_name,"lab_list.csv")$concept_id ## read from lablist
   unexpected_message<- reportUnexpected(df_labs,table_name,field_name,acceptable_labs,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste("Labs: ",unexpected_message), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste("Labs: ",unexpected_message), table_name, 
+                                                           g_data_version));
   
   
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -472,10 +475,8 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT######################
-  order_bins <-c("4171754","4171755","4171756","4172703","4172704","0",NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "operator_concept_id.csv")) 
 
   #print (fileContent)
 
@@ -500,10 +501,8 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT################
-  order_bins <-c("4171754","4171755","4171756","4172703","4172704","0",NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "operator_concept_id.csv")) 
 
   # other fields not plotted : operator concept id, value as concept id, value source value, measurement source concept id
   #write all contents to the report file and close it.

@@ -1,0 +1,1 @@
+vocabulary_id ='PEDSnet' and concept_class_id='Service Type' and standard_concept='S'

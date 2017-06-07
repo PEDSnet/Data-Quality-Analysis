@@ -1,0 +1,1 @@
+vocabulary_id ='PEDSnet' and domain_id='ADT Event Type'

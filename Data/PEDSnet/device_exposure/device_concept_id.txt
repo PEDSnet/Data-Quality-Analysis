@@ -1,0 +1,1 @@
+(domain_id='Device' and  (invalid_reason is null or invalid_reason='')) or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))

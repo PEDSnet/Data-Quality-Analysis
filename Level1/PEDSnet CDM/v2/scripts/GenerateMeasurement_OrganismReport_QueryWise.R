@@ -84,16 +84,16 @@ generateMeasurementOrganismReport <- function() {
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   #organism_concept_id
-  df_unit <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                       ,"concept_class_id='Organism' and vocabulary_id ='SNOMED' and standard_concept='S'")
+  df_unit <-generate_df_concepts(con, table_name,"organism_concept_id.txt")
   order_bins <-c(df_unit$concept_id,0,44814650,NA)
   field_name="organism_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "organism_concept_id.txt")) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));

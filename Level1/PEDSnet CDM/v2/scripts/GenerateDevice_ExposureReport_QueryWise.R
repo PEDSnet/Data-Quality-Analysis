@@ -93,19 +93,17 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   ##### ##### ##### ##### May Need Work ##### ##### ##### ##### ##### #####
   
-  df_measurement_concept <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                                     ,"(domain_id='Device' and  (invalid_reason is null or invalid_reason=''))
-                                                     or (vocabulary_id = 'PCORNet' and (concept_class_id = 'Undefined' or concept_class_id = 'UnDefined'))")
-  order_bins <-c(df_device_concept$concept_id,0,NA)
-  
-  
-  
   field_name<-"device_concept_id" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "device_concept_id.txt")) 
+  df_device_concept_id <-generate_df_concepts(con, table_name, "device_concept_id.txt")
+  
+  order_bins <-c(df_device_concept$concept_id,0,NA)
+  
   ###########DQA CHECKPOINT -- missing information##############
   # add % of no matching concept (concept id = 0). for the completeness report
   no_matching_concept_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)

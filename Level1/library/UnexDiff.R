@@ -29,7 +29,7 @@ applyCheck.UnexDiff <- function(theObject, table_list, field_list, current_total
     issue_obj<-Issue(theObject, table_list, field_list, paste(percentage_diff,'%',sep=""))
     #print(issue_obj)
     # log issue 
-    print(logIssue(issue_obj))
+    #print(logIssue(issue_obj))
     return(logIssue(issue_obj))
     
   }

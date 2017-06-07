@@ -58,18 +58,22 @@ generateProcedureOccurrenceReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
 
-  order_bins <-c("38000275","0",NA)
+  
+  df_procedure_type_concept_id <-generate_list_concepts(table_name,"procedure_type_concept_id.csv")
+  
+  order_bins <-c(df_procedure_type_concept_id$concept_id,"0",NA)
   label_bins<-c("EHR order list entry (38000275)","Other (0)","NULL")
   color_bins <-c("38000275"="lightcoral","0"="steelblue1")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "procedure_type_concept_id.csv")) 
+  #fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -213,18 +217,18 @@ generateProcedureOccurrenceReport <- function() {
   field_name="modifier_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
 
-  df_modifier <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept","concept_id,concept_name"
-                                          ,"concept_class_id like '%Modifier%'")
+  df_modifier <-generate_df_concepts(con, table_name,"modifier_concept_id.txt")
 
   order_bins <-c(df_modifier$concept_id,44814650,0,NA)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "modifier_concept_id.txt")) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+  #fileContent<-c(fileContent,unexpected_message)
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,missing_message)
