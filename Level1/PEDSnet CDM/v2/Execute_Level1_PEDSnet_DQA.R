@@ -8,6 +8,8 @@ source("../../library/Issue.R", chdir = T)
 source("../../library/MissData.R", chdir = T)
 source("../../library/InvalidConID.R", chdir = T)
 source("../../library/InvalidValue.R", chdir = T)
+source("../../library/InconPK.R", chdir = T)
+source("../../library/InvalidVocab.R", chdir = T)
 
 executeLevel1DQA <- function() {
   dir.create(file.path(normalize_directory_path(

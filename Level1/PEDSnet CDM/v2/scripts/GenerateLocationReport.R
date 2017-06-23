@@ -29,9 +29,9 @@ generateLocationReport <- function() {
   field_name<-"location_source_value"
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ", describeIdentifier(df_table, field_name),"\n"))
   ###########DQA CHECKPOINT##############  total id different from source value
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("AA-003","location_id", field_name,
-                                                           (current_total_count- describeIdentifier(df_table, field_name)), table_name, g_data_version));
-  ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), c("location_id",field_name),con)) 
+
+    ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   
   test<-1

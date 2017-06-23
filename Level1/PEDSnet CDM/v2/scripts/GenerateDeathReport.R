@@ -110,16 +110,12 @@ generateDeathReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
-  fileContent<-c(fileContent,paste("\n The standard/prescribed vocabulary is SNOMED CT\n"))
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "CONDITION")
-  fileContent<-c(fileContent,paste("\n The vocabulary used by the site is",used_vocabulary,"\n"))
-  if(!is.na(used_vocabulary) && used_vocabulary!='SNOMED|'
-     && used_vocabulary!='NA||')
-  {
-  ###########DQA CHECKPOINT -- vocabulary incorrect ##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-005", field_name, "invalid vocabulary used, please use SNOMEDCT", table_name, g_data_version));
-  }
-
+  
+  ###########DQA CHECKPOINT --vocabulary check ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition','SNOMED'))) 
+  
+  
+  
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"cause_source_value",

@@ -31,8 +31,8 @@ generatePersonReport <- function() {
   df_total_person_source_value<-retrieve_dataframe_count(con, g_config,table_name,field_name)
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ", formatC(df_total_person_source_value[1,1], format="d", big.mark=','),"\n"))
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("AA-003", "person_id",field_name,
-                                                           (current_total_count-df_total_person_source_value[1][1]), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), c("person_id",field_name),con)) 
+  
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)

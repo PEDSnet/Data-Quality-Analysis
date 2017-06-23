@@ -37,7 +37,7 @@ logIssue.Issue <- function(theObject)
   {
   field_list_character<-""
   } else {
-    for(i in length(theObject$field_list))
+    for(i in 1:length(theObject$field_list))
   {
       if(i==1)
         field_list_character<-(theObject$field_list)[i]

@@ -105,25 +105,10 @@ generateProcedureOccurrenceReport <- function() {
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   # some fields can have multiple vocabularies
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "PROCEDURE")
-  fileContent<-c(fileContent,paste("\n The source vocabulary is",used_vocabulary,"\n"))
-  if(!is.na(used_vocabulary))
-  {
-    # check if each vocabulary is one of the prescribed ones
-    for(vocab_index in 1:length(unlist(strsplit(used_vocabulary,"\\|"))))
-    {
-      vocabulary<-unlist(strsplit(used_vocabulary,"\\|"))[vocab_index];
-      if(grepl("ICD",vocabulary)||grepl("CPT",vocabulary)
-         ||grepl("HCPCS",vocabulary)||grepl("OPCS",vocabulary))
-      {
-
-      } else {
-        ###########DQA CHECKPOINT -- vocabulary incorrect ##############
-        logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-005", field_name,
-                                                                  paste("invalid vocabulary found:",vocabulary," ; please use {ICD-9, ICD-10 Proc, CPT-4, HCPCS, or OPCS-4} only"), table_name, g_data_version));
-      }
-    }
-  }
+  ### DQA CHECKPOINT ##########
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, 
+                                                   c('Procedure',c('HCPCS','CPT4', 'OPCS', 'ICD9Proc','ICD10PCS')))) 
+  
   message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
   new_message<-""
   if(length(message)>0)
@@ -143,26 +128,10 @@ generateProcedureOccurrenceReport <- function() {
   fileContent<-c(fileContent,no_matching_message)
   ###########DQA CHECKPOINT -- no matching concept percentage ##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version)); # custom threshold
-  # some fields can have multiple vocabularies
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "PROCEDURE")
-  fileContent<-c(fileContent,paste("\n The vocabulary used is",used_vocabulary,"\n"))
-  if(!is.na(used_vocabulary))
-  {
-    # check if each vocabulary is one of the prescribed ones
-    for(vocab_index in 1:length(unlist(strsplit(used_vocabulary,"\\|"))))
-    {
-      vocabulary<-unlist(strsplit(used_vocabulary,"\\|"))[vocab_index];
-      if(grepl("ICD",vocabulary)||grepl("CPT",vocabulary)
-         ||grepl("HCPCS",vocabulary)||grepl("SNOMED",vocabulary))
-      {
-
-      } else {
-        ###########DQA CHECKPOINT -- vocabulary incorrect ##############
-        logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-005", field_name,
-                                                                  paste("invalid vocabulary found:",vocabulary," ; please use {ICD-9, ICD-10 Proc, CPT-4, HCPCS, or OPCS-4} only"), table_name, g_data_version));
-      }
-    }
-  }
+  ### DQA CHECKPOINT ##########
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, 
+                                                   c('Procedure',c('HCPCS','CPT4', 'SNOMED','ICD9Proc','ICD10PCS')))) 
+  
   message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
   new_message<-create_meaningful_message_concept_id(message,field_name,con, g_config)
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));

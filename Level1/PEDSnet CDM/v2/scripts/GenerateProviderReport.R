@@ -28,9 +28,8 @@ generateProviderReport <- function() {
   field_name<-"provider_source_value"
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ", describeIdentifier(df_provider,field_name),"\n"))
   ###########DQA CHECKPOINT##############  total id different from source value
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("AA-003","provider_id" ,field_name, (current_total_count-
-                                                           describeIdentifier(df_provider,field_name)), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), c("provider_id",field_name),con)) 
+  
 
 
   #Gender Source Value
@@ -167,12 +166,14 @@ generateProviderReport <- function() {
   
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  #logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,unexpected_message)
   no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,no_matching_message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  
+  acceptable_specialty<- read.csv(paste(getwd(), "/Data/PEDSnet/provider/specialty.csv", sep= ""))$concept_id ## read from specialty list
   df_table_specialty_enhanced<-EnhanceFieldValues(df_provider,field_name,as.data.frame(acceptable_specialty));
   describeNominalField_basic(df_table_specialty_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
