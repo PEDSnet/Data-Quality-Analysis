@@ -289,10 +289,12 @@ generatePersonReport <- function() {
   describeOrdinalField(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   #######DQA CHECKPOINT################
-  order_bins <- c(1,2,3,4,5,6,7,8,9,10,11,12)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-001", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+  #order_bins <- c(1,2,3,4,5,6,7,8,9,10,11,12)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-001", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
+                                                   ,con,  "month_of_birth.csv")) 
+  #fileContent<-c(fileContent,unexpected_message)
 
   #Day of Birth
   field_name="day_of_birth"
@@ -306,10 +308,13 @@ generatePersonReport <- function() {
   describeOrdinalField(df_table,table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA checkpoint#####################
-  order_bins <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31)
-  unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-001", field_name, unexpected_message, table_name, g_data_version));
-  fileContent<-c(fileContent,unexpected_message)
+ # order_bins <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31)
+  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  #logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-001", field_name, unexpected_message, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
+                                                   ,con,  "day_of_birth.csv")) 
+  
+  #fileContent<-c(fileContent,unexpected_message)
 
 
   #Time of Birth --
