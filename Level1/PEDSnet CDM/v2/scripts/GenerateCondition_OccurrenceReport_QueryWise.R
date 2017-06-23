@@ -145,22 +145,9 @@ generateConditionOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   # some fields can have multiple vocabularies
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "CONDITION")
-  fileContent<-c(fileContent,paste("\n The source vocabulary is",used_vocabulary,"\n"))
-  if(!is.na(used_vocabulary))
-  {
-    # check if each vocabulary is a flavor of ICD
-    for(vocab_index in 1:length(unlist(strsplit(used_vocabulary,"\\|"))))
-    {
-      vocabulary<-unlist(strsplit(used_vocabulary,"\\|"))[vocab_index];
-      if(!grepl("ICD",vocabulary))
-      {
-      ###########DQA CHECKPOINT -- vocabulary incorrect ##############
-        logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-005", field_name,
-                                                                  paste("invalid vocabulary found:",vocabulary," ; please use ICD9 or ICD10 only"), table_name, g_data_version));
-      }
-    }
-  }
+  ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition',c('ICD9','ICD9CM', 'ICD10', 'ICD10CM')))) 
+  
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   # create meaningful message
   new_message<-create_meaningful_message_concept_id(message,field_name,con,g_config)
@@ -177,14 +164,10 @@ generateConditionOccurrenceReport <- function() {
   ###########DQA CHECKPOINT -- no matching concept percentage ##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version)); # custom threshold
   # some fields can have multiple vocabularies
-  fileContent<-c(fileContent,paste("\n The standard/prescribed vocabulary is SNOMED\n"))
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name, "CONDITION")
-  fileContent<-c(fileContent,paste("\n The vocabulary used by the site is",used_vocabulary,"\n"))
-  if(!is.na(used_vocabulary) && used_vocabulary!='SNOMED|')
-  {
-    ###########DQA CHECKPOINT -- vocabulary incorrect ##############
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-005", field_name, "invalid vocabulary used, please use SNOMEDCT", table_name, g_data_version));
-  }
+
+  ###########DQA CHECKPOINT -- invalid vocab ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition','SNOMED'))) 
+  
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   # create meaningful message
   new_message<-create_meaningful_message_concept_id(message,field_name,con,g_config)

@@ -563,18 +563,13 @@ get_vocabulary_name_by_concept_codes <- function (con,config, schema1,table_name
   }
   return(final_vocabulary_name)
 }
+#returns a list
 get_vocabulary_name_by_concept_ids <- function (con, config, table_name, field_name, domain)
 {
   df_vocabulary_name<-retrieve_dataframe_join_clause(con,config,config$db$schema,table_name,config$db$vocab_schema,"concept","vocabulary_id",
                                                      paste(field_name,"= concept_id and upper(domain_id) =upper('",domain,"')",sep="")
   )
-
-  final_vocabulary_name<-""
-  for (row_num in 1:nrow(df_vocabulary_name))
-  {
-    final_vocabulary_name<-paste(final_vocabulary_name,df_vocabulary_name[row_num,1],"|",sep="")
-  }
-  return(final_vocabulary_name)
+  return(df_vocabulary_name$vocabulary_id)
 }
 get_vocabulary_name <- function (concept_id,con, config)
 {

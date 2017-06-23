@@ -225,9 +225,8 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   }
 
 
-  if(check_entry$check_code=='AA-001'
-     ||check_entry$check_code=='AA-002' || check_entry$check_code=='CA-001'
-     || check_entry$check_code=='AA-005'
+  if(
+     check_entry$check_code=='AA-002' || check_entry$check_code=='CA-001'
       || check_entry$check_code=='BA-003'|| check_entry$check_code=='CB-002')
   {
     if(nchar(trim(value))>0)
@@ -268,7 +267,7 @@ apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_dat
   if(diff<check_entry$Lower_Threshold || diff>check_entry$Upper_Threshold)
   {
     # create issue
-    if(any(check_entry$check_code=='AA-003' )||check_entry$check_code=='AA-009')
+    if(check_entry$check_code=='AA-009')
     {
          log_file_entry<-c(as.character(g_data_version), as.character(table_name),
                            paste(as.character(field1),",",as.character(field2)), as.character(check_entry$check_code),

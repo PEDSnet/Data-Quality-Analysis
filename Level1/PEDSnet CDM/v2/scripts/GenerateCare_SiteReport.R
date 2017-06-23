@@ -36,8 +36,8 @@ generateCareSiteReport <- function() {
   field_name<-"care_site_source_value"
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ", describeIdentifier(df_care_site,field_name),"\n"))
   ### DQA CHECKPOINT ####################
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("AA-003", "care_site_id",field_name, (current_total_count
-                                                                                          - describeIdentifier(df_care_site,field_name)), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), c("care_site_id",field_name),con)) 
+  
   # ORDINAL Fields
   #place of service source value
   field_name="place_of_service_source_value"
