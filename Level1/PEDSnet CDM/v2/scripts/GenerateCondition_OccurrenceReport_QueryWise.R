@@ -159,10 +159,8 @@ generateConditionOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   # add % of no matching concept (concept id = 0). for the completeness report
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  ###########DQA CHECKPOINT -- no matching concept percentage ##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version)); # custom threshold
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   # some fields can have multiple vocabularies
 
   ###########DQA CHECKPOINT -- invalid vocab ##############

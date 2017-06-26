@@ -162,7 +162,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   # flog.info(check_entry)
 
 
-  if(check_entry$check_code=='BA-001' || check_entry$check_code=='BA-002')
+  if(check_entry$check_code=='BA-001')
   {
 	  if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
 	  {

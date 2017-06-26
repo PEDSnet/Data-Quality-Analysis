@@ -51,9 +51,7 @@ generateProviderReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   describeNominalField_basic(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -69,10 +67,8 @@ generateProviderReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  
   ###########DQA CHECKPOINT##############
   df_gender <-generate_df_concepts(con, table_name,"gender.txt")
   order_bins <-c(df_gender$concept_id,NA)
@@ -140,9 +136,7 @@ generateProviderReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   describeNominalField_basic(df_provider,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -168,10 +162,7 @@ generateProviderReport <- function() {
   ###########DQA CHECKPOINT##############
   #logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  #fileContent<-c(fileContent,unexpected_message)
-  no_matching_message<-reportNoMatchingCount(df_provider,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   
   acceptable_specialty<- read.csv(paste(getwd(), "/Data/PEDSnet/provider/specialty.csv", sep= ""))$concept_id ## read from specialty list
   df_table_specialty_enhanced<-EnhanceFieldValues(df_provider,field_name,as.data.frame(acceptable_specialty));

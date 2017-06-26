@@ -58,10 +58,7 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
 
 
   #Gender Concept Id
@@ -85,9 +82,7 @@ generatePersonReport <- function() {
   #                                                            extract_ni_missing_percent( null_message), table_name, g_data_version))
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
@@ -121,10 +116,8 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  
 
   #Race Concept Id
   
@@ -142,9 +135,7 @@ generatePersonReport <- function() {
   # flog.info( null_message)
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   #update values of the field before plotting
   df_table_race_enhanced<-EnhanceFieldValues(df_table,field_name,df_race);
   describeNominalField_basic(df_table_race_enhanced,table_name,field_name,big_data_flag);
@@ -178,10 +169,8 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  
 
   #Ethnicity Concept Id
   field_name="ethnicity_concept_id"
@@ -201,9 +190,7 @@ generatePersonReport <- function() {
   # flog.info( null_message)
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   # flog.info(paste("Unexpected Values:",unexpected_message))
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins,big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
@@ -238,10 +225,8 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  
 
   #language Concept Id
   ## reading specific subset of the concept table to retrieve language concepts
@@ -262,11 +247,8 @@ generatePersonReport <- function() {
   df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_lang);
   describeNominalField_basic(df_table_language_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  
   # ORDINAL Fields
   #Year of Birth
   field_name="year_of_birth"

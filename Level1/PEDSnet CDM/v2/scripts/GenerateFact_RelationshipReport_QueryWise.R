@@ -58,9 +58,8 @@ generateFactRelationshipReport <- function() {
   field_name<-"domain_concept_id_1" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "domain_id.txt")) 
@@ -75,9 +74,8 @@ generateFactRelationshipReport <- function() {
   field_name<-"domain_concept_id_2" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "domain_id.txt")) 
