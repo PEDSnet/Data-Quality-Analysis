@@ -106,12 +106,8 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   ###########DQA CHECKPOINT -- missing information##############
   # add % of no matching concept (concept id = 0). for the completeness report
-  no_matching_concept_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_concept_message)
-  no_matching_concept_number<-extract_numeric_value(no_matching_concept_message)
-  # if more than 10% concepts are not being mapped to HCPCS
-  ###########DQA CHECKPOINT -- no matching concept percentage ##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_concept_message), table_name, g_data_version)); # custom threshold
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, 
@@ -137,9 +133,8 @@ generateDeviceExposureReport <- function(g_data_version) {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 

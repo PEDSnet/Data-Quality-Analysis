@@ -94,9 +94,8 @@ generateMeasurementOrganismReport <- function() {
                                                    ,con,  "organism_concept_id.txt")) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,unexpected_message)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
   describeNominalField_basic(df_table_unit_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));

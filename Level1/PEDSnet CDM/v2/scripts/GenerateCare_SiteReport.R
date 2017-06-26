@@ -65,12 +65,9 @@ generateCareSiteReport <- function() {
   missing_percent_message<-reportMissingCount(df_care_site,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
-  no_matching_concept_message<-reportNoMatchingCount(df_care_site,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_concept_message)
-  no_matching_concept_number<-extract_numeric_value(no_matching_concept_message)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_concept_message), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   
   ###########DQA CHECKPOINT##############
   #df_place_of_service <- as.data.frame(acceptable_PLOS)
@@ -102,13 +99,10 @@ generateCareSiteReport <- function() {
   missing_percent_message<-reportMissingCount(df_care_site,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
-  no_matching_concept_message<-reportNoMatchingCount(df_care_site,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_concept_message)
-  no_matching_concept_number<-extract_numeric_value(no_matching_concept_message)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_concept_message), table_name, g_data_version));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  
   describeNominalField_basic(df_care_site, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match

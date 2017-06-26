@@ -67,9 +67,8 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "procedure_type_concept_id.csv")) 
@@ -98,9 +97,8 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
@@ -124,10 +122,8 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   # add % of no matching concept (concept id = 0). for the completeness report
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  ###########DQA CHECKPOINT -- no matching concept percentage ##############
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version)); # custom threshold
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, 
                                                    c('Procedure',c('HCPCS','CPT4', 'SNOMED','ICD9Proc','ICD10PCS')))) 
@@ -194,9 +190,8 @@ generateProcedureOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "modifier_concept_id.txt")) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   #fileContent<-c(fileContent,unexpected_message)
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)

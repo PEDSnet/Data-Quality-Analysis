@@ -83,9 +83,8 @@ generateObservationReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   ###########DQA CHECKPOINT -- missing information##############
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   fileContent<-c(fileContent,message)
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
@@ -226,9 +225,8 @@ generateObservationReport <- function() {
   field_name<-"value_as_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
@@ -267,9 +265,8 @@ null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "unit_concept_id.txt")) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   #fileContent<-c(fileContent,unexpected_message)
@@ -293,9 +290,8 @@ null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "observation_type_concept_id.csv")) 
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -318,10 +314,9 @@ null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
- null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"qualifier_source_value",
                                                            (missing_percent_source_value -

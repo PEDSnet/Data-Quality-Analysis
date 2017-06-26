@@ -107,9 +107,7 @@ generateVisitOccurrenceReport <- function() {
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   #fileContent<-c(fileContent,unexpected_message)
   df_table_visit_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_visit_type);
   describeNominalField_basic(df_table_visit_type_enhanced,table_name,field_name,big_data_flag);
@@ -138,9 +136,7 @@ generateVisitOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   if(missing_percent<100)
   {
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
@@ -167,9 +163,7 @@ generateVisitOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,no_matching_message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
   if(nrow(subset(df_table,df_table$visit_concept_id==9201))==0)
   {
