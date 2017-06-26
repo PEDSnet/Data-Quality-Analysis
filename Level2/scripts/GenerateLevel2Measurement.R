@@ -21,6 +21,7 @@ generateLevel2Measurement <- function () {
   fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_Measurement_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",config)
 
+  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
   
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
@@ -44,80 +45,28 @@ generateLevel2Measurement <- function () {
   ### checking consistency between date and date/time fields. 
   ## AA009 check type 
   
-  #temp1<- mutate(
-  #  select(measurement_tbl, measurement_date, measurement_time)
-  #  , measurement_time_new=date(measurement_time),  ### also extract the right format. 
-  #  measurement_date_new=date(measurement_date)
-  #)
-  #temp2<-select(temp1, measurement_date_new,measurement_time_new)
-  #temp3<-temp2  %>% head %>% mutate(mismatch = .[[1]]!=.[[2]]) 
-  #temp4<-temp3 %>% filter(mismatch==TRUE)
   
-  mismatch_meas_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                        " WHERE cast(measurement_time as date) <> measurement_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_meas_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," measurements with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"measurement_time", "measurement_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_time', 
+                                                                                                 'measurement_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
-  mismatch_meas_order_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                        " WHERE cast(measurement_order_time as date) <> measurement_order_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_meas_order_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," measurements with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"measurement_order_time", "measurement_order_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_order_time', 
+                                                                                                 'measurement_order_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
-  mismatch_meas_result_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                              " WHERE cast(measurement_result_time as date) <> measurement_result_date",sep=''))
-  )
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_result_time', 
+                                                                                                 'measurement_result_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
-  df_incon<-as.data.frame(mismatch_meas_result_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," measurements with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"measurement_result_time", "measurement_result_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
- 
+  
   lab_tbl<-select(filter(measurement_tbl, measurement_type_concept_id==44818702),measurement_id, measurement_concept_id)
   vital_tbl<-select(filter(measurement_tbl, measurement_type_concept_id==2000000033
                            |measurement_type_concept_id==2000000032),measurement_id, measurement_concept_id)

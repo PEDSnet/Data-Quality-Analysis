@@ -23,6 +23,7 @@ generateLevel2Visit <- function () {
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_Visit_Report_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",config)
+  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
   
   
   # Connection basics ---------------------------------------------------------
@@ -51,54 +52,22 @@ generateLevel2Visit <- function () {
   patient_dob_tbl <- tbl(my_db, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
   
-  
-  mismatch_visit_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                              " WHERE cast(visit_start_time as date) <> visit_start_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_visit_start_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," visits with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"visit_start_time", "visit_start_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  ### AA009 datetime inconsistency
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('visit_start_time', 
+                                                                                                 'visit_start_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
-  mismatch_visit_end_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                               " WHERE cast(visit_end_time as date) <> visit_end_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_visit_end_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," visits with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"visit_end_time", "visit_end_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('visit_end_time', 
+                                                                                                 'visit_end_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   fileContent<-c(fileContent,"##Implausible Events")
   
-  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
   
   ## Temporal checks --- facts before birth date
   df_visit_before_dob<-as.data.frame(

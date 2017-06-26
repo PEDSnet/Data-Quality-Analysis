@@ -122,25 +122,7 @@ apply_check_type_0<-function(check_code, value,table_name, g_data_version)
   # read check code from catalogue
   check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_table_level(check_code, table_name))
-  #print(check_entry)
-  
 
-  if(check_entry$check_code=='AA-006'
-     )
-  {
-
-      log_file_entry<-c(as.character(g_data_version),
-                        as.character(table_name),
-                        "",
-                        as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),
-                        as.character(value),
-                        as.character(normalize_prevalence(value))
-      )
-      # flog.info(log_file_entry)
-      return (log_file_entry);
-  }
- 
   if(check_entry$check_code=='BA-004')
   {
     if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
@@ -267,16 +249,7 @@ apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_dat
   if(diff<check_entry$Lower_Threshold || diff>check_entry$Upper_Threshold)
   {
     # create issue
-    if(check_entry$check_code=='AA-009')
-    {
-         log_file_entry<-c(as.character(g_data_version), as.character(table_name),
-                           paste(as.character(field1),",",as.character(field2)), as.character(check_entry$check_code),
-                        as.character(check_entry$check_type), ' ',
-                        as.character(diff),
-                        as.character(normalize_prevalence(diff)))
-        #  flog.info(log_file_entry)
-      return (log_file_entry);
-    }
+    
     if( any(check_entry$check_code=='CA-014'))
     {
       log_file_entry<-c(as.character(g_data_version),
@@ -325,7 +298,7 @@ apply_check_type_2_diff_tables<-function(check_code,table1, field1, table2, fiel
                         table2,
                         paste(as.character(field1),",",as.character(field2)),
                         as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),
+                        as.character(check_entry$check_type),' ',
                         message,
                         "unknown")
       #  flog.info(log_file_entry)

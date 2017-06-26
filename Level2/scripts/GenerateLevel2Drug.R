@@ -12,12 +12,9 @@ generateLevel2Drug <- function() {
   # load the configuration file
   #get path for current script
 
+  log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
+  
   #g_data_version<-paste("pedsnet-2.3.0-", g_config$reporting$site,"-ETLv", g_config$reporting$etl_script_version, sep="")
-
-  #establish connection to database
-  #con <- establish_database_connection_OHDSI( g_config)
-
-  #con <- establish_database_connection( g_config)
 
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/Level2_Drug_Automatic.md",sep=""))
@@ -50,47 +47,18 @@ generateLevel2Drug <- function() {
 
 
   ##AA009 date time inconsistency 
-  mismatch_drug_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
-                                                              " WHERE cast(drug_exposure_start_time as date) <> drug_exposure_start_date",sep=''))
-  )
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_start_time', 
+                                                                                                 'drug_exposure_start_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
-  df_incon<-as.data.frame(mismatch_drug_start_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," drug exposures with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"drug_exposure_start_time", "drug_exposure_start_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
   
-  mismatch_drug_end_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
-                                                              " WHERE cast(drug_exposure_end_time as date) <> drug_exposure_end_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_drug_end_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," drug exposures with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"drug_exposure_end_time", "drug_exposure_end_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_end_time', 
+                                                                                                 'drug_exposure_end_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
   
