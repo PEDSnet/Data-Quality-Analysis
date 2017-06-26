@@ -24,6 +24,7 @@ generateLevel2Death <- function () {
   fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_Death_Report_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",config)
   
+  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/death_issue.csv",sep="")
   
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
@@ -39,28 +40,12 @@ generateLevel2Death <- function () {
   total_death_count<-  as.data.frame(summarise(death_tbl,n = n()))[1,1]
   
   
-  
-  mismatch_death_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                              " WHERE cast(death_time as date) <> death_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_death_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," deaths with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/death_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"death_time", "death_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-  
+  ##AA009 date time consistency
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('death_time', 
+                                                                                                 'death_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
   #write all contents to the report file and close it.

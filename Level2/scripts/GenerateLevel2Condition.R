@@ -22,7 +22,8 @@ generateLevel2Condition <- function() {
   fileContent <-get_report_header("Level 2",config)
 
   table_name<-"condition_occurrence"
-
+  log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
+  
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
   my_db <- src_postgres(dbname=config$db$dbname,
@@ -45,47 +46,18 @@ generateLevel2Condition <- function() {
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
   ##AA009 date time inconsistency 
-  mismatch_cond_start_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                       " WHERE cast(condition_start_time as date) <> condition_start_date",sep=''))
-  )
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_start_time', 
+                                                                                                 'condition_start_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
-  df_incon<-as.data.frame(mismatch_cond_start_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," condition occurrences with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"condition_start_time", "condition_start_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-
-  mismatch_cond_end_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                              " WHERE cast(condition_end_time as date) <> condition_end_date",sep=''))
-  )
   
-  df_incon<-as.data.frame(mismatch_cond_end_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," condition occurrences with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"condition_end_time", "condition_end_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_end_time', 
+                                                                                                 'condition_end_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   ## sibling concepts 
   condition_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, condition_concept_tbl, 
@@ -147,8 +119,8 @@ generateLevel2Condition <- function() {
   ##### Printing top 100 inpatient visits ##### 
   condition_tbl_enhanced<- distinct(select(inner_join(condition_concept_tbl,condition_tbl, by = c("concept_id"="condition_concept_id"))
                                   , visit_occurrence_id, condition_concept_id, concept_name))
-  print(head(condition_tbl_enhanced))
-  print(head(inpatient_visit_tbl))
+  #print(head(condition_tbl_enhanced))
+  #print(head(inpatient_visit_tbl))
   
   inpatient_visit_conditions<-
     distinct(select(
@@ -156,7 +128,7 @@ generateLevel2Condition <- function() {
                                          inpatient_visit_tbl)#, by =c("visit_occurrence_id", "visit_occurrence_id"))
         ,visit_occurrence_id,concept_name, condition_concept_id))
 
-  print(head(inpatient_visit_conditions))
+  #print(head(inpatient_visit_conditions))
   
   condition_counts_by_visit <-
     filter(

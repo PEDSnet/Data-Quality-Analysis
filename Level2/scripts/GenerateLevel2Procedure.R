@@ -12,6 +12,7 @@ generateLevel2Procedure <- function () {
   # load the configuration file
   #get path for current script
   config = yaml.load_file(g_config_path)
+  log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
   
   #establish connection to database
   #con <- establish_database_connection_OHDSI(config)
