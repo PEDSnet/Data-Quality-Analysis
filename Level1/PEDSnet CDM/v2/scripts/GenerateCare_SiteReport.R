@@ -76,10 +76,10 @@ generateCareSiteReport <- function() {
   describeNominalField_basic(df_table_place_of_service_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name, "place_of_service_source_value",
-                                                           (missing_percent_source_value -
-                                                            extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "place_of_service_source_value"),con
+  )) 
+  
+  
 
 
   # specialty source value
@@ -106,9 +106,8 @@ generateCareSiteReport <- function() {
   describeNominalField_basic(df_care_site, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name, "specialty_source_value",
-                                                           (missing_percent_source_value -
-                                                            extract_ni_missing_percent( null_message)), table_name, g_data_version))
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "specialty_source_value"),con
+  )) 
   ##########DQA CHECKPOINT##############
 
 
@@ -118,22 +117,11 @@ generateCareSiteReport <- function() {
   
   ## check for caresites with specific specialties
   ## for nephrology
-  num_neph_records<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*)","specialty_concept_id in (38004479,45756813)")[1,1]
-  fileContent<-c(fileContent,paste("\nThe number of nephrology caresites is: ",num_neph_records,"(",
-                                   round((num_neph_records/current_total_count),2),"%)"))
-  if(num_neph_records==0)
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "no nephrology caresites found", table_name, g_data_version));
-  }
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38004479,45756813, "nephrology"))) 
+  
+ 
   ## for GI
-  num_gi_records<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*)","specialty_concept_id in (45756810,38004455)")[1,1]
-  fileContent<-c(fileContent,paste("\nThe number of GI (Gastroenterology) caresites is: ",num_gi_records,"(",
-                                   round((num_gi_records/current_total_count),2),"%)"))
-  if(num_gi_records==0)
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "no GI caresites found", table_name, g_data_version));
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(45756810,38004455, "GI(Gastroenterology)"))) 
 
 
   #FOREIGN KEY fields

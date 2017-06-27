@@ -50,26 +50,11 @@ generateLevel2Procedure <- function () {
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
   
   ### AA009 date time inconsistency 
-  mismatch_proc_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                              " WHERE cast(procedure_time as date) <> procedure_date",sep=''))
-  )
-  
-  df_incon<-as.data.frame(mismatch_proc_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," procedure occurrences with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"procedure_time", "procedure_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_time', 
+                                                                                                 'procedure_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   ## sibling concepts 
   procedure_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, procedure_concept_tbl, 
@@ -436,48 +421,18 @@ generateLevel2Procedure <- function () {
   
   fileContent<-c(fileContent,"##Implausible Events")
   
-  df_proc_before_dob<-as.data.frame(
-    select(
-      filter(inner_join(procedure_tbl,patient_dob_tbl, by =c("person_id"="person_id")),procedure_date<dob)
-      ,person_id, dob, procedure_date
-    ))
-  if(nrow(df_proc_before_dob)>0)
-  {
-    df_proc_prenatal<-subset(df_proc_before_dob,elapsed_months(dob,procedure_date)<=9)
-    message<-paste(nrow(df_proc_before_dob)
-                   ,"procedures before birth ( including",nrow(df_proc_prenatal),"prenatal procedures)")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-003',"Person","time_of_birth",table_name, "procedure_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('procedure_date', 
+                                                                                                      'time_of_birth'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   table_name<-"procedure_occurrence"
-  df_proc_after_death<-as.data.frame(
-    select(
-      filter(inner_join(procedure_tbl,death_tbl, by =c("person_id"="person_id")),procedure_date>death_date)
-      ,person_id
-    ))
-  
-  if(nrow(df_proc_after_death)>0)
-  {
-    message<-paste(nrow(df_proc_after_death),"procedures after death")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-004',"Death","death_date",table_name, "procedure_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('procedure_date', 
+                                                                                                      'death_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
   #write all contents to the report file and close it.

@@ -35,10 +35,10 @@ generateDeathReport <- function() {
   field_name="death_date"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "deaths cannot occur in the future", table_name, g_data_version));
-  }
+  
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
@@ -109,14 +109,11 @@ generateDeathReport <- function() {
   ###########DQA CHECKPOINT --vocabulary check ##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition','SNOMED'))) 
   
+   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "cause_source_value"),con
+                                                   )) 
   
   
-  null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
-  ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"cause_source_value",
-                                                           (missing_percent_source_value -
-                                                            extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
   describeOrdinalField(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 

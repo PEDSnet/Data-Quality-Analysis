@@ -186,51 +186,20 @@ generateLevel2Drug <- function() {
 
 
   table_name<-"drug_exposure"
-  df_drug_before_dob<-as.data.frame(
-    select(
-      filter(inner_join(drug_tbl,patient_dob_tbl, by =c("person_id"="person_id")),drug_exposure_start_date<dob)
-      ,person_id, dob, drug_exposure_start_date
-    ))
-  if(nrow(df_drug_before_dob)>0)
-  {
-    df_drug_prenatal<-subset(df_drug_before_dob,elapsed_months(dob,drug_exposure_start_date)<=9)
-    message<-paste(nrow(df_drug_before_dob)
-                   ,"drug exposures before birth ( including",nrow(df_drug_prenatal),"prenatal drug exposures)")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-003',"Person","time_of_birth","drug_exposure", "drug_exposure_start_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-
-  }
-
-
-
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('drug_exposure_start_date', 
+                                                                                                      'time_of_birth'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
   table_name<-"drug_exposure"
-  df_drug_after_death<-as.data.frame(
-    select(
-      filter(inner_join(drug_tbl,death_tbl, by =c("person_id"="person_id")),drug_exposure_start_date>death_date)
-      ,person_id
-    ))
-
-  if(nrow(df_drug_after_death)>0)
-  {
-    message<-paste(nrow(df_drug_after_death),"drug exposures after death")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-004',"Death","death_date","drug_exposure", "drug_exposure_start_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('drug_exposure_start_date', 
+                                                                                                      'death_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

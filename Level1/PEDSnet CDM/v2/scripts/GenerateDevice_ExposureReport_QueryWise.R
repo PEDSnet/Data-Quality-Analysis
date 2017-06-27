@@ -122,9 +122,8 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"device_source_value",
-                                                           (missing_percent_source_value-
-                                                              extract_ni_missing_percent( null_message)), table_name, g_data_version))
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "device_source_value"),con
+  )) 
   
   ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
   
@@ -201,10 +200,10 @@ generateDeviceExposureReport <- function(g_data_version) {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "device exposures cannot start in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   
   
@@ -219,10 +218,10 @@ generateDeviceExposureReport <- function(g_data_version) {
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   if(missing_percent<100)
   {
-    if(grepl("future",message[3]))
-    {
-      logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "device exposures cannot end in the future", table_name, g_data_version));
-    }
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   

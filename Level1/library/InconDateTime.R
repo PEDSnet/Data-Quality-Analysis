@@ -19,8 +19,9 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
   time_field<-field_list[1]
   date_field<-field_list[2]
   
-  check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
+  check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, time_field, date_field)
   
+  #print(date_field)
 
   if(grepl('year', date_field)==TRUE)
   {
@@ -46,12 +47,13 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
     )
   }
   
+  #print(grepl('date', date_field))
   if(grepl('date', date_field)==TRUE) 
   {
     mismatch_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                      " WHERE cast(",time_field," as date) <> ",date_field,sep='')))
   }
-  
+  #print(mismatch_date_tbl)
   df_incon<-as.data.frame(mismatch_date_tbl)
   
  

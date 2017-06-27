@@ -138,10 +138,9 @@ generateDrugExposureReport <- function() {
 
    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"drug_source_value",
-                                                           (missing_percent_source_value-
-                                                              extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "drug_source_value"),con
+  )) 
+  
   if(no_matching_concept_number>10)
   {
     fileContent<-c(fileContent,"###Frequent source values for non-matching concepts:")
@@ -203,11 +202,10 @@ generateDrugExposureReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  ###########DQA CHECKPOINT##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "drug exposures cannot start in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
@@ -224,24 +222,18 @@ generateDrugExposureReport <- function() {
   if(missing_percent<100)
   {
     message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-    ###########DQA CHECKPOINT##############
-    if(grepl("future",message[3]))
-    {
-      logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "drug exposures cannot end in the future", table_name, g_data_version));
-    }
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
     fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
     message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
     fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
   }
   #implausible event clause
-  df_implausible_date_count<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*)","drug_exposure_start_date>drug_exposure_end_date")
-  if(df_implausible_date_count[1][1]>0)
-  {
-    ###########DQA CHECKPOINT##############
-    implausible_message<-paste("There are ",df_implausible_date_count[1][1]," records with drug_exposure_start_date>drug_exposure_end_date")
-    fileContent<-c(fileContent,implausible_message);
-    #logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-016", table_name, "drug_exposure_start_date",field_name, implausible_message, table_name, g_data_version));
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), 
+                                                   c('drug_exposure_start_date','drug_exposure_end_date'),con)) 
+  
 
   # drug exposure end date
   field_name<-"drug_exposure_end_date"
@@ -266,10 +258,10 @@ generateDrugExposureReport <- function() {
   ###########DQA CHECKPOINT -- future dates ##############
   if(missing_percent!=100)
   {
-    if(grepl("future",message[3]))
-    {
-      logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "drug orders cannot occur in the future", table_name, g_data_version));
-    }
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
@@ -309,24 +301,14 @@ generateDrugExposureReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   ## DQA check for recall of various drug types
-  if(nrow(subset(df_table,df_table$drug_type_concept_id==38000175))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Dispensing Records");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No dispensing records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$drug_type_concept_id==38000180))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Inpatient Administration Records");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No inpatient administration records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$drug_type_concept_id==38000177))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Prescription Records");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No prescription records found", table_name, g_data_version));
-
-  }
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(38000175,  "Dispensing"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(38000180,  "Inpatient Administration"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(38000177,  "prescription"))) 
+  
 
   field_name<-"stop_reason"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -447,10 +429,9 @@ generateDrugExposureReport <- function() {
 
    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"route_source_value",
-                                                           (missing_percent_source_value-
-                                                              extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "route_source_value"),con
+  )) 
+  
 
   #print (fileContent)
 
@@ -509,10 +490,9 @@ generateDrugExposureReport <- function() {
    #print(null_message)
    #print(extract_ni_missing_percent( null_message))
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"dose_unit_source_value",
-                                                           (missing_percent_source_value-
-                                                              extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "dose_unit_source_value"),con
+   )) 
+   
 
   fileContent<-c(fileContent,"\nDQA NOTE: There should be a one-to-one correspondence between dose_unit source value and concept id fields; compare the top 5 values")
   fileContent<-c(fileContent,"\nDQA NOTE: Look for cases where dose_unit_concept_id =0, this would happen when dose_unit_source_value is either NULL or cannot be mapped")

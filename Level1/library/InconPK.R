@@ -19,7 +19,7 @@ applyCheck.InconPK <- function(theObject, table_list, field_list, con)
   field_name_1<-field_list[1]
   field_name_2<-field_list[2]
   
-  check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
+  check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, field_name_1, field_name_2)
   
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name_1)
   count1<-describeIdentifier(df_table,field_name_1)

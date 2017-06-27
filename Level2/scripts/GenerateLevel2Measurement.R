@@ -187,50 +187,20 @@ generateLevel2Measurement <- function () {
   
   fileContent<-c(fileContent,"##Implausible Events")
   table_name<-"measurement"
-  df_meas_before_dob<-as.data.frame(
-    select(
-      filter(inner_join(measurement_tbl,patient_dob_tbl, by =c("person_id"="person_id")),measurement_date<dob)
-      ,person_id, dob, measurement_date
-    ))
-  if(nrow(df_meas_before_dob)>0)
-  {
-    df_meas_prenatal<-subset(df_meas_before_dob,elapsed_months(dob,measurement_date)<=9)
-    message<-paste(nrow(df_meas_before_dob)
-                 ,"measurements before birth ( including",nrow(df_meas_prenatal),"prenatal measurements)")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-003',"Person","time_of_birth","measurement", "measurement_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-
-
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('measurement_date', 
+                                                                                                      'time_of_birth'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
   table_name<-"measurement"
-  df_meas_after_death<-as.data.frame(
-    select(
-      filter(inner_join(measurement_tbl,death_tbl, by =c("person_id"="person_id")),measurement_date>death_date)
-      ,person_id
-    ))
-
-  if(nrow(df_meas_after_death)>0)
-  {
-    message<-paste(nrow(df_meas_after_death),"measurements after death")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-004',"Death","death_date","measurement", "measurement_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
-
-
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('measurement_date', 
+                                                                                                      'death_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

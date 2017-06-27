@@ -91,11 +91,10 @@ generateMeasurementReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  ###########DQA CHECKPOINT##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "measurements cannot occur in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   field_name<-"measurement_time" #
@@ -111,11 +110,10 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  ###########DQA CHECKPOINT -- future dates##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "measurement result date cannot occur in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   #field_name<-"measurement_result_time" #
@@ -138,11 +136,10 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  ###########DQA CHECKPOINT -- future dates##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "measurement order date cannot occur in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   #field_name<-"measurement_order_time" #
@@ -219,10 +216,9 @@ generateMeasurementReport <- function() {
 
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"unit_source_value",
-                                                           (missing_percent_source_value-
-                                                              extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "unit_source_value"),con
+  )) 
+  
 
   #Operator Concept Id
   field_name = "operator_concept_id"
@@ -294,10 +290,9 @@ generateMeasurementReport <- function() {
     null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
     
     ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-    logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"priority_source_value",
-                                                             (missing_percent_source_value-
-                                                                extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+    logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "priority_source_value"),con
+    )) 
+    
   }
 
 
@@ -321,19 +316,12 @@ generateMeasurementReport <- function() {
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-  if( nrow(subset(df_table,df_table$measurement_type_concept_id==2000000033))==0 && nrow(subset(df_table,df_table$measurement_type_concept_id==2000000032))==0 )  
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Vital sign Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Vitals sign records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$measurement_type_concept_id==44818702))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Lab Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Lab records found", table_name, g_data_version));
-
-  }
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(2000000033,  2000000032, "vital signs"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(44818702, "lab records"))) 
+  
 
   #print (fileContent)
 
@@ -395,15 +383,8 @@ generateMeasurementReport <- function() {
 
   ## Specific lab checks
   ## for creatinine
-  num_creatinine_records<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*)","measurement_concept_id in (3016723,3017250) and value_as_number > 0")[1,1]
-
-  fileContent<-c(fileContent,paste("The number of creatinine records is: ",num_creatinine_records,"(",
-                                   round((num_creatinine_records/df_total_measurement_count),2),"%)"))
-
-  if(num_creatinine_records==0)
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No creatinine records found", table_name, g_data_version));
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(3016723,3017250,  "creatinine"))) 
 
   concept_id_list <- unique(df_table[,1])
 
