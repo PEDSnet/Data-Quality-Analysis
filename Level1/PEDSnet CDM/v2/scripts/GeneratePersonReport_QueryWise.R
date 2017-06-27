@@ -87,22 +87,9 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
   # flog.info("here")
-  if(nrow(subset(df_table,df_table$gender_concept_id==8532))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Female Patients Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No female patient records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$gender_concept_id==8507))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Male Patients Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No male patient records found", table_name, g_data_version));
-
-  }
-
-
-
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8532, "female"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8502, "male"))) 
+ 
   #Race Source Value
   field_name="race_source_value"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -141,18 +128,8 @@ generatePersonReport <- function() {
   describeNominalField_basic(df_table_race_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
-  if(nrow(subset(df_table,df_table$race_concept_id==8527))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No White Patient Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No white Patient records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$race_concept_id ==8516))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Black Patient Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No black Patient records found", table_name, g_data_version));
-
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8527, "white"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8516, "black"))) 
 
 
 
@@ -195,19 +172,8 @@ generatePersonReport <- function() {
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins,big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   
-
-  if(nrow(subset(df_table,df_table$ethnicity_concept_id == 38003563))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Hispanic Patient Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Hispanic patient records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$ethnicity_concept_id == 38003564))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No non-Hispanic Patient Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No non-Hispanic patient records found", table_name, g_data_version));
-
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38003563, "hispanic"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38003564, "non-hispanic"))) 
 
 
   ### language field
@@ -310,14 +276,8 @@ generatePersonReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   #message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  ###########DQA CHECKPOINT############## ... time of birth cannot be in future
-  if(length(message)==3)
-  {
-    if(grepl("future",message[3]))
-    {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "birthdays cannot occur in the future", table_name, g_data_version));
-    }
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
 
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
 
@@ -337,7 +297,7 @@ generatePersonReport <- function() {
   if (missing_percent<100)
   {
   ###########DQA CHECKPOINT############## gestational age cannot be above 45
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-011",field_name,extract_maximum_value(message), table_name, g_data_version));
+    logFileData<-custom_rbind(logFileData,applyCheck(NumOutlier(), c(table_name),c(field_name),con)) 
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 

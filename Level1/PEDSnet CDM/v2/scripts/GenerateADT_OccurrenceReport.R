@@ -50,20 +50,9 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
 
 
   ### DQA checkpoint --- incosnistent visit types
-  df_outpatient_adts_count<-retrieve_dataframe_join_clause(con,g_config,g_config$db$schema,table_name, 
-                                   g_config$db$schema,"visit_occurrence","count(*)",
-                                   "adt_occurrence.visit_occurrence_id = visit_occurrence.visit_occurrence_id
-                                      and visit_concept_id in (9202, 44814711)") 
-  
-  ###########DQA CHECKPOINT############## difference from previous cycle
-  if(df_outpatient_adts_count[1,1]>0)
-  {
-    logFileData<-custom_rbind(logFileData,
-                              apply_check_type_2_diff_tables("CA-013",table_name, "visit_occurrence_id", 
-                                                             "visit_occurrence", "visit_concept_id", 
-                                                             paste(df_outpatient_adts_count[1,1], "adts are outpatient visits"))
-                              );
-  }
+
+  logFileData<-custom_rbind(logFileData,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                   c("visit_occurrence_id", "visit_concept_id"),con)) 
   
   #NOMINAL Fields
 
@@ -87,15 +76,10 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
   #}
-  ###########DQA CHECKPOINT##############
-if(length(message)==3)
-{
-        if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "future visits should not be included", table_name, g_data_version));
-  }
-
-}
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
      flog.info(Sys.time())
 
      flog.info(Sys.time())

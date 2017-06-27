@@ -148,11 +148,10 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeDateField(df_table, table_name, field_name,big_data_flag)
-  ###########DQA CHECKPOINT##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "procedures cannot occur in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
   field_name<-"procedure_time" #
@@ -206,12 +205,10 @@ generateProcedureOccurrenceReport <- function() {
 
     ## run the CA-014 DQA check only if there is some data in modifier_concept_id
     ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-    logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"modifier_source_value",
-                                                             (missing_percent_source_value-
-                                                                extract_ni_missing_percent( null_message)), table_name, g_data_version))
+    logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "modifier_source_value"),con
+    )) 
+    
   }
-
-
 
 
 

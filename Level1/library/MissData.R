@@ -17,7 +17,7 @@ applyCheck.MissData <- function(theObject, table_list, field_list, con)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
-  check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
+  check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   

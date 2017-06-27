@@ -111,48 +111,27 @@ generateObservationReport <- function() {
 
 
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"observation_source_value",
-                                                           (missing_percent_source_value-
-                                                              extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "observation_source_value"),con
+  )) 
+  
 
   ###########DQA CHECKPOINT############## missing expected concepts 
-  if(nrow(subset(df_table,df_table$observation_concept_id==4145666))==0)
-  {
-    message<-"No admitting source records found"
-    #print(message)
-    fileContent<-c(fileContent,message,"\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
-  }
-  if(nrow(subset(df_table,df_table$observation_concept_id==4137274))==0)
-  {
-    message<-"No discharge disposition records found"
-    fileContent<-c(fileContent,message,"\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
-    
-  }
-  if(nrow(subset(df_table,df_table$observation_concept_id==44813951))==0)
-  {
-    message<-"No discharge status records found"
-    fileContent<-c(fileContent,message,"\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
-    
-  }
-  if(nrow(subset(df_table,df_table$observation_concept_id==3040464))==0)
-  {
-    message<-"No DRG records found"
-    fileContent<-c(fileContent,message,"\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
-    
-  }
-  if(nrow(subset(df_table,df_table$observation_concept_id==4005823 | 
-                 df_table$observation_concept_id==4219336 |
-                 df_table$observation_concept_id==4275495))==0)
-  {
-    message<-"No Tobacco records found"
-    fileContent<-c(fileContent,message,"\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, message, table_name, g_data_version));
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(4145666,  "admitting source"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(4137274,  "discharge disposition"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(44813951,  " discharge status "))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(3040464,  "DRG"))) 
+  
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(4005823, 4219336, 4275495,  "Tobacco"))) 
+  
   
   #NOMINAL Fields
 
@@ -196,13 +175,10 @@ generateObservationReport <- function() {
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT##############
-  if(length(message)==3)
-  {
-    if(grepl("future",message[3]))
-    {  logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "observations should not occur in the future", table_name, g_data_version));
-
-    }
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   field_name<-"observation_time" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -257,10 +233,9 @@ generateObservationReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
 null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"unit_source_value",
-                                                           (missing_percent_source_value-
-                                                            extract_ni_missing_percent( null_message)), table_name, g_data_version))
-  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "unit_source_value"),con
+)) 
+#unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "unit_concept_id.txt")) 
@@ -318,9 +293,8 @@ null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"qualifier_source_value",
-                                                           (missing_percent_source_value -
-                                                            extract_ni_missing_percent( null_message)), table_name, g_data_version))
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "qualifier_source_value"),con
+  )) 
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 

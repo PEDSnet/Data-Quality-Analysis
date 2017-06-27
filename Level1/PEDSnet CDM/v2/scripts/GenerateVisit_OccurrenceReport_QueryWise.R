@@ -49,12 +49,10 @@ generateVisitOccurrenceReport <- function() {
     fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_time",sep="")),message);
   
   
-  ###########DQA CHECKPOINT##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "future visits should not be included", table_name, g_data_version));
-  }
-
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
 
    flog.info(Sys.time())
 
@@ -68,24 +66,17 @@ generateVisitOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
-  ###########DQA CHECKPOINT##############
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "visits ending in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
 
   # check for plausibility
-  df_implausible_date_count<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,"count(*) as count","visit_start_date>visit_end_date")
-  if(df_implausible_date_count[1][1]>0)
-  {
-    ###########DQA CHECKPOINT##############
-    implausible_message<-paste("There are ",df_implausible_date_count[1][1]," records with visit_start_date>visit_end_date")
-    fileContent<-c(fileContent,implausible_message);
-    #logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-016", table_name, "visit_start_date",field_name, implausible_message, table_name, g_data_version));
-  }
+
    flog.info(Sys.time())
 
-
+   logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), c('visit_start_date','visit_end_date'),con)) 
+   
   ## visit end time
   #field_name<-"visit_end_time"
   #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -156,39 +147,19 @@ generateVisitOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,apply_check_type_2("CA-014", field_name,"visit_source_value",
-                                                           (missing_percent_source_value -
-                                                            extract_ni_missing_percent( null_message)), table_name, g_data_version))
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "visit_source_value"),con
+  )) 
+  
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
-  if(nrow(subset(df_table,df_table$visit_concept_id==9201))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Inpatient visits found","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No inpatient visits found", table_name, g_data_version));
-    
-  }
-  if(nrow(subset(df_table,df_table$visit_concept_id==9202))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No outpatient visits found","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No outpatient visits found", table_name, g_data_version));
-    
-  }
-  if(nrow(subset(df_table,df_table$visit_concept_id==9203))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No ED visits found","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No ED visits found", table_name, g_data_version));
-    
-  }
-  if(nrow(subset(df_table,df_table$visit_concept_id==44814711))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No other ambulatory visits found","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No other ambulatory visits found", table_name, g_data_version));
-    
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(9201, "inpatient"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(9202, "outpatient"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(9203, "ED"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(44814711,
+                                                                                                  "other ambulatory"))) 
   
   #fileContent<-c(fileContent,unexpected_message)
   df_table_visit_enhanced<-EnhanceFieldValues(df_table,field_name,df_visit);

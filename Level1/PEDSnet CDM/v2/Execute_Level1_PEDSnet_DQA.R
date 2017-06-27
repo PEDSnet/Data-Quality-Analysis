@@ -11,6 +11,17 @@ source("../../library/InvalidValue.R", chdir = T)
 source("../../library/InconPK.R", chdir = T)
 source("../../library/InvalidVocab.R", chdir = T)
 source("../../library/MissConID.R", chdir = T)
+source("../../library/MissFact.R", chdir = T)
+source("../../library/MissVisitFact.R", chdir = T)
+source("../../library/ImplFutureDate.R", chdir = T)
+source("../../library/PreBirth.R", chdir = T)
+source("../../library/PostDeath.R", chdir = T)
+source("../../library/NumOutlier.R", chdir = T)
+source("../../library/InconVisitType.R", chdir = T)
+source("../../library/InconSource.R", chdir = T)
+source("../../library/ImplEvent.R", chdir = T)
+source("../../library/UnexTop.R", chdir = T)
+
 
 executeLevel1DQA <- function() {
   dir.create(file.path(normalize_directory_path(

@@ -19,7 +19,7 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, con, doma
   field_name<-field_list[1]
   domain<-domain_vocabulary[1]
   
-  check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
+  check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
    
   used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name,domain)

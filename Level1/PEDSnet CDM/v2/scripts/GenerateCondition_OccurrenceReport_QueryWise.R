@@ -83,47 +83,22 @@ generateConditionOccurrenceReport <- function() {
   describeNominalField_basic(df_table_condition_type_enhanced,table_name,field_name, big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000092
-                 |df_table$condition_type_concept_id==2000000093
-                 |df_table$condition_type_concept_id==2000000094))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Inpatient header primary Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No inpatient header primary records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000095
-                 |df_table$condition_type_concept_id==2000000096
-                 |df_table$condition_type_concept_id==2000000097))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Outpatient header 1st position Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No outpatient header 1st position records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000098
-                 |df_table$condition_type_concept_id==2000000099
-                 |df_table$condition_type_concept_id==2000000100))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Inpatient header - 2nd position Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Inpatient header - 2nd position records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000101
-                 |df_table$condition_type_concept_id==2000000102
-                 |df_table$condition_type_concept_id==2000000103))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No Outpatient header - 2nd position Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Outpatient header - 2nd position records found", table_name, g_data_version));
-
-  }
-  if(nrow(subset(df_table,df_table$condition_type_concept_id==2000000089
-                 |df_table$condition_type_concept_id==2000000090
-                 |df_table$condition_type_concept_id==2000000091))==0)
-  {
-    fileContent<-c(fileContent,"DQA WARNING: No EHR problem list entry Records","\n");
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No EHR problem list entry records found", table_name, g_data_version));
-
-  }
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(2000000092,2000000093,2000000094,  "inpatient header primary"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(2000000095,2000000096,2000000097,  "outpatient header 1st position"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(2000000098,2000000099,2000000100,  "inaptient header 2nd position"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(2000000101,2000000102,2000000103,  "outpatient header 2nd position"))) 
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(2000000089,2000000090,2000000091,  "EHR problem list entry"))) 
+  
+  
   # ORDINAL Fields
 
   field_name<-"condition_source_value"
@@ -193,10 +168,10 @@ generateConditionOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
-  if(grepl("future",message[3]))
-  {
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "conditions cannot start in the future", table_name, g_data_version));
-  }
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  
+  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   field_name<-"condition_end_date"
@@ -210,23 +185,17 @@ generateConditionOccurrenceReport <- function() {
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   if(missing_percent<100)
   {
-    if(grepl("future",message[3]))
-    {
-      logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "conditions cannot end in the future", table_name, g_data_version));
-    }
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   
   #Sys.sleep(10)
 
-  df_implausible_date_count<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)","condition_start_date>condition_end_date")
-  if(df_implausible_date_count[1][1]>0)
-  {
-    ###########DQA CHECKPOINT##############
-    implausible_message<-paste("There are ",df_implausible_date_count[1][1]," records with condition_start_date>condition_end_date")
-    fileContent<-c(fileContent,implausible_message);
-    #logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-016", table_name, "condition_start_date",field_name, implausible_message, table_name, g_data_version));
-  }
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), c('condition_start_date','condition_end_date'),con)) 
+  
   #Sys.sleep(10)
 
   #print (fileContent)

@@ -19,7 +19,7 @@ applyCheck.InvalidValue <- function(theObject, table_list, field_list, con, meta
   field_name<-field_list[1]
 
   
-  check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
+  check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
    
   value_set<-generate_list_concepts(table_name, metadata)

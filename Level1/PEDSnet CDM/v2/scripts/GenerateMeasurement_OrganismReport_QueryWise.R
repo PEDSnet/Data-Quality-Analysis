@@ -76,10 +76,10 @@ generateMeasurementOrganismReport <- function() {
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   if(missing_percent<100)
   {
-    if(grepl("future",message[3]))
-    {
-      logFileData<-custom_rbind(logFileData,apply_check_type_1("CA-001", field_name, "conditions cannot start in the future", table_name, g_data_version));
-    }
+    ### DQA checkpoint - future date
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+    
+    
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 

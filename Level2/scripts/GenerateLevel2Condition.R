@@ -416,53 +416,23 @@ generateLevel2Condition <- function() {
   }
 
   fileContent<-c(fileContent,"##Unexpected Events")
-
-
-
-  df_cond_before_dob<-as.data.frame(
-    select(
-      filter(inner_join(condition_tbl,patient_dob_tbl, by =c("person_id"="person_id")),condition_start_date<dob)
-      ,person_id, dob, condition_start_date
-    ))
-
-  if(nrow(df_cond_before_dob)>0)
-  {
-    df_cond_prenatal<-subset(df_cond_before_dob,elapsed_months(dob,condition_start_date)<=9)
-    message<-paste(nrow(df_cond_before_dob)
-                 ,"conditions before birth ( including",nrow(df_cond_prenatal),"prenatal conditions)")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-003',"Person","time_of_birth","condition_occurrence", "condition_start_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-
-  }
-
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('condition_start_date', 
+                                                                                                      'time_of_birth'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  
 
   table_name<-"condition_occurrence"
-  df_cond_after_death<-as.data.frame(
-    select(
-      filter(inner_join(condition_tbl,death_tbl, by =c("person_id"="person_id")),condition_start_date>death_date)
-      ,person_id
-    ))
-
-  if(nrow(df_cond_after_death)>0)
-  {
-    message<-paste(nrow(df_cond_after_death),"conditions after death")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2_diff_tables('CA-004',"Death","death_date","condition_occurrence", "condition_start_date", message)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  ## Temporal checks --- facts after death date
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('condition_start_date', 
+                                                                                                      'death_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  
 
 
   #write all contents to the report file and close it.

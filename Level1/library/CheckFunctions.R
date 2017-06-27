@@ -113,42 +113,6 @@ get_check_entry_two_variables_diff_tables<-function(check_code, table1, field1,t
   )
 }
 
-## no variables
-## a custom upper threshold is provided
-#apply_check_type_0<-function(check_code, message, upper_threshold)
-apply_check_type_0<-function(check_code, value,table_name, g_data_version)
-{
-
-  # read check code from catalogue
-  check_entry <- cbind(get_catalog_entry(check_code),
-                       get_check_entry_table_level(check_code, table_name))
-
-  if(check_entry$check_code=='BA-004')
-  {
-    if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
-    {
-    log_file_entry<-c(as.character(g_data_version),
-                      as.character(table_name),
-                      "",
-                      as.character(check_entry$check_code),
-                      as.character(check_entry$check_type),
-                      as.character(paste(value,"%",sep="")),
-                      "unknown")
-    
-    # flog.info(log_file_entry)
-    return (log_file_entry);
-    }
-    else
-    {
-      return(c()); # i.e. no issue
-    }
-    
-  }
-  
-
-
-
-}
 
 ## one variable and a value to compare against a threshold or print a message
 apply_check_type_1<-function(check_code, field, value, table_name, g_data_version)
@@ -184,32 +148,9 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   }
   }
 
-  if(any(check_entry$check_code=='CA-011'))
-  {
-    if(any(value>=check_entry$Upper_Threshold))
-    {
-      log_file_entry<-c(as.character(g_data_version),
-                        as.character(table_name),
-                        as.character(field),
-                        as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),
-                        as.character(paste(value))  ,
-                        "low"
-      )
-      # flog.info(log_file_entry)
-      # flog.info(log_file_entry)
-      return (log_file_entry);
-    }
-    else
-    {
-      return(c()); # i.e. no issue
-    }
-  }
-
-
   if(
-     check_entry$check_code=='AA-002' || check_entry$check_code=='CA-001'
-      || check_entry$check_code=='BA-003'|| check_entry$check_code=='CB-002')
+     check_entry$check_code=='AA-002'
+      || check_entry$check_code=='CB-002')
   {
     if(nchar(trim(value))>0)
     {
@@ -232,99 +173,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   }
 }
 
-## two variables from same table and two associated values
-apply_check_type_2<-function(check_code, field1, field2, diff, table_name, g_data_version)
-{
-  # flog.info("here")
-  # read check code from catalogue
-  #print("here")
-  #print(get_catalog_entry(check_code))
-  #print(get_check_entry_two_variables(check_code, table_name, field1, field2))
-  
-  check_entry <- cbind(get_catalog_entry(check_code),
-                       get_check_entry_two_variables(check_code, table_name, field1, field2))
 
-  #print("here")
-  # flog.info(get_catalog_entry(check_code))
-  if(diff<check_entry$Lower_Threshold || diff>check_entry$Upper_Threshold)
-  {
-    # create issue
-    
-    if( any(check_entry$check_code=='CA-014'))
-    {
-      log_file_entry<-c(as.character(g_data_version),
-                        as.character(table_name),
-                        paste(as.character(field1),",",as.character(field2)),
-                        as.character(check_entry$check_code),
-                        as.character(check_entry$check_type), ' ',
-                        paste(as.character(diff),"%"),
-                        as.character(normalize_prevalence(diff)))
-      #  flog.info(log_file_entry)
-      return (log_file_entry);
-    }
-
-  }
-  else
-  {
-    return(c()); # i.e. no issue
-  }
-  if(any(check_entry$check_code=='CA-016'))
-  {
-    log_file_entry<-c(as.character(g_data_version),
-                      as.character(table_name),
-                      paste(as.character(field1),",",as.character(field2)),
-                      as.character(check_entry$check_code),
-                      as.character(check_entry$check_type),
-                      diff,
-                     'unknown')
-    #  flog.info(log_file_entry)
-    return (log_file_entry);
-  }
-}
-
-# two variables from diff tables
-apply_check_type_2_diff_tables<-function(check_code,table1, field1, table2, field2, message)
-{
-  #print(get_check_entry_two_variables_diff_tables(check_code, table1, field1,table2, field2))
- check_entry <- cbind(get_catalog_entry(check_code),
-                       get_check_entry_two_variables_diff_tables(check_code, table1, field1,table2, field2))
-
-  # flog.info(check_entry)
-    # create issue
-    if(check_entry$check_code=='CA-003'
-       || check_entry$check_code=='CA-004')
-    {
-      log_file_entry<-c(as.character(g_data_version),
-                        table2,
-                        paste(as.character(field1),",",as.character(field2)),
-                        as.character(check_entry$check_code),
-                        as.character(check_entry$check_type),' ',
-                        message,
-                        "unknown")
-      #  flog.info(log_file_entry)
-      return (log_file_entry);
-    } else
-      {
-        if ( any(check_entry$check_code=='BA-004')
-             ||  any(check_entry$check_code=='CA-013')) {
-          log_file_entry<-c(as.character(g_data_version),
-                            #as.character(paste(table1,",",table2)), # causes error during merging of issues so picking only the first table
-                            as.character(table1),
-                            paste(as.character(field1),",",as.character(field2)),
-                            as.character(check_entry$check_code),
-                            as.character(check_entry$check_type), ' ',
-                            message,
-                            "unknown")
-          # flog.info(log_file_entry)
-          return (log_file_entry);
-        }
-      else
-      {
-      return(c()); # i.e. no issue
-      }
-    }
-
-}
 normalize_prevalence<-function(value)
 {
   if (abs(value)<=1) { return('low')
