@@ -45,7 +45,8 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list, my_db)
   no_fact_percentage<-((key_visits_without_facts)*100/total_visit_count)
   #print(no_fact_percentage)
   
-  if(no_fact_percentage>0)
+  if(check_list_entry$Lower_Threshold <no_fact_percentage || 
+  check_list_entry$Upper_Threshold >no_fact_percentage )
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, paste(no_fact_percentage,"%",sep=""))

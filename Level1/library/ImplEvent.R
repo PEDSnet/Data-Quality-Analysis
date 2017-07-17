@@ -13,7 +13,7 @@ ImplEvent <- function()
 }
 
 
-applyCheck.ImplEvent<- function(theObject, table_list, field_list, my_db)
+applyCheck.ImplEvent<- function(theObject, table_list, field_list, con)
 {
   table_name<-table_list[1]
   start_field<-field_list[1]

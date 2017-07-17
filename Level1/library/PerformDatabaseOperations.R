@@ -406,7 +406,10 @@ retrieve_dataframe_group<-function(con,config,table_name,field_name)
     else
     {
       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," group by ",field_name,sep="");
+      #print(query)
+      #print(con)
       df<-dbGetQuery(con, query)
+      #print(query)
     }
   }
   #converting all names to lower case for consistency
