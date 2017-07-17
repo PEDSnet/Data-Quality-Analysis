@@ -141,13 +141,13 @@ generateDrugExposureReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "drug_source_value"),con
   )) 
   
-  if(no_matching_concept_number>10)
-  {
-    fileContent<-c(fileContent,"###Frequent source values for non-matching concepts:")
-    df_no_match_result<-retrieve_dataframe_top_20_clause(con,g_config,
-                                                         table_name,"drug_source_value","drug_concept_id=0")
-    fileContent<-c(fileContent,print_2d_dataframe(df_no_match_result))
-  }
+  #if(no_matching_concept_number>10)
+  #{
+  #  fileContent<-c(fileContent,"###Frequent source values for non-matching concepts:")
+  #  df_no_match_result<-retrieve_dataframe_top_20_clause(con,g_config,
+  #                                                       table_name,"drug_source_value","drug_concept_id=0")
+  #  fileContent<-c(fileContent,print_2d_dataframe(df_no_match_result))
+  #}
 
   fileContent<-c(fileContent,"###Distribution of drug concept class:")
   df_concept_class<-retrieve_dataframe_join_clause_group(con, g_config,g_config$db$schema,table_name, g_config$db$vocab_schema,"concept","concept_class_id",

@@ -271,7 +271,7 @@ generateConditionOccurrenceReport <- function() {
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-     order_bins <-c(df_condition_type_concept_id$concept_id,NA)
+     #order_bins <-c(df_condition_type_concept_id$concept_id,NA)
     
     
     # this is a nominal field - work on it
@@ -288,7 +288,7 @@ generateConditionOccurrenceReport <- function() {
   
     logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                      ,con,  "condition_status_concept_id.csv")) 
-    df_condition_status_concept_id <-generate_list_concepts(table_name, "condition_status_concept_id.csv")
+    #df_condition_status_concept_id <-generate_list_concepts(table_name, "condition_status_concept_id.csv")
     
     
     describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
