@@ -567,7 +567,7 @@ generateDrugExposureReport <- function() {
   writeLines(fileContent, fileConn)
   close(fileConn)
 
-  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","finding", "prevalence")
+  colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)

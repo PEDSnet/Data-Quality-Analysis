@@ -88,7 +88,7 @@ generatePersonReport <- function() {
 
   # flog.info("here")
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8532, "female"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8502, "male"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8507, "male"))) 
  
   #Race Source Value
   field_name="race_source_value"
