@@ -116,11 +116,11 @@ generateObservationReport <- function() {
   
 
   ###########DQA CHECKPOINT############## missing expected concepts 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(4145666,  "admitting source"))) 
+  #logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  #                                                 c(4145666,  "admitting source"))) 
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(4137274,  "discharge disposition"))) 
+  #logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  #                                                 c(4137274,  "discharge disposition"))) 
   
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(44813951,  " discharge status "))) 
