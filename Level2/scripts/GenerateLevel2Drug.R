@@ -60,6 +60,11 @@ generateLevel2Drug <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_order_time', 
+                                                                                                 'drug_exposure_order_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
   
   
   #filter by inpatient and outpatient visits and select visit occurrence id column
