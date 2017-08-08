@@ -173,13 +173,6 @@ generateMeasurementReport <- function() {
   message<-describeOrdinalField(df_table,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  field_name<-"specimen_source_value" #
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  
-
 
 
   #print (fileContent)
@@ -389,6 +382,31 @@ generateMeasurementReport <- function() {
   concept_id_list <- unique(df_table[,1])
 
 
+
+  ## compute missing % for labs only 
+  field_name<-"specimen_source_value" #
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  ###########DQA CHECKPOINT -- missing information##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
+  
+  ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
+  count_lab_no_specimen<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
+                                                          ,"specimen_source_value is null and measurement_type_concept_id = 44818702")
+  count_lab<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
+                                                  ,"measurement_type_concept_id = 44818702")
+  # compute % (# of records with missing visit info for problem list visits) / (# problem list visits)
+  missing_specimen_percent_lab<-round(count_lab_no_specimen*100/retrieve_dataframe_clause,2)
+ ###########DQA CHECKPOINT -- missing information##############
+  #missing_percent<-extract_numeric_value(message)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_specimen_percent_lab, table_name, g_data_version));
+  
+  #message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
+  #fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
+  
+  
+  
   #generating concept wise graphs for numerical readings
 
   dqa_for_lab<-FALSE
