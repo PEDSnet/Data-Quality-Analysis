@@ -47,14 +47,14 @@ generateLevel2Condition <- function() {
 
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_start_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_start_datetime', 
                                                                                                  'condition_start_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_end_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_end_datetime', 
                                                                                                  'condition_end_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)

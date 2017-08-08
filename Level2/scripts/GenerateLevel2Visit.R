@@ -44,14 +44,14 @@ generateLevel2Visit <- function () {
   
   ### AA009 datetime inconsistency
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('visit_start_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('visit_start_datetime', 
                                                                                                  'visit_start_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('visit_end_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('visit_end_datetime', 
                                                                                                  'visit_end_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)

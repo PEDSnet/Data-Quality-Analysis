@@ -279,7 +279,7 @@ generatePersonReport <- function() {
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
 
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
   #RATIO Fields
 

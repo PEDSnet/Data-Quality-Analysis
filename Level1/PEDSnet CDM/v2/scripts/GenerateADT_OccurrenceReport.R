@@ -59,14 +59,14 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   # ORDINAL Fields
 
 
-    field_name<-"adt_time"
+    field_name<-"adt_datetime"
     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
     #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
     message<-describeDateField(df_table, table_name, field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
     message<-describeTimeField(df_table, table_name, field_name,big_data_flag)
-    fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_time",sep="")),message);
+    fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_datetime",sep="")),message);
 
     field_name<-"adt_date"
     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)

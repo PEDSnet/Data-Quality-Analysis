@@ -64,7 +64,7 @@ generateMeasurementOrganismReport <- function() {
 
   # ORDINAL Fields
    flog.info(Sys.time())
-  field_name<-"positivity_time" #
+  field_name<-"positivity_datetime" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT -- missing information##############

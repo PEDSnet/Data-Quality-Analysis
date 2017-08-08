@@ -197,7 +197,7 @@ generateDrugExposureReport <- function() {
   fileContent<-c(fileContent,new_message,paste_image_name("person_id",field_name));
 
 
-  field_name<-"drug_exposure_start_time"
+  field_name<-"drug_exposure_start_datetime"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
@@ -208,10 +208,10 @@ generateDrugExposureReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
 
-  field_name<-"drug_exposure_end_time"
+  field_name<-"drug_exposure_end_datetime"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -228,7 +228,7 @@ generateDrugExposureReport <- function() {
     
     fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
     message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-    fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+    fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
   }
   #implausible event clause
   logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), 
@@ -246,7 +246,7 @@ generateDrugExposureReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
 
-  field_name<-"drug_exposure_order_time"
+  field_name<-"drug_exposure_order_datetime"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -265,7 +265,7 @@ generateDrugExposureReport <- function() {
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
   # drug exposure order date
   field_name<-"drug_exposure_order_date"

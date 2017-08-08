@@ -51,7 +51,7 @@ generateLevel2Procedure <- function () {
   
   ### AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_datetime', 
                                                                                                  'procedure_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)

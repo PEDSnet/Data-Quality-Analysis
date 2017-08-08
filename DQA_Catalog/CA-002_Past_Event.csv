@@ -16,4 +16,4 @@ CA-002,Drug_Exposure,drug_exposure_order_date,0,0
 CA-002,Measurement,measurement_date,0,0
 CA-002,Measurement,measurement_order_date,0,0
 CA-002,Measurement,measurement_result_date,0,0
-CA-002,Measurement_Organism,positivity_time,0,0
+CA-002,Measurement_Organism,positivity_datetime,0,0

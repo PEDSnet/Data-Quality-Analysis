@@ -97,12 +97,12 @@ generateMeasurementReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  field_name<-"measurement_time" #
+  field_name<-"measurement_datetime" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
   field_name<-"measurement_result_date" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -116,7 +116,7 @@ generateMeasurementReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  #field_name<-"measurement_result_time" #
+  #field_name<-"measurement_result_datetime" #
   #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -142,7 +142,7 @@ generateMeasurementReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  #field_name<-"measurement_order_time" #
+  #field_name<-"measurement_order_datetime" #
   #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -357,7 +357,9 @@ generateMeasurementReport <- function() {
   
   ###########DQA CHECKPOINT############## FOR LABS only 
   df_labs<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id=44818702")
+  acceptable_fevs<-generate_list_concepts(table_name,"fev_list.csv")$concept_id ## read from lablist
   acceptable_labs<-generate_list_concepts(table_name,"lab_list.csv")$concept_id ## read from lablist
+  acceptable_labs<-c(acceptable_labs, acceptable_fevs)
   unexpected_message<- reportUnexpected(df_labs,table_name,field_name,acceptable_labs,big_data_flag)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, 
                                                            g_data_version));
