@@ -97,12 +97,12 @@ generateMeasurementReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  field_name<-"measurement_time" #
+  field_name<-"measurement_datetime" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
   field_name<-"measurement_result_date" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -116,7 +116,7 @@ generateMeasurementReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  #field_name<-"measurement_result_time" #
+  #field_name<-"measurement_result_datetime" #
   #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
@@ -142,7 +142,7 @@ generateMeasurementReport <- function() {
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-  #field_name<-"measurement_order_time" #
+  #field_name<-"measurement_order_datetime" #
   #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)

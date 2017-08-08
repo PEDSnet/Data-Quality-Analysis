@@ -42,7 +42,7 @@ generateLevel2Death <- function () {
   
   ##AA009 date time consistency
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('death_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('death_datetime', 
                                                                                                  'death_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)

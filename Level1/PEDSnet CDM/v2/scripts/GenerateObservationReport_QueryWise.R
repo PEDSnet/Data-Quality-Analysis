@@ -179,13 +179,13 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
   
   
-  field_name<-"observation_time" #
+  field_name<-"observation_datetime" #
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
   # not plotting the value_as_string column as it's a free text field
   field_name<-"value_as_string"

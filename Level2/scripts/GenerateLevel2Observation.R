@@ -41,7 +41,7 @@ generateLevel2Observation <- function () {
 
  ##AA009 date time inconsistency 
   mismatch_obs_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                         " WHERE cast(observation_time as date) <> observation_date",sep=''))
+                                                         " WHERE cast(observation_datetime as date) <> observation_date",sep=''))
   )
   
   df_incon<-as.data.frame(mismatch_obs_date_tbl)
@@ -54,7 +54,7 @@ generateLevel2Observation <- function () {
     log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/observation_issue.csv",sep="")
     log_entry_content<-(read.csv(log_file_name))
     log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"observation_time", "observation_date",nrow(df_incon), 
+                                    apply_check_type_2('AA-009',"observation_datetime", "observation_date",nrow(df_incon), 
                                                        table_name, g_data_version)
     )
     write.csv(log_entry_content, file = log_file_name

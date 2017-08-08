@@ -51,10 +51,10 @@ generateDeathReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
 
-  field_name<-"death_time"
+  field_name<-"death_datetime"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_time",sep="")));
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
 
   #death type concept id

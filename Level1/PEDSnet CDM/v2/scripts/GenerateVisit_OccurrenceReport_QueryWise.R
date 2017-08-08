@@ -39,14 +39,14 @@ generateVisitOccurrenceReport <- function() {
   # ORDINAL Fields
 
 
-    field_name<-"visit_start_time"
+    field_name<-"visit_start_datetime"
     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
     #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
     message<-describeDateField(df_table, table_name, field_name,big_data_flag)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
     message<-describeTimeField(df_table, table_name, field_name,big_data_flag)
-    fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_time",sep="")),message);
+    fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_datetime",sep="")),message);
   
   
     ### DQA checkpoint - future date
@@ -78,7 +78,7 @@ generateVisitOccurrenceReport <- function() {
    logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), c('visit_start_date','visit_end_date'),con)) 
    
   ## visit end time
-  #field_name<-"visit_end_time"
+  #field_name<-"visit_end_datetime"
   #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   #missing_percent<- extract_numeric_value(missing_percent_message)

@@ -42,7 +42,7 @@ generateLevel2ADT_Occurrence <- function () {
   
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('adt_time', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('adt_datetime', 
                                                                                                  'adt_date'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
