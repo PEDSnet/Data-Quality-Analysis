@@ -82,6 +82,13 @@ generateLevel2Visit <- function () {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
+  ### inpatient visits with no DRG data 
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(MissVisitTypeFact(), c(table_name, 'observation'),
+                                                               c('9201','observation_concept_id','3040464'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
   
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
