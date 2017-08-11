@@ -88,7 +88,10 @@ generateProcedureOccurrenceReport <- function() {
   message<-describeOrdinalField_large(df_table, table_name, field_name,big_data_flag)
   #new_message<-create_meaningful_message_concept_code(message,field_name,con, g_config)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
+                                                   ,con,  1))  ## number of pipes
+  
+  
    flog.info(Sys.time())
 
 
