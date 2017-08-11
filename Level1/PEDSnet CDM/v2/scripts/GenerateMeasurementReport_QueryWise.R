@@ -365,6 +365,14 @@ generateMeasurementReport <- function() {
                                                            g_data_version));
   
   
+  df_vitals<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (2000000033, 2000000032)")
+  acceptable_vitals<-generate_list_concepts(table_name,"vital_list.csv")$concept_id ## read from vitals list
+  unexpected_message<- reportUnexpected(df_labs,table_name,field_name,acceptable_vitals,big_data_flag)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, 
+                                                           g_data_version));
+  
+  
+  
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name, big_data_flag))
   # add % of no matching concept (concept id = 0). for the completeness report
