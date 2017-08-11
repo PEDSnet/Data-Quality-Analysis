@@ -110,7 +110,10 @@ generateConditionOccurrenceReport <- function() {
   message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
   #new_message<-create_meaningful_message_concept_code(message,field_name,con,config)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
+                                                   ,con,  2))  ## number of pipes
+  
+  
   field_name<-"condition_source_concept_id"
   df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
