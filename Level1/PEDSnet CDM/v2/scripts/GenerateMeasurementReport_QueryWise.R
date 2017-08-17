@@ -407,7 +407,7 @@ generateMeasurementReport <- function() {
   count_lab<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
                                                   ,"measurement_type_concept_id = 44818702")
   # compute % (# of records with missing visit info for problem list visits) / (# problem list visits)
-  missing_specimen_percent_lab<-round(count_lab_no_specimen*100/retrieve_dataframe_clause,2)
+  missing_specimen_percent_lab<-round(count_lab_no_specimen*100/count_lab,2)
  ###########DQA CHECKPOINT -- missing information##############
   #missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_specimen_percent_lab, table_name, g_data_version));

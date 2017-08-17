@@ -185,13 +185,17 @@ generateVisitOccurrenceReport <- function() {
   
   ### admitting source value 
   field_name="admitting_source_value"
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_provider,table_name,field_name,big_data_flag);
+  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  describeNominalField_basic(df_provider,table_name,field_name,big_data_flag)
+  if(missing_percent_source_value<100)
+  {
+  	describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  }
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   
   ### admitting source concept id 
@@ -206,7 +210,7 @@ generateVisitOccurrenceReport <- function() {
   # flog.info(unexpected_message)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
-  df_admitting_source_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_lang);
+  df_admitting_source_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_admitting_source_concept_id);
   describeNominalField_basic(df_admitting_source_concept_id_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
@@ -219,14 +223,15 @@ generateVisitOccurrenceReport <- function() {
   
   
   ### admitting source value 
-  field_name="admitting_source_value"
+  field_name="discharge_to_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_provider,table_name,field_name,big_data_flag);
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  missing_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  describeNominalField_basic(df_provider,table_name,field_name,big_data_flag)
+  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   
   ### discharge to concept id 
@@ -241,7 +246,7 @@ generateVisitOccurrenceReport <- function() {
   # flog.info(unexpected_message)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
-  df_discharge_to_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_lang);
+  df_discharge_to_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_discharge_to_concept_id);
   describeNominalField_basic(df_discharge_to_concept_id_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 

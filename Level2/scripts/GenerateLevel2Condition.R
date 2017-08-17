@@ -38,11 +38,11 @@ generateLevel2Condition <- function() {
   condition_tbl<-tbl(my_db, "condition_occurrence")
   death_tbl <- tbl(my_db, "death")
 
-  concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
-  concept_ancestor_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept_ancestor',sep='')))
+  concept_tbl <- tbl(my_db,sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
+  concept_ancestor_tbl <- tbl(my_db,sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept_ancestor',sep='')))
   condition_concept_tbl <- select(filter(concept_tbl, domain_id=='Condition'), concept_id, concept_name)
 
-  patient_dob_tbl <- tbl(my_db, dplyr::sql
+  patient_dob_tbl <- tbl(my_db,sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
   ##AA009 date time inconsistency 
@@ -81,7 +81,7 @@ generateLevel2Condition <- function() {
   no_match_condition_counts <-
     filter(
       arrange(
-        summarize(
+       summarize(
           group_by(condition_no_match, condition_source_value)
           , count=n())
         , desc(count))
@@ -133,7 +133,7 @@ generateLevel2Condition <- function() {
   condition_counts_by_visit <-
     filter(
       arrange(
-        summarize(
+       summarize(
           group_by(inpatient_visit_conditions, condition_concept_id)
           , visit_count=n())
         , desc(visit_count))
@@ -180,7 +180,7 @@ generateLevel2Condition <- function() {
   condition_counts_by_visit <-
     filter(
       arrange(
-        summarize(
+       summarize(
           group_by(condition_visit_join_tbl, concept_id)
           , count=n())
         , desc(count))
@@ -282,7 +282,7 @@ generateLevel2Condition <- function() {
   condition_counts_by_patients <-
     filter(
       arrange(
-        summarize(
+       summarize(
           group_by(outpatient_visit_conditions, condition_concept_id)
           , pt_count=n())
         , desc(pt_count))
@@ -322,7 +322,7 @@ generateLevel2Condition <- function() {
   out_condition_counts_by_person <-
     filter(
       arrange(
-        summarize(
+       summarize(
           group_by(out_condition_visit_join_tbl, concept_id)
           , count=n())
         , desc(count))
