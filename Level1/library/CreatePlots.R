@@ -426,11 +426,10 @@ describeNominalField_basic<-function(df_table, table_name,field_name,big_data_fl
             #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
             #adding new columns
 
-
             df_table$Var1 <- as.factor(df_table$Var1)
-
+            
             df_table$label <- as.character(
-            paste(
+            paste0(
             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
             ,'%')	# add percentage
             )
@@ -438,19 +437,26 @@ describeNominalField_basic<-function(df_table, table_name,field_name,big_data_fl
            #  flog.info(df_table)
             #creating barplot from dfTab dataframe
             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-
+            
             # add axis labels
             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+            
             #remove legend and set size and orientation of tick labels
             p<-p+theme(legend.position="none", text = element_text(size=10),
             axis.text.x = element_text(angle=90, vjust=1))
+            
             # add the label to each bar (from the dfTab dataframe)
             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
-            # flog.info(df_table)
             #save the barplot image (will be referenced by the final report)
             # flog.info(p)
+            if(nrow(df_table)==1 & is.na(df_table[1,1]))
+            {
+              ### dont print the graph
+            }
+            else {
             ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-
+            }  
+            
         }
     }
 

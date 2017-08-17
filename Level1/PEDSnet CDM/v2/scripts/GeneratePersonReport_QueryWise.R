@@ -265,8 +265,8 @@ generatePersonReport <- function() {
   #fileContent<-c(fileContent,unexpected_message)
 
 
-  #Time of Birth --
-  field_name<-"time_of_birth"
+  #birth_datetime --
+  field_name<-"birth_datetime"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)

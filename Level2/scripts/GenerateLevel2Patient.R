@@ -39,20 +39,20 @@ generateLevel2Patient <- function() {
                             FROM person'))
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('time_of_birth', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('birth_datetime', 
                                                                                                  'year_of_birth'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('time_of_birth', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('birth_datetime', 
                                                                                                  'month_of_birth'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('time_of_birth', 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('birth_datetime', 
                                                                                                  'day_of_birth'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
