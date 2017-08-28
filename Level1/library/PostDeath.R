@@ -32,10 +32,11 @@ applyCheck.PostDeath<- function(theObject, table_list, field_list, my_db)
   df_after_death<-as.data.frame(
     select_(
       filter_(inner_join(fact_tbl,patient_tbl, by =c("person_id"="person_id")),
-              field_name_1 >quote(death_date))
+              paste0(field_name_1, '>', field_name_2))
       ,quote(person_id), field_name_1
     ))
  
+  #print(head(df_after_death))
   if(nrow(df_after_death)>0)
   {
     # create an issue 

@@ -30,14 +30,10 @@ generateLevel2Drug <- function() {
                         options=paste("-c search_path=", g_config$db$schema,sep=""))
 
   # Then reference a tbl within that src
-  observation_period_tbl <- tbl(my_db, "observation_period")
-  observation_tbl <- tbl(my_db, "observation")
   visit_tbl <- tbl(my_db, "visit_occurrence")
   patient_tbl<-tbl(my_db, "person")
   condition_tbl<-tbl(my_db, "condition_occurrence")
-  #drug_tbl<-tbl(my_db, "procedure_occurrence")
   drug_tbl <- tbl(my_db, "drug_exposure")
-  measurement_tbl <- tbl(my_db, "measurement")
   death_tbl <- tbl(my_db, "death")
 
   concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ', g_config$db$vocab_schema,'.concept',sep='')))
@@ -193,7 +189,7 @@ generateLevel2Drug <- function() {
   table_name<-"drug_exposure"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('drug_exposure_start_date', 
-                                                                                                      'time_of_birth'),my_db)) 
+                                                                                                      'birth_datetime'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
