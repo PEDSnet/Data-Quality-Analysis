@@ -27,16 +27,16 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list, my_db)
   
   
   patient_tbl<-tbl(my_db, table_name_2)
-  
-  print(field_name_1)
+
+                   
   df_before_dob<-as.data.frame(
     select_(
       filter_(inner_join(fact_tbl,patient_tbl, by =c("person_id"="person_id")),
-              field_name_1 <quote(time_of_birth))
+              paste0(field_name_1, '<', field_name_2))
       ,quote(person_id), field_name_1
     ))
- 
-  if(nrow(df_before_dob)>0)
+  
+   if(nrow(df_before_dob)>0)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, (nrow(df_before_dob)))

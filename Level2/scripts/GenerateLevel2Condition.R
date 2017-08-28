@@ -42,9 +42,6 @@ generateLevel2Condition <- function() {
   concept_ancestor_tbl <- tbl(my_db,sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept_ancestor',sep='')))
   condition_concept_tbl <- select(filter(concept_tbl, domain_id=='Condition'), concept_id, concept_name)
 
-  patient_dob_tbl <- tbl(my_db,sql
-                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
-
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_start_datetime', 
