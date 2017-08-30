@@ -48,3 +48,15 @@ where
 a.concept_class_id in ('Branded Pack', 'Clinical Pack')
 and a.concept_id = b.concept_id_1 and b.relationship_id ='Contains'
 and b.concept_id_2 = c.SCD_concept_id;
+
+
+---- drug-ingredient map 
+drop table dqa.drug_in_concept_id_map; 
+--- taking 5 min 
+--- creating mapping table from drug concept id to in concept id
+create table dqa.drug_in_concept_id_map as 
+select distinct a.concept_id as drug_concept_id, c.concept_id as IN_concept_id, c.concept_name as IN_concept_name
+ from vocabulary.concept a, vocabulary.concept_ancestor b , vocabulary.concept c 
+where a.concept_id = b.descendant_concept_id and b.ancestor_concept_id = c.concept_id 
+and c.concept_class_id ='Ingredient' and c.vocabulary_id='RxNorm' and a.vocabulary_id = 'RxNorm'
+and a.domain_id='Drug'; 

@@ -32,12 +32,13 @@ generateLevel2Drug <- function() {
   # Then reference a tbl within that src
   visit_tbl <- tbl(my_db, "visit_occurrence")
   patient_tbl<-tbl(my_db, "person")
-  condition_tbl<-tbl(my_db, "condition_occurrence")
   drug_tbl <- tbl(my_db, "drug_exposure")
   death_tbl <- tbl(my_db, "death")
 
   concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ', g_config$db$vocab_schema,'.concept',sep='')))
-
+  drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
+  drug_in_map_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',site_config$db$dqa_schema,'.drug_in_concept_id_map',sep='')))
+  
   patient_dob_tbl <- tbl(my_db, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
@@ -64,18 +65,18 @@ generateLevel2Drug <- function() {
   
   
   #filter by inpatient and outpatient visits and select visit occurrence id column
-  inpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9201),visit_occurrence_id)
-  outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202),visit_occurrence_id)
+  inpatient_visit_tbl<-select(filter(visit_tbl,
+                                     (visit_concept_id==9201
+                                      | visit_concept_id==2000000048) & !is.na(visit_end_date)
+  )
+  ,visit_occurrence_id,visit_start_date, visit_end_date)
+  
+  
+  outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202),visit_occurrence_id, person_id)
 
   
 
-  fileContent<-c(fileContent,
-                 get_top_concepts(inpatient_visit_tbl,drug_tbl, "drug_concept_id", "drug_exposure_id", "Inpatient Medications", concept_tbl))
-  fileContent<-c(fileContent,
-                 get_top_concepts(outpatient_visit_tbl,drug_tbl, "drug_concept_id", "drug_exposure_id", "Outpatient Medications", concept_tbl))
-
-
-  ### Print top 100 no matching concept source values in drug table 
+ ### Print top 100 no matching concept source values in drug table 
   drug_no_match<- select( filter(drug_tbl, drug_concept_id==0)
                                , drug_source_value)
   
@@ -103,85 +104,119 @@ generateLevel2Drug <- function() {
                                     "./data/no_match_drugs.csv",sep="")
             ,row.names=FALSE)
   }
-  ##### Printing top 100 inpatient drugs ##### 
-  drug_tbl_enhanced<- distinct(select(inner_join(concept_tbl,drug_tbl, by = c("concept_id"="drug_concept_id"))
-                                           , visit_occurrence_id, drug_concept_id, concept_name))
-  #print(head(condition_tbl_enhanced))
-  #print(head(inpatient_visit_tbl))
-  inpatient_visit_drugs<-
-    distinct(select(
-      inner_join(drug_tbl_enhanced, 
-                 inpatient_visit_tbl)#, by =c("visit_occurrence_id", "visit_occurrence_id"))
-      ,visit_occurrence_id,concept_name, drug_concept_id))
+
+  ###### Identifying outliers in top inpatient drugs 
+  inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
+                                        , visit_occurrence_id)
+  
+  
+  temp_join <- inner_join(drug_concept_tbl,drug_tbl, by = c("concept_id"="drug_concept_id"))
+  
+  drug_tbl_restricted <- select (temp_join, visit_occurrence_id, drug_concept_id)
+  
+  drug_visit_join_tbl <- distinct(
+    select (
+      inner_join(inpatient_visit_gte_2days_tbl,
+                 drug_tbl_restricted,
+                 by = c("visit_occurrence_id" = "visit_occurrence_id"))
+      ,visit_occurrence_id, drug_concept_id)
+  )
+  
+  drug_ingredient_visit_join_tbl<- distinct(
+    select (
+      inner_join(drug_visit_join_tbl,
+                 drug_in_map_tbl,
+                 by = c("drug_concept_id" = "drug_concept_id"))
+      ,visit_occurrence_id, in_concept_id, in_concept_name)
+  )
   
   drug_counts_by_visit <-
     filter(
       arrange(
         summarize(
-          group_by(inpatient_visit_drugs, drug_concept_id)
-          , visit_count=n())
-        , desc(visit_count))
-      , row_number()>=1 & row_number()<=100) ## printing top 100
+          group_by(drug_ingredient_visit_join_tbl, in_concept_id)
+          , count=n())
+        , desc(count))
+      , row_number()>=1 & row_number()<=20) ## look at top 20
   
-  df_drug_counts_by_visit_all<-as.data.frame(
-    arrange(distinct(
-      select(inner_join(drug_counts_by_visit, drug_tbl_enhanced, 
-                        by = c("drug_concept_id"="drug_concept_id"))
-             ,drug_concept_id, concept_name, visit_count)
-    ), desc(visit_count)
-    ))
+  df_drug_counts_by_visit<-as.data.frame(
+    select(
+      inner_join(drug_counts_by_visit, concept_tbl,
+                 by=c("in_concept_id"="concept_id"))
+      , in_concept_id, concept_name, count)
+  )
+  print(df_drug_counts_by_visit)
   
-  #print(df_condition_counts_by_visit_all)
+  outlier_inpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id',my_db, 
+                                           c(df_drug_counts_by_visit,'vt_counts','top_inpatient_drugs.csv',
+                                             'outlier inpatient drug:',g_top50_inpatient_drugs_path
+                                             , 'Drug'))
   
-  ## writing to the issue log file
-  data_file<-data.frame(concept_id=character(0), concept_name=character(0), visit_counts=character(0))
+  for ( issue_count in 1: nrow(outlier_inpatient_drugs))
+  {
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-
+      custom_rbind(log_entry_content,c(outlier_inpatient_drugs[issue_count,1:8]))
+    
+    write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
+  }
   
-  data_file<-rbind(df_drug_counts_by_visit_all)
-  colnames(data_file)<-c("concept_id", "concept_name","visit_counts")
-  write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./data/top_inpatient_drugs.csv",sep="")
-            ,row.names=FALSE)
   
-  
-  ### printing top 100 outpatient drugs by patient counts
+  ### outlier outpatient drugs 
   outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
                                ,visit_occurrence_id, person_id)
   
-  outpatient_visit_drugs<-
-    distinct(select(
-      inner_join(drug_tbl_enhanced, 
-                 outpatient_visit_tbl)#, by =c("visit_occurrence_id", "visit_occurrence_id"))
-      ,person_id,concept_name, drug_concept_id))
+  drug_visit_join_tbl <- distinct(
+    select (
+      inner_join(outpatient_visit_tbl,
+                 drug_tbl_restricted,
+                 by = c("visit_occurrence_id" = "visit_occurrence_id"))
+      ,person_id, drug_concept_id)
+  )
   
-  drug_counts_by_patients <-
+  drug_ingredient_visit_join_tbl<- distinct(
+    select (
+      inner_join(drug_visit_join_tbl,
+                 drug_in_map_tbl,
+                 by = c("drug_concept_id" = "drug_concept_id"))
+      ,person_id, in_concept_id, in_concept_name)
+  )
+  
+  drug_counts_by_person <-
     filter(
       arrange(
         summarize(
-          group_by(outpatient_visit_drugs, drug_concept_id)
-          , pt_count=n())
-        , desc(pt_count))
-      , row_number()>=1 & row_number()<=100) ## printing top 100
+          group_by(drug_ingredient_visit_join_tbl, in_concept_id)
+          , count=n())
+        , desc(count))
+      , row_number()>=1 & row_number()<=20) ## look at top 20
   
-  df_drug_counts_by_patients_all<-as.data.frame(
-    arrange(distinct(
-      select(inner_join(drug_counts_by_patients, drug_tbl_enhanced, 
-                        by = c("drug_concept_id"="drug_concept_id"))
-             ,drug_concept_id, concept_name, pt_count)
-    ), desc(pt_count)
-    ))
+  df_drug_counts_by_person<-as.data.frame(
+    select(
+      inner_join(drug_counts_by_person, concept_tbl,
+                 by=c("in_concept_id"="concept_id"))
+      , in_concept_id, concept_name, count)
+  )
+ # print(df_drug_counts_by_visit)
   
-  #print(df_condition_counts_by_visit_all)
+  outlier_outpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id',my_db, 
+                                      c(df_drug_counts_by_person,'pt_counts','top_outpatient_drugs.csv',
+                                        'outlier outpatient drug:',g_top50_outpatient_drugs_path
+                                        , 'Drug'))
   
-  ## writing to the issue log file
-  data_file<-data.frame(concept_id=character(0), concept_name=character(0), pt_counts=character(0))
-  
-  data_file<-rbind(df_drug_counts_by_patients_all)
-  colnames(data_file)<-c("concept_id", "concept_name","pt_counts")
-  write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),
-                                    "./data/top_outpatient_drugs.csv",sep="")
-            ,row.names=FALSE)
-  
-  
-
+  for ( issue_count in 1: nrow(outlier_outpatient_drugs))
+  {
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),
+                         "./issues/drug_exposure_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-
+      custom_rbind(log_entry_content,c(outlier_outpatient_drugs[issue_count,1:8]))
+    
+    write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
+  }
 
   fileContent<-c(fileContent,"##Implausible Events")
 

@@ -149,8 +149,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   }
 
   if(
-     check_entry$check_code=='AA-002'
-      || check_entry$check_code=='CB-002')
+     check_entry$check_code=='AA-002')
   {
     if(nchar(trim(value))>0)
     {
