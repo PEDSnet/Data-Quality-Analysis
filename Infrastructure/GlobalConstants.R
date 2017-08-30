@@ -22,6 +22,12 @@ g_top50_inpatient_procedures_path <<- paste(getwd(),
 g_top50_outpatient_procedures_path <<- paste(getwd(),
                                              "/Data/top50_outpatient_procedures_ranked.csv", sep= "")
 
+g_top50_inpatient_drugs_path <<- paste(getwd(),
+                                            "/Data/top50_inpatient_drugs_ranked.csv", sep= "")
+
+g_top50_outpatient_drugs_path <<- paste(getwd(),
+                                             "/Data/top50_outpatient_drugs_ranked.csv", sep= "")
+
 
 g_df_check_catalogue<<-read.csv(paste(g_catalog_folder_path,"DQA_Check_Type_Inventory.csv",sep=""), header = TRUE, sep = ",", quote = "\"",
                              dec = ".", fill = TRUE, comment.char = "")

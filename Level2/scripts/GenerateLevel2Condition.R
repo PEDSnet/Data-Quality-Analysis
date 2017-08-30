@@ -39,7 +39,6 @@ generateLevel2Condition <- function() {
   death_tbl <- tbl(my_db, "death")
 
   concept_tbl <- tbl(my_db,sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
-  concept_ancestor_tbl <- tbl(my_db,sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept_ancestor',sep='')))
   condition_concept_tbl <- select(filter(concept_tbl, domain_id=='Condition'), concept_id, concept_name)
 
   ##AA009 date time inconsistency 
@@ -113,47 +112,7 @@ generateLevel2Condition <- function() {
 
   
   
-  ##### Printing top 100 inpatient visits ##### 
-  condition_tbl_enhanced<- distinct(select(inner_join(condition_concept_tbl,condition_tbl, by = c("concept_id"="condition_concept_id"))
-                                  , visit_occurrence_id, condition_concept_id, concept_name))
-  #print(head(condition_tbl_enhanced))
-  #print(head(inpatient_visit_tbl))
-  
-  inpatient_visit_conditions<-
-    distinct(select(
-      inner_join(condition_tbl_enhanced, 
-                                         inpatient_visit_tbl)#, by =c("visit_occurrence_id", "visit_occurrence_id"))
-        ,visit_occurrence_id,concept_name, condition_concept_id))
-
-  #print(head(inpatient_visit_conditions))
-  
-  condition_counts_by_visit <-
-    filter(
-      arrange(
-       summarize(
-          group_by(inpatient_visit_conditions, condition_concept_id)
-          , visit_count=n())
-        , desc(visit_count))
-     , row_number()>=1 & row_number()<=100) ## printing top 100
-  
-  df_condition_counts_by_visit_all<-as.data.frame(
-    arrange(distinct(
-      select(inner_join(condition_counts_by_visit, condition_tbl_enhanced, 
-                        by = c("condition_concept_id"="condition_concept_id"))
-             ,condition_concept_id, concept_name, visit_count)
-      ), desc(visit_count)
-      ))
-      
-  #print(df_condition_counts_by_visit_all)
-  
-  ## writing to the issue log file
-  data_file<-data.frame(concept_id=character(0), concept_name=character(0), visit_counts=character(0))
-  
-  data_file<-rbind(df_condition_counts_by_visit_all)
-  colnames(data_file)<-c("concept_id", "concept_name","visit_counts")
-  write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./data/top_inpatient_conditions.csv",sep="")
-            ,row.names=FALSE)
-  
+ 
   
   ###### Identifying outliers in top inpatient conditions 
   #inpatient_visit_df<-as.data.frame(inpatient_visit_tbl)
@@ -190,75 +149,23 @@ generateLevel2Condition <- function() {
       , concept_id, concept_name, count)
   )
 
-  ## create a list to be compared with.
-  all_top_conditions<-read.csv(g_top50_inpatient_conditions_path)
-  colnames(all_top_conditions)<-tolower(colnames(all_top_conditions))
-  site_column_number<-which(colnames(all_top_conditions)==tolower(config$reporting$site))
-  top_conditions_other_sites<-all_top_conditions[-c(1,site_column_number)]
-  top_cond_other_sites_list <- unique(c(top_conditions_other_sites[,1]
-                                        , top_conditions_other_sites[,2], top_conditions_other_sites[,3]
-                                        , top_conditions_other_sites[,4], top_conditions_other_sites[,5]))
-
-  extended_list<-list()
-  for (list_index in 1:length(top_cond_other_sites_list))
-  {
-
-    temp<- as.data.frame(union(
-      select(
-        filter(concept_ancestor_tbl, ancestor_concept_id==top_cond_other_sites_list[list_index]
-        ), descendant_concept_id)
-      ,
-      select(
-        filter(concept_ancestor_tbl, descendant_concept_id==top_cond_other_sites_list[list_index]
-        ), ancestor_concept_id)
-    ))
-    extended_list<-(c(extended_list, unique(temp$descendant_concept_id)))
-    #if(list_index==2)
-    #break;
-  }
-
-  extended_list<-unique(extended_list)
-
-  ## further extend by including siblings of those concepts 
-  for (list_index in 1:length(top_cond_other_sites_list))
-  {
-    temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x==top_cond_other_sites_list[list_index])
-    sibling_table<- as.data.frame(select(temp3, descendant_concept_id.y))
-    extended_list<-(c(extended_list, unique(sibling_table$descendant_concept_id.y))) 
-    
-  }  
-  extended_list<-unique(extended_list)
+  outlier_inpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id',my_db, 
+                                            c(df_condition_counts_by_visit,'vt_counts','top_inpatient_conditions.csv',
+                                              'outlier inpatient condition:',g_top50_inpatient_conditions_path
+                                              , 'Condition'))
   
-  fileContent<-c(fileContent,"##Inpatient Conditions")
-  for(row in 1:20)
+  for ( issue_count in 1: nrow(outlier_inpatient_conditions))
   {
-    ## add to descriptive report
-    fileContent<-c(fileContent,paste(
-      df_condition_counts_by_visit[row,1],
-      df_condition_counts_by_visit[row,2],"(count=",
-      df_condition_counts_by_visit[row,3],")","\n"))
-    ## match with lists from other sites.
-    # flog.info("Testing for : ")
-    # flog.info(df_condition_counts_by_visit[row,1])
-    if(is.element(df_condition_counts_by_visit[row,1],extended_list)==FALSE)
-    {
-      # flog.info("HERE")
-      ### open the person log file for appending purposes.
-      log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
-      log_entry_content<-(read.csv(log_file_name))
-
-      log_entry_content<-custom_rbind(log_entry_content,
-                                      apply_check_type_1('CB-002', "condition_concept_id",
-                                                         paste("outlier inpatient condition:",df_condition_counts_by_visit[row,1],df_condition_counts_by_visit[row,2]), table_name, g_data_version)
-      )
-      # flog.info(df_condition_counts_by_visit[row,1])
-      write.csv(log_entry_content, file = log_file_name
-                ,row.names=FALSE)
-
-      #break;
-    }
-
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-
+      custom_rbind(log_entry_content,c(outlier_inpatient_conditions[issue_count,1:8]))
+    
+    write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
   }
+  
+  
 
   
   
@@ -266,44 +173,7 @@ generateLevel2Condition <- function() {
   outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
                                ,visit_occurrence_id, person_id)
   
-  #condition_tbl_enhanced<- distinct(select(inner_join(concept_tbl,condition_tbl, by = c("concept_id"="condition_concept_id"))
-   #                                        , visit_occurrence_id, condition_concept_id, concept_name))
-  #print(head(condition_tbl_enhanced))
-  #print(head(inpatient_visit_tbl))
-  outpatient_visit_conditions<-
-    distinct(select(
-      inner_join(condition_tbl_enhanced, 
-                 outpatient_visit_tbl)#, by =c("visit_occurrence_id", "visit_occurrence_id"))
-      ,person_id,concept_name, condition_concept_id))
-  
-  condition_counts_by_patients <-
-    filter(
-      arrange(
-       summarize(
-          group_by(outpatient_visit_conditions, condition_concept_id)
-          , pt_count=n())
-        , desc(pt_count))
-      , row_number()>=1 & row_number()<=100) ## printing top 100
-  
-  df_condition_counts_by_visit_all<-as.data.frame(
-    arrange(distinct(
-      select(inner_join(condition_counts_by_patients, condition_tbl_enhanced, 
-                        by = c("condition_concept_id"="condition_concept_id"))
-             ,condition_concept_id, concept_name, pt_count)
-    ), desc(pt_count)
-    ))
-  
-  #print(df_condition_counts_by_visit_all)
-  
-  ## writing to the issue log file
-  data_file<-data.frame(concept_id=character(0), concept_name=character(0), visit_counts=character(0))
-  
-  data_file<-rbind(df_condition_counts_by_visit_all)
-  colnames(data_file)<-c("concept_id", "concept_name","pt_counts")
-  write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),
-                                    "./data/top_outpatient_conditions.csv",sep="")
-            ,row.names=FALSE)
-  
+ 
   ### implementation of unexpected top outpatient conditions check 
  
   
@@ -332,90 +202,28 @@ generateLevel2Condition <- function() {
       , concept_id, concept_name, count)
   )
   
-  ## create a list to be compared with.
-  all_top_conditions<-read.csv(g_top50_outpatient_conditions_path)
-  #print(all_top_conditions)
-  colnames(all_top_conditions)<-tolower(colnames(all_top_conditions))
-  site_column_number<-which(colnames(all_top_conditions)==tolower(config$reporting$site))
-  top_conditions_other_sites<-all_top_conditions[-c(1,site_column_number)]
-  top_cond_other_sites_list <- unique(c(top_conditions_other_sites[,1]
-                                        , top_conditions_other_sites[,2], top_conditions_other_sites[,3]
-                                        , top_conditions_other_sites[,4], top_conditions_other_sites[,5]))
-  #print(top_cond_other_sites_list)
-  extended_list<-list()
-  for (list_index in 1:length(top_cond_other_sites_list))
+  outlier_outpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id',my_db, 
+                                           c(df_out_condition_counts_by_person,'pt_counts','top_outpatient_conditions.csv',
+                                             'outlier outpatient condition:',g_top50_outpatient_conditions_path
+                                             , 'Condition'))
+  
+  if(nrow(outlier_outpatient_conditions)>0)
+  for ( issue_count in 1: nrow(outlier_outpatient_conditions))
   {
+    ### open the person log file for appending purposes.
+    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
+    log_entry_content<-(read.csv(log_file_name))
+    log_entry_content<-
+      custom_rbind(log_entry_content,c(outlier_outpatient_conditions[issue_count,1:8]))
     
-    parent_child_table<- as.data.frame(union(
-      select(
-        filter(concept_ancestor_tbl, ancestor_concept_id==top_cond_other_sites_list[list_index]
-        ), descendant_concept_id)
-      ,
-      select(
-        filter(concept_ancestor_tbl, descendant_concept_id==top_cond_other_sites_list[list_index]
-        ), ancestor_concept_id)
-    ))
-    extended_list<-(c(extended_list, unique(parent_child_table$descendant_concept_id)))
-    #if(list_index==2)
-    #break;
+    write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
   }
   
-  extended_list<-unique(extended_list)
-  #print(match(254761,extended_list)
-  #      )
-  #print(extended_list)
   
-  ## further extend by including siblings of those concepts 
-  for (list_index in 1:length(top_cond_other_sites_list))
-  {
-     temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x==top_cond_other_sites_list[list_index])
-    sibling_table<- as.data.frame(select(temp3, descendant_concept_id.y))
-    extended_list<-(c(extended_list, unique(sibling_table$descendant_concept_id.y))) 
-   
-  }  
-  extended_list<-unique(extended_list)
-  #print(match(254761,extended_list)
-  #)
-  
-  fileContent<-c(fileContent,"##Outpatient Conditions")
-  for(row in 1:20)
-  {
-    ## add to descriptive report
-    fileContent<-c(fileContent,paste(
-      df_out_condition_counts_by_person[row,1],
-      df_out_condition_counts_by_person[row,2],"(count=",
-      df_out_condition_counts_by_person[row,3],")","\n"))
-    ## match with lists from other sites.
-    # flog.info("Testing for : ")
-    # flog.info(df_condition_counts_by_visit[row,1])
-    if(is.element(df_out_condition_counts_by_person[row,1],extended_list)==FALSE
-       && df_out_condition_counts_by_person[row,1]!=444093) # filter out "patient status finding" concept
-    {
-      # flog.info("HERE")
-      ### open the person log file for appending purposes.
-      log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/condition_occurrence_issue.csv",sep="")
-      log_entry_content<-(read.csv(log_file_name))
-      
-      log_entry_content<-custom_rbind(log_entry_content,
-                                      apply_check_type_1('CB-002', "condition_concept_id",
-                                                         paste("outlier outpatient condition:",
-                                                               df_out_condition_counts_by_person[row,1],
-                                                               df_out_condition_counts_by_person[row,2]), 
-                                                        table_name, g_data_version)
-      )
-      # flog.info(df_condition_counts_by_visit[row,1])
-      write.csv(log_entry_content, file = log_file_name
-                ,row.names=FALSE)
-      
-      #break;
-    }
-    
-  }
-
   fileContent<-c(fileContent,"##Unexpected Events")
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('condition_start_date', 
-                                                                                                      'time_of_birth'),my_db)) 
+                                                                                                      'birth_datetime'),my_db)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

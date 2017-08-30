@@ -1,60 +1,141 @@
 ### implementation of the unexpected difference class 
-InvalidConID <- function()
+UnexTop <- function()
 {
-  check_code="AA-002"
+  check_code="CB-002"
   check_entry<-get_catalog_entry(check_code)
   check_name <- check_entry$check_type
   check_alias<-check_entry$alias
   me <- CheckType(check_code,check_name, check_alias)
   
   ## Add the name for the class
-  class(me) <- append(class(me),"InvalidConID")
+  class(me) <- append(class(me),"UnexTop")
   return(me)
 }
 
 
-applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, metadata)
+applyCheck.UnexTop <- function(theObject, table_name, field_name, con, metadata)
 {
-  table_name<-table_list[1]
-  field_name<-field_list[1]
+ count_colname<-metadata[4]
+ data_filename<-metadata[5]
+ error_message<-metadata[6]
+ ranked_facts_previous_cycle_path<-as.character(metadata[7])
+ domain<-as.character(metadata[8])
+ #print(top_20_facts)
+  
+  ## writing to the data log file
+  data_file = matrix("", ncol = 3, nrow = 20)
+                 
+   for (i in 1:20)
+  {
+     concept_id<-unlist(metadata[1])[i]
+    concept_name<-unlist(metadata[2])[i]
+    count<-unlist(metadata[3])[i]
+    
+    #datafile[i,] <-c(concept_id, concept_name, count)
+    data_file[i,1]<-concept_id
+    data_file[i,2]<-concept_name
+    data_file[i,3]<-count
+    
+  }
+  colnames(data_file)<-c("concept_id", "concept_name",count_colname)
+  
+  write.csv(data_file, file = paste(normalize_directory_path(g_config$reporting$site_directory),
+                                    "./data/",data_filename,sep="")
+            ,row.names=FALSE)
+  
+  # print(df_procedure_counts_by_visit) 
+  
+  ## create a list to be compared with.
+  all_top_facts<-read.csv(ranked_facts_previous_cycle_path)
+  colnames(all_top_facts)<-tolower(colnames(all_top_facts))
+  site_column_number<-which(colnames(all_top_facts)==tolower(g_config$reporting$site))
+  top_facts_other_sites<-all_top_facts[-c(1,site_column_number)]
+  top_facts_other_sites_list <- unique(c(top_facts_other_sites[,1]
+                                        , top_facts_other_sites[,2], top_facts_other_sites[,3]
+                                        , top_facts_other_sites[,4], top_facts_other_sites[,5]))
+  
+  if(domain!='Drug')
+  {
+  concept_ancestor_tbl <- tbl(con, dplyr::sql(paste('SELECT * FROM ',g_config$db$vocab_schema,'.concept_ancestor',sep='')))
+  
+  ## sibling concepts 
+  concept_tbl <- tbl(con, dplyr::sql(paste('SELECT * FROM ',g_config$db$vocab_schema,'.concept',sep='')))
+  procedure_concept_tbl <- select(filter_(concept_tbl, paste0("domain_id=='",domain,"'")), concept_id, concept_name)
+  procedure_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, procedure_concept_tbl, 
+                                               by = c("ancestor_concept_id" = "concept_id"))
+  
+  temp1<-inner_join(procedure_concept_ancestor_tbl, procedure_concept_ancestor_tbl, 
+                    by =c("ancestor_concept_id"="ancestor_concept_id"))
+  temp2<-filter(temp1
+                , max_levels_of_separation.x==1 & max_levels_of_separation.y==1)
+  sibling_concepts_tbl<-
+    (select (temp2,
+             descendant_concept_id.x, descendant_concept_id.y)
+    )
+  extended_list<-list()
+  for (list_index in 1:length(top_facts_other_sites_list))
+  {
+    
+    temp<- as.data.frame(union(
+      select(
+        filter(concept_ancestor_tbl, ancestor_concept_id==top_facts_other_sites_list[list_index]
+        ), descendant_concept_id)
+      ,
+      select(
+        filter(concept_ancestor_tbl, descendant_concept_id==top_facts_other_sites_list[list_index]
+        ), ancestor_concept_id)
+    ))
+    extended_list<-(c(extended_list, unique(temp$descendant_concept_id)))
+    #if(list_index==2)
+    #break;
+  }
+  extended_list<-unique(extended_list)
+  
+  ## further extend by including siblings of those concepts 
+  for (list_index in 1:length(top_facts_other_sites_list))
+  {
+    temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x==top_facts_other_sites_list[list_index])
+    sibling_table<- as.data.frame(select(temp3, descendant_concept_id.y))
+    extended_list<-(c(extended_list, unique(sibling_table$descendant_concept_id.y))) 
+    
+  }  
+  extended_list<-unique(extended_list)
+  }
+  else {
+    #print('here')
+    extended_list<-top_facts_other_sites_list
+  }
+  
 
-  
-  check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
-  
-  if(grepl('csv$', metadata)==TRUE)
-  { 
-    concept_id_list<-generate_list_concepts(table_name, metadata)
-    } else
+  issues_list<-matrix("",ncol=8, nrow=0)
+  for(row in 1:20)
   {
-    concept_id_list <-generate_df_concepts(con, table_name, metadata)
-    
-  }
-  order_bins <-c(concept_id_list$concept_id,0,44814650,44814653, 44814649,NA)
-  #print(order_bins)
-  
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  current_values<-c(df_table[,1])
-  unexpected_message<-""
-  for(i in 1:nrow(df_table))
-  {
-    value <-df_table[i,1]
-    # flog.info(df_table[i,1])
-    if(!is.element(value,order_bins) && !is.na(value))
-      unexpected_message<-paste(unexpected_message, value,";")
+    ## add to descriptive report
+    ## match with lists from other sites.
+    if(is.element(data_file[row,1],extended_list)==FALSE
+        && (data_file[row,1]!=444093) # filter out "patient status finding" concept - for procedure domain
+      )
+    {
+        # create an issue 
+        issue_obj<-Issue(theObject, table_name, field_name, paste(error_message,
+                                                                  data_file[row,1],
+                                                                  data_file[row,2])
+                         )
+        # log issue 
+         issues_list<-rbind(issues_list, logIssue(issue_obj));
+        
+     
+    }
     
   }
   
-  if( nchar(trim(unexpected_message))>0)
-  {
-    # create an issue 
-    issue_obj<-Issue(theObject, table_list, field_list, unexpected_message)
-    #print(issue_obj)
-    # log issue 
-    return(logIssue(issue_obj))
-    
-  }
+  #if(nrow(issues_list)==1)
+   #return(c(issues_list[1,1:8]))
   
+  #if(nrow(issues_list)>1)
+  #  issues_matrix<-t(issues_list)
+  #return()
   NextMethod("applyCheck",theObject)
-  return(c())
+  return(issues_list)
 }
 

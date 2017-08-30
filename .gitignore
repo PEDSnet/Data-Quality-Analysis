@@ -2,8 +2,10 @@ Level1/PEDSnet\ CDM/PEDSnet_config.yml
 Level1/PCORnet\ CDM/PCORnet_config.yml
 Data/top50_inpatient_procedures_ranked.csv 
 Data/top50_inpatient_conditions_ranked.csv
+Data/top50_inpatient_drugs_ranked.csv
 Data/top50_outpatient_procedures_ranked.csv
 Data/top50_outpatient_conditions_ranked.csv
+Data/top50_outpatient_drugs_ranked.csv
 Data/total_counts.csv 
 
 *.idea/
