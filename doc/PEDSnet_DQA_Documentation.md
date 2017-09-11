@@ -75,6 +75,3 @@ generateSingleReport(level=2, report="table_name")
 
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```
-
-#### All Tables: Oracle
-Execute [Level2\_queries.md](../Level2/Level2\_queries.md) 
