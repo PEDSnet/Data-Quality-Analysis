@@ -37,8 +37,8 @@ applyCheck.InvalidValue <- function(theObject, table_list, field_list, con, meta
   {
     value <-df_table[i,1]
     # flog.info(df_table[i,1])
-    if(!is.element(value,order_bins) && !is.na(value))
-      unexpected_message<-paste(unexpected_message, value,";")
+    if(!is.element(trim(value),order_bins) && !is.na(value))
+      unexpected_message<-paste(unexpected_message, trim(value),";")
     
   }
   
