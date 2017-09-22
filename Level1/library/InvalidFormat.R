@@ -29,22 +29,24 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, con, for
     for(i in 1:nrow(df_table))  
     {
       source_value<-  df_table[i,1]
-      #print(length(unlist(strsplit(source_value, '\\|'))))
+      print(length(unlist(strsplit(source_value, '\\|'))))
+      print(format)
       if(length(unlist(strsplit(source_value, '\\|')))!=format) 
       {
-        invalid_message<-c(invalid_message, source_value)
+        invalid_message<-paste(invalid_message, source_value, sep=";")
       }
       
-    #  break;
+      if (i==1000)
+        break;
     }
   
    
- 
-  invalid_message<-""
+  print(substring(invalid_message,0,500))
+  #invalid_message<-""
   if( nchar(trim(invalid_message))>0)
   {
     # create an issue 
-    issue_obj<-Issue(theObject, table_list, field_list, invalid_message)
+    issue_obj<-Issue(theObject, table_list, field_list, substring(invalid_message,0,1000))
     #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))

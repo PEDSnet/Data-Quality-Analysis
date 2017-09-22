@@ -37,7 +37,7 @@ generateLevel2Drug <- function() {
 
   concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ', g_config$db$vocab_schema,'.concept',sep='')))
   drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
-  drug_in_map_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',site_config$db$dqa_schema,'.drug_in_concept_id_map',sep='')))
+  drug_in_map_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$dqa_schema,'.drug_in_concept_id_map',sep='')))
   
   patient_dob_tbl <- tbl(my_db, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
@@ -152,6 +152,7 @@ generateLevel2Drug <- function() {
                                              'outlier inpatient drug:',g_top50_inpatient_drugs_path
                                              , 'Drug'))
   
+  if(nrow(outlier_inpatient_drugs)>0)
   for ( issue_count in 1: nrow(outlier_inpatient_drugs))
   {
     ### open the person log file for appending purposes.
@@ -206,6 +207,7 @@ generateLevel2Drug <- function() {
                                         'outlier outpatient drug:',g_top50_outpatient_drugs_path
                                         , 'Drug'))
   
+  if( nrow(outlier_outpatient_drugs)>0)
   for ( issue_count in 1: nrow(outlier_outpatient_drugs))
   {
     ### open the person log file for appending purposes.

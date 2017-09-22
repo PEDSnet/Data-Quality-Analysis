@@ -145,6 +145,7 @@ generateLevel2Procedure <- function () {
                                              'outlier inpatient procedure:',g_top50_inpatient_procedures_path
                                              , 'Procedure'))
 
+    if(nrow(outlier_inpatient_procedures)>0)
     for ( issue_count in 1: nrow(outlier_inpatient_procedures))
     {
     ### open the person log file for appending purposes.
