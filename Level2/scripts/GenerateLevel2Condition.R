@@ -55,19 +55,7 @@ generateLevel2Condition <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-  ## sibling concepts 
-  condition_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, condition_concept_tbl, 
-                                               by = c("ancestor_concept_id" = "concept_id"))
-  
-  temp1<-inner_join(condition_concept_ancestor_tbl, condition_concept_ancestor_tbl, 
-                    by =c("ancestor_concept_id"="ancestor_concept_id"))
-  temp2<-filter(temp1
-                , max_levels_of_separation.x==1 & max_levels_of_separation.y==1)
-  #print(head(temp2))
-  sibling_concepts_tbl<-
-    (select (temp2,
-      descendant_concept_id.x, descendant_concept_id.y)
-    )
+
  
  #print(head(sibling_concepts_tbl))
   ### Print top 100 no matching concept source values in condition table 

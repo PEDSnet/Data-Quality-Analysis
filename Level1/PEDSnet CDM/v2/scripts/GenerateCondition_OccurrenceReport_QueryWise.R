@@ -111,7 +111,7 @@ generateConditionOccurrenceReport <- function() {
   #new_message<-create_meaningful_message_concept_code(message,field_name,con,config)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
-                                                   ,con,  2))  ## number of pipes
+                                                   ,con,  3))  ## number of components in condition_source_value
   
   
   field_name<-"condition_source_concept_id"
