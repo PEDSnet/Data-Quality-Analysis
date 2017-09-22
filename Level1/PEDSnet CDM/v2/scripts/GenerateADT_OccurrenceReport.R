@@ -52,7 +52,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   ### DQA checkpoint --- incosnistent visit types
 
   logFileData<-custom_rbind(logFileData,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
-                                                   c("visit_occurrence_id", "visit_concept_id"),con)) 
+                                                   c("visit_occurrence_id", "visit_concept_id"),con, "(9202, 44814711)")) 
   
   #NOMINAL Fields
 
