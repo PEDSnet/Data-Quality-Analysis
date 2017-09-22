@@ -13,7 +13,7 @@ InconVisitType <- function()
 }
 
 
-applyCheck.InconVisitType<- function(theObject, table_list, field_list, con)
+applyCheck.InconVisitType<- function(theObject, table_list, field_list, con, illegal_visit_ids)
 {
   table_name_1<-table_list[1]
   table_name_2<-table_list[2]
@@ -27,8 +27,8 @@ applyCheck.InconVisitType<- function(theObject, table_list, field_list, con)
   df_outpatient_adts_count<-retrieve_dataframe_join_clause(con,g_config,g_config$db$schema,table_name_1, 
                                                            g_config$db$schema,
                                                            table_name_2,"count(*)",
-                                                           "adt_occurrence.visit_occurrence_id = visit_occurrence.visit_occurrence_id
-                                                           and visit_concept_id in (9202, 44814711)") 
+                                                           paste0("adt_occurrence.visit_occurrence_id = visit_occurrence.visit_occurrence_id
+                                                           and visit_concept_id in ", illegal_visit_ids)) 
   
   ###########DQA CHECKPOINT############## 
   if(df_outpatient_adts_count[1,1]>0)
