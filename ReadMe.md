@@ -23,7 +23,7 @@ R version 3.1.x or above, 64-bit ([Comprehensive R Archive Network](http://cran.
 ### R Packages 
 
 ```
-install.packages(c("RPostgreSQL","DBI","yaml","ggplot2","RJDBC","devtools","futile.logger))
+install.packages(c("RPostgreSQL","DBI","yaml","ggplot2","RJDBC","devtools","futile.logger"))
 library(devtools)
 install_github("ohdsi/SqlRender") 
 install_github("ohdsi/DatabaseConnector")       
