@@ -398,7 +398,7 @@ generateMeasurementReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  #logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   
   
   ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
