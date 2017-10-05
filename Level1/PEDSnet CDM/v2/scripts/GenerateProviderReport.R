@@ -146,7 +146,7 @@ generateProviderReport <- function() {
   
   ##########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "specialty.csv")) 
+                                                   ,con,  "specialty.txt")) 
   
   
   ###########DQA CHECKPOINT##############
