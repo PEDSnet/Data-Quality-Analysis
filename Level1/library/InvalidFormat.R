@@ -29,8 +29,8 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, con, for
     for(i in 1:nrow(df_table))  
     {
       source_value<-  df_table[i,1]
-      print(length(unlist(strsplit(source_value, '\\|'))))
-      print(format)
+      #print(length(unlist(strsplit(source_value, '\\|'))))
+      #print(format)
       if(length(unlist(strsplit(source_value, '\\|')))!=format) 
       {
         invalid_message<-paste(invalid_message, source_value, sep=";")
@@ -41,7 +41,7 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, con, for
     }
   
    
-  print(substring(invalid_message,0,500))
+  #print(substring(invalid_message,0,500))
   #invalid_message<-""
   if( nchar(trim(invalid_message))>0)
   {

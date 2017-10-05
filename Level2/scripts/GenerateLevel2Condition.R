@@ -142,6 +142,11 @@ generateLevel2Condition <- function() {
                                               'outlier inpatient condition:',g_top50_inpatient_conditions_path
                                               , 'Condition'))
   
+  #print(outlier_inpatient_conditions)
+  #print(nrow(outlier_inpatient_conditions))
+  
+  if(nrow(outlier_inpatient_conditions)>0)
+  {
   for ( issue_count in 1: nrow(outlier_inpatient_conditions))
   {
     ### open the person log file for appending purposes.
@@ -152,7 +157,7 @@ generateLevel2Condition <- function() {
     
     write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
   }
-  
+  }
   
 
   
