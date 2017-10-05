@@ -21,7 +21,7 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list, my_db)
   field_name_2<-field_list[2]
   
   check_list_entry<-get_check_entry_two_variables_diff_tables(theObject$check_code, table_name_1, field_name_1, 
-                                                              table_name_2, field_name_2)
+                                                              table_name_2, paste0("extract(date from ",field_name_2,")"))
   
   fact_tbl <- tbl(my_db, table_name_1)
   
