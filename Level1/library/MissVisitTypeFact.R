@@ -66,7 +66,7 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, my_d
   check_list_entry$Upper_Threshold <no_fact_percentage )
   {
     # create an issue 
-    issue_obj<-Issue(theObject, table_list, paste("visit_concept_id","observation_concept_id",","), 
+    issue_obj<-Issue(theObject, table_list, paste("visit_concept_id","observation_concept_id",sep=","), 
                      paste0(no_fact_percentage,"% (for visit_concept_id=",field_list[1], " and ",field_list[2]
                             , "=",field_list[3]))
     # log issue 
