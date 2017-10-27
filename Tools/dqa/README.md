@@ -23,7 +23,6 @@ These commands sync up causes of previous reports from Github, generate the temp
 ETLv{x} = Current ETL Script Version
 ETLv{x - 1} = Previous ETL Script Version
 ```
-[Instructions for generating personal token](https://github.com/PEDSnet/tools/tree/master/cmd/dqa#generate-template)
 
 ## Report and Track Issues
 
