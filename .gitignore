@@ -13,3 +13,9 @@ Data/total_counts.csv
 
 .DS_Store
 dqa.log
+
+vendor/
+
+# VS Code and Delve
+debug
+.vscode
