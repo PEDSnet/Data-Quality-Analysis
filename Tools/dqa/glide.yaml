@@ -1,0 +1,15 @@
+package: github.com/PEDSnet/tools/cmd/dqa
+import:
+- package: github.com/blang/semver
+- package: github.com/chop-dbhi/data-models-service
+  subpackages:
+  - client
+- package: github.com/fatih/color
+- package: github.com/mattn/go-sqlite3
+- package: github.com/olekukonko/tablewriter
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
+- package: github.com/google/go-github
+  subpackages:
+  - github
+- package: golang.org/x/oauth2

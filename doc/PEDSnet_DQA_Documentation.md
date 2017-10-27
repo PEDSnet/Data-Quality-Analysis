@@ -75,3 +75,6 @@ generateSingleReport(level=2, report="table_name")
 
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```
+
+### Generate Github Issues
+To generate GitHub issues from Secondary Reports follow instructions [here](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Tools/dqa/README.md).

@@ -8,8 +8,17 @@ Data/top50_outpatient_conditions_ranked.csv
 Data/top50_outpatient_drugs_ranked.csv
 Data/total_counts.csv 
 
+*.py?
+*.sw?
+
 *.idea/
 *.Rhistory
 
 .DS_Store
 dqa.log
+
+vendor/
+
+# VS Code and Delve
+debug
+.vscode
