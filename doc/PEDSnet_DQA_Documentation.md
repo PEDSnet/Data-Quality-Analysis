@@ -4,7 +4,7 @@
 
 [Required Downloads](https://github.com/PEDSnet/Data-Quality#required-downloads)
 
-## Generate primary DQA reports
+## Apply Data Quality Checks
 
 ### Create Configuration File
 Create a configuration file named `PEDSnet_config.yml` using the template specified in [PEDSnet_config_sample.yml](../Level1/PEDSnet%20CDM/PEDSnet_config_sample.yml) of the same folder.
@@ -76,5 +76,5 @@ generateSingleReport(level=2, report="table_name")
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```
 
-### Generate Github Issues
-To generate GitHub issues from Secondary Reports follow instructions [here](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Tools/dqa/README.md).
+## Generate feedback (GitHub)
+To investigate differences between the previous data version and the current and generate feedback:[here](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Tools/dqa/README.md).
