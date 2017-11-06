@@ -1,5 +1,5 @@
 g_config_path <<- paste(getwd(),
-  "/Level1/PEDSnet CDM/PEDSnet_config.yml", sep = "")
+  "Resources/PEDSnet_config.yml", sep = "")
 
 g_catalog_folder_path <<- paste(getwd(), "/DQA_Catalog/", sep = "")
 

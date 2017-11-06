@@ -7,7 +7,7 @@
 ## Generate primary DQA reports
 
 ### Create Configuration File
-Create a configuration file named `PEDSnet_config.yml` using the template specified in [PEDSnet_config_sample.yml](../Level1/PEDSnet%20CDM/PEDSnet_config_sample.yml) of the same folder.
+Create a configuration file named `PEDSnet_config.yml` using the template specified in [PEDSnet_config_sample.yml](../Resources/PEDSnet_config_sample.yml) of the same folder.
 
 #### Example
 
@@ -37,7 +37,7 @@ reporting:
 
 ### Create RxNorm Reference Tables
 
-Execute [DDL_RxNorm_Tables.sql](../Level1/library/DDL_RxNorm_Tables.sql)  
+Execute [DDL_RxNorm_Tables.sql](../Library/DDL_RxNorm_Tables.sql)  
 
 **Note**: If using a custom schema for DQA tables, please change all references to schema "dqa" in the above script into the custom schema.  
 
