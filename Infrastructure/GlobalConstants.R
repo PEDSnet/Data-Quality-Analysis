@@ -11,22 +11,22 @@ g_total_counts_path <<- paste(getwd(),
 g_executive_summary_path <<- paste(getwd(),
                                    "/ExecutiveSummary/", sep="")
 g_top50_inpatient_conditions_path <<- paste(getwd(),
-                                        "/Data/top50_inpatient_conditions_ranked.csv", sep= "")
+                                        "/Data/PreviousDataSummary/top50_inpatient_conditions_ranked.csv", sep= "")
 
 g_top50_outpatient_conditions_path <<- paste(getwd(),
-                                        "/Data/top50_outpatient_conditions_ranked.csv", sep= "")
+                                        "/Data/PreviousDataSummary/top50_outpatient_conditions_ranked.csv", sep= "")
 
 g_top50_inpatient_procedures_path <<- paste(getwd(),
-                                            "/Data/top50_inpatient_procedures_ranked.csv", sep= "")
+                                            "/Data/PreviousDataSummary/top50_inpatient_procedures_ranked.csv", sep= "")
 
 g_top50_outpatient_procedures_path <<- paste(getwd(),
-                                             "/Data/top50_outpatient_procedures_ranked.csv", sep= "")
+                                             "/Data/PreviousDataSummary/top50_outpatient_procedures_ranked.csv", sep= "")
 
 g_top50_inpatient_drugs_path <<- paste(getwd(),
-                                            "/Data/top50_inpatient_drugs_ranked.csv", sep= "")
+                                            "/Data/PreviousDataSummary/top50_inpatient_drugs_ranked.csv", sep= "")
 
 g_top50_outpatient_drugs_path <<- paste(getwd(),
-                                             "/Data/top50_outpatient_drugs_ranked.csv", sep= "")
+                                             "/Data/PreviousDataSummary/top50_outpatient_drugs_ranked.csv", sep= "")
 
 
 g_df_check_catalogue<<-read.csv(paste(g_catalog_folder_path,"DQA_Check_Type_Inventory.csv",sep=""), header = TRUE, sep = ",", quote = "\"",
