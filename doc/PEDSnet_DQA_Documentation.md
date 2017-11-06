@@ -77,4 +77,4 @@ generateSingleReport(level=2, report="table_name")
 ```
 
 ## Generate feedback (GitHub)
-To investigate differences between the previous data version and the current and generate feedback:[here](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Tools/dqa/README.md).
+To investigate differences between the previous data version and the current and generate feedback, follow the instructions [here](../Tools/dqa/README.md).
