@@ -1,12 +1,12 @@
 g_config_path <<- paste(getwd(),
-  "Resources/PEDSnet_config.yml", sep = "")
+  "/Resources/PEDSnet_config.yml", sep = "")
 
 g_catalog_folder_path <<- paste(getwd(), "/DQA_Catalog/", sep = "")
 
 g_config <<- yaml.load_file(g_config_path)
 
 g_total_counts_path <<- paste(getwd(),
-                              "/Data/total_counts.csv", sep= "")
+                              "/Data/PreviousDataSummary/total_counts.csv", sep= "")
 
 g_executive_summary_path <<- paste(getwd(),
                                    "/ExecutiveSummary/", sep="")
