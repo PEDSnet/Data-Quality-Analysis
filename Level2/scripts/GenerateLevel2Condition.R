@@ -32,15 +32,18 @@ generateLevel2Condition <- function() {
                         password =config$db$dbpass,
                         options=paste("-c search_path=",config$db$schema,sep=""))
 
+  
   # Then reference a tbl within that src
   visit_tbl <- tbl(my_db, "visit_occurrence")
   patient_tbl<-tbl(my_db, "person")
   condition_tbl<-tbl(my_db, "condition_occurrence")
   death_tbl <- tbl(my_db, "death")
 
+  
   concept_tbl <- tbl(my_db,sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
   condition_concept_tbl <- select(filter(concept_tbl, domain_id=='Condition'), concept_id, concept_name)
 
+  
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_start_datetime', 
@@ -55,12 +58,13 @@ generateLevel2Condition <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-
- 
+  
+  
  #print(head(sibling_concepts_tbl))
   ### Print top 100 no matching concept source values in condition table 
   condition_no_match<- select( filter(condition_tbl, condition_concept_id==0)
                                , condition_source_value)
+
   
   no_match_condition_counts <-
     filter(
@@ -71,6 +75,8 @@ generateLevel2Condition <- function() {
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
+  print("here")
+  
   df_no_match_condition_counts<-as.data.frame(
     no_match_condition_counts
     )
@@ -79,6 +85,8 @@ generateLevel2Condition <- function() {
   data_file<-data.frame(concept_id=character(0), concept_name=character(0), condition_source_value=character(0))
   
   data_file<-rbind(df_no_match_condition_counts)
+  
+#  print(nrow(df_no_match_condition_counts))
   if(nrow(df_no_match_condition_counts)>0)
   {
   colnames(data_file)<-c("condition_source_value","occurrence_counts")
@@ -88,6 +96,7 @@ generateLevel2Condition <- function() {
   
   }
  #print(head(df_no_match_condition_counts))
+
   
   ### implementation of unexpected top inpatient conditions check 
   #filter by inpatient and outpatient visits and select visit occurrence id column
@@ -98,9 +107,6 @@ generateLevel2Condition <- function() {
   ,visit_occurrence_id,visit_start_date, visit_end_date)
 
 
-  
-  
- 
   
   ###### Identifying outliers in top inpatient conditions 
   #inpatient_visit_df<-as.data.frame(inpatient_visit_tbl)
