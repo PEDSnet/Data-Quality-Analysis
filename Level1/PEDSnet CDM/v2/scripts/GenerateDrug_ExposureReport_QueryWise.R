@@ -155,36 +155,7 @@ generateDrugExposureReport <- function() {
   fileContent<-c(fileContent,print_2d_dataframe(df_concept_class))
 
   ### ingredient-level normalization
-  fileContent<-c(fileContent,"### ingredient-level normalization")
-
-  in_set_1<-retrieve_dataframe_join_clause_group(con, g_config, g_config$db$schema,table_name,  g_config$db$vocab_schema,"concept","concept_id , concept_name"
-                                                 ,"DRUG_CONCEPT_ID = CONCEPT_ID and CONCEPT_CLASS_ID='Ingredient'")
-  colnames(in_set_1)[1]<-"in_concept_id"
-  colnames(in_set_1)[2]<-"in_concept_name"
-
-  in_set_2<-retrieve_dataframe_join_clause_group(con, g_config, g_config$db$schema,table_name,  g_config$db$dqa_schema,"rxnorm_in_scd"
-                                                 ,"in_concept_id, in_concept_name"
-                                                 ,"drug_concept_id = SCD_concept_id")
-
-  in_set_3<-retrieve_dataframe_join_clause_group(con, g_config, g_config$db$schema,table_name,  g_config$db$dqa_schema,"rxnorm_in_bcd"
-                                                 ,"in_concept_id, in_concept_name"
-                                                 ,"drug_concept_id = BCD_concept_id")
-
-  in_set_4<-retrieve_dataframe_join_clause_group(con, g_config, g_config$db$schema,table_name,  g_config$db$dqa_schema,"rxnorm_in_bpck"
-                                                 ,"in_concept_id, in_concept_name"
-                                                 ,"drug_concept_id = BPCK_concept_id")
-
-  total<-rbind(in_set_1,in_set_2,in_set_3,in_set_4)
-  # aggregate 4 datasets by counts
-  new_total<-aggregate(count~in_concept_id+in_concept_name, sum, data=total)
-  colnames(new_total)[3]<-"frequency"
-  # order by sum
-  ordered_total <- new_total[with(new_total, order(-frequency)), ]
-  ordered_total$concept <- paste(ordered_total$in_concept_id,'-',ordered_total$in_concept_name)
-  enhanced_total<-subset(ordered_total[1:20,],select=c(concept,frequency))
-  fileContent<-c(fileContent,print_2d_dataframe(enhanced_total))
-
-
+  
   # also draw distribution of drug concept id vs person_id
   field_name<-"drug_concept_id" #
   df_table_new<-retrieve_dataframe_count_group(con, g_config,table_name,"person_id", field_name)
