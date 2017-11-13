@@ -15,13 +15,13 @@ Go version 1.8.x or above
 
 ```
 Update causes of previous secondary reports 
-../pedsnet-dqa feedback sync --cycle="M0 YYYY" --token=abc123 ./Site/ETLv{x-1}
+./pedsnet-dqa feedback sync --cycle="M0 YYYY" --token=abc123 /path/to/previous/reports/
 
 Generate templates for new secondary reports
-../pedsnet-dqa generate-templates --version="a.b.c" --copy-persistent={Site}/ETLv{x-1} --root={Site}/ETLv{x} {Site} ETLv{x}
+./pedsnet-dqa generate-templates --version="a.b.c" --copy-persistent=/path/to/previous/reports/ --root=/path/to/current/reports/ {Site_Name} ETLv{x}
 
 Investigate differences between previous and new issues and resolve conflicts
-../pedsnet-dqa merge-issues \
+./pedsnet-dqa merge-issues \
    --token=<token> \
    --program=./ConflictResolution/resolve.py \
    --resolvers=./ConflictResolution/resolvers \
