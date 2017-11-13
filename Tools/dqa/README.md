@@ -1,7 +1,7 @@
-# Instructions for Preparing the DQA Results
+# Generate Feedback (GitHub)
 
 
-## Merge Issues into Secondary Reports
+## Investigate differences
 
 ```
 ../pedsnet-dqa feedback sync --cycle="M0 YYYY" --token=abc123 ./Site/ETLv{x-1}
