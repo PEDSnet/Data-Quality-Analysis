@@ -16,13 +16,9 @@ import (
 
 var (
 	progVersion = semver.Version{
-		Major: 0,
-		Minor: 3,
+		Major: 1,
+		Minor: 0,
 		Patch: 0,
-		Pre: []semver.PRVersion{
-			{VersionStr: "beta"},
-			{VersionNum: 1},
-		},
 	}
 
 	buildVersion string
