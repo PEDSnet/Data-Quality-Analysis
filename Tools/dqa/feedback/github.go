@@ -31,7 +31,7 @@ var (
 )
 
 // Eventually we will make this more dynamic, at least for line numbers
-var githubCheckURL = "https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Level1/library/%s.R#L16"
+var githubCheckURL = "https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Library/%s.R#L16"
 
 func Labeler(p string) func(interface{}) string {
 	return func(v interface{}) string {

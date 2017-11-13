@@ -1,5 +1,15 @@
 # Generate Feedback (GitHub)
 
+## Required Downloads
+
+### Python 
+Python version 2.7
+
+Note: Tested with Python version 2.7.12, has not been tested with Python 3
+
+### Go
+Go version 1.8.x or above
+
 
 ## Investigate differences
 

@@ -19,7 +19,7 @@ const (
 	owner = "PEDSnet"
 
 	catalogRepo = "Data-Quality-Analysis"
-	catalogPath = "DQA_Catalog/"
+	catalogPath = "/Data/DQACatalog/"
 
 	conflictRepo             = "Data-Quality-Results"
 	conflictAssociationsPath = "SecondaryReports/ConflictResolution/conflict_associations.csv"

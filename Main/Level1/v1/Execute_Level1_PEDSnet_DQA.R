@@ -1,7 +1,7 @@
 library(yaml)
-source("../../library/CreatePlots.R", chdir=T)
-source("../../library/PerformDatabaseOperations.R", chdir=T)
-source("../../library/DocumentationModules.R", chdir=T)
+source("../../../Library/CreatePlots.R", chdir=T)
+source("../../../Library/PerformDatabaseOperations.R", chdir=T)
+source("../../../Library/DocumentationModules.R", chdir=T)
 
 config = yaml.load_file(g_config_path)
 dir.create(file.path(normalize_directory_path(config$reporting$site_directory), "reports"), showWarnings = FALSE)

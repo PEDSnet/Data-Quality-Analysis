@@ -3,8 +3,8 @@ source('Infrastructure/LibraryImports.R')
 source('Infrastructure/ReportImports.R', chdir = T)
 source('Infrastructure/GlobalConstants.R')
 source('Infrastructure/LoggingFunctions.R')
-source("./Level1/PEDSnet CDM/v2/Execute_Level1_PEDSnet_DQA.R", chdir=T)
-source("./Level2/Execute_Level2_PEDSnet_DQA.R", chdir = T)
+source("./Main/Level1/v2/Execute_Level1_PEDSnet_DQA.R", chdir=T)
+source("./Main/Level2/Execute_Level2_PEDSnet_DQA.R", chdir = T)
 
 #Fixes rJava out of memory exception
 options(java.parameters = "-Xmx1024m")
