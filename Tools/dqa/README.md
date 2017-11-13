@@ -18,7 +18,7 @@ Update causes of previous secondary reports
 ./pedsnet-dqa feedback sync --cycle="M0 YYYY" --token=abc123 /path/to/previous/reports/
 
 Generate templates for new secondary reports
-./pedsnet-dqa generate-templates --version="a.b.c" --copy-persistent=/path/to/previous/reports/ --root=/path/to/current/reports/ {Site_Name} ETLv{x}
+./pedsnet-dqa generate-templates --version="a.b.c" --copy-persistent=/path/to/previous/reports/ --root=/path/to/new/reports/ {Site_Name} ETLv{x}
 
 Investigate differences between previous and new issues and resolve conflicts
 ./pedsnet-dqa merge-issues \
