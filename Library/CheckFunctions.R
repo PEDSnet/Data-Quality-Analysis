@@ -1,7 +1,7 @@
 ## generate concept_id from clause 
 generate_df_concepts<-function(con,table_name, filename)
 {
-  file_txt<-as.character(paste("Data/PEDSnet",table_name,filename, sep="/"))
+  file_txt<-as.character(paste("Data/ValueSets",table_name,filename, sep="/"))
   #print(file_txt)
   clause <- readChar(file_txt, file.info(file_txt)$size)
   clause_trunc <- gsub("\n", '', noquote(clause), fixed = T) # takes off extra characters
@@ -21,7 +21,7 @@ return(concept_id_list)
 generate_list_concepts<-function(table_name, filename)
 {
   #print(getwd());
-  df_csv<-read.csv(paste(getwd(),"Data/PEDSnet", table_name,filename, sep= "/"))
+  df_csv<-read.csv(paste(getwd(),"Data/ValueSets", table_name,filename, sep= "/"))
   #print(df_csv$concept_id)
   return(df_csv)##
 
