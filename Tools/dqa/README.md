@@ -14,9 +14,13 @@ Go version 1.8.x or above
 ## Investigate differences
 
 ```
+Update causes of previous secondary reports 
 ../pedsnet-dqa feedback sync --cycle="M0 YYYY" --token=abc123 ./Site/ETLv{x-1}
+
+Generate templates for new secondary reports
 ../pedsnet-dqa generate-templates --version="a.b.c" --copy-persistent={Site}/ETLv{x-1} --root={Site}/ETLv{x} {Site} ETLv{x}
 
+Investigate differences between previous and new issues and resolve conflicts
 ../pedsnet-dqa merge-issues \
    --token=<token> \
    --program=./ConflictResolution/resolve.py \
@@ -24,7 +28,6 @@ Go version 1.8.x or above
    {Site}/ETLv{x}
    /path/to/site_directory/issues/*
 ```
-These commands sync up causes of previous reports from Github, generate the templates for secondary reports, and merge the automatically identified issues (resolving any conflicts).
 
 
 **Notes** :
