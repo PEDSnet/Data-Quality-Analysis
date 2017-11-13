@@ -31,4 +31,7 @@ install_github("ohdsi/DatabaseConnector")
 ```
 For troubleshooting with `install_github("ohdsi/SqlRender")`, please see [here](https://github.com/OHDSI/SqlRender/issues/28). 
 
+Note: if previously installed, run `update.packages()` to get the latest version of each library
+
+
 
