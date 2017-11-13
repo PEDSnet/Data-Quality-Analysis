@@ -23,8 +23,8 @@ Generate templates for new secondary reports
 Investigate differences between previous and new issues and resolve conflicts
 ./pedsnet-dqa merge-issues \
    --token=<token> \
-   --program=./ConflictResolution/resolve.py \
-   --resolvers=./ConflictResolution/resolvers \
+   --program=/path/to/ConflictResolution/resolve.py \
+   --resolvers=/path/to/ConflictResolution/resolvers \
    {Site}/ETLv{x}
    /path/to/site_directory/issues/*
 ```
@@ -41,11 +41,12 @@ ETLv{x}:
 ## Report and Track Issues
 
 ```
-./pedsnet-dqa query - {Site]/ETLv{x} < print_new_issues.sql
+./pedsnet-dqa query - /path/to/new/reports < print_new_issues.sql
 
 ```
-Review new issues 
+### Review new issues 
 ```
-../pedsnet-dqa feedback generate --cycle="M1 YYYY" --token=abc123 --post ./{Site}/ETLv{x}
+./pedsnet-dqa feedback generate --cycle="M1 YYYY" --token=abc123 --post /path/to/new/reports
 ```
+
 This command creates GitHub issues for the identified DQA issues
