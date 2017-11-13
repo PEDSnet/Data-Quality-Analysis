@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-[Required Downloads](https://github.com/PEDSnet/Data-Quality#required-downloads)
+[Required Downloads](https://github.com/PEDSnet/Data-Quality-Analysis#required-downloads)
 
 ## Apply Data Quality Checks
 
