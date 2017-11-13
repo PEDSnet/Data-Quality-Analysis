@@ -1,7 +1,7 @@
 g_config_path <<- paste(getwd(),
   "/Resources/PEDSnet_config.yml", sep = "")
 
-g_catalog_folder_path <<- paste(getwd(), "/DQA_Catalog/", sep = "")
+g_catalog_folder_path <<- paste(getwd(), "/Data/DQACatalog/", sep = "")
 
 g_config <<- yaml.load_file(g_config_path)
 
