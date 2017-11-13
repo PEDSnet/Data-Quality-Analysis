@@ -33,7 +33,9 @@ Investigate differences between previous and new issues and resolve conflicts
 **Notes** :
 
 ```
-ETLv{x} = Current ETL Script Version
+ETLv{x}:  
+   {x} = Current ETL Script Version
+   Example: ETLv14
 ```
 
 ## Report and Track Issues
