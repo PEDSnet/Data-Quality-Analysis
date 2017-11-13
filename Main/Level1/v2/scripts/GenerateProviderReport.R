@@ -154,7 +154,7 @@ generateProviderReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   
-  acceptable_specialty<- read.csv(paste(getwd(), "/Data/PEDSnet/provider/specialty.csv", sep= ""))$concept_id ## read from specialty list
+  acceptable_specialty<- read.csv(paste(getwd(), "/Data/ValueSets/provider/specialty.csv", sep= ""))$concept_id ## read from specialty list
   df_table_specialty_enhanced<-EnhanceFieldValues(df_provider,field_name,as.data.frame(acceptable_specialty));
   describeNominalField_basic(df_table_specialty_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
