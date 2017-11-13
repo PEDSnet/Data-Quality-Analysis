@@ -34,7 +34,6 @@ Investigate differences between previous and new issues and resolve conflicts
 
 ```
 ETLv{x} = Current ETL Script Version
-ETLv{x - 1} = Previous ETL Script Version
 ```
 
 ## Report and Track Issues
