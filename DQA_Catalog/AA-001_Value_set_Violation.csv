@@ -1,0 +1,6 @@
+Category Code,PEDSnet_Table,PEDSnet_Field,Lower Threshold,Upper Threshold
+AA-001,Person,month_of_birth,0,0
+AA-001,Person,day_of_birth,0,0
+AA-001,Location,state,0,0
+AA-001,Visit_Payer,plan_type,0,0
+AA-001,Visit_Payer,plan_class,0,0

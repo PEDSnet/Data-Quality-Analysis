@@ -1,0 +1,9 @@
+Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_Threshold
+AA-005,Condition_Occurrence,condition_concept_id,0,0
+AA-005,Condition_Occurrence,condition_source_concept_id,0,0
+AA-005,Procedure_Occurrence,procedure_concept_id,0,0
+AA-005,Procedure_Occurrence,procedure_source_concept_id,0,0
+AA-005,Drug_Exposure,drug_concept_id,0,0
+AA-005,Measurement,measurement_concept_id,0,0
+AA-005,Death,cause_concept_id,0,0
+AA-005,Device_Exposure,device_concept_id,0,0

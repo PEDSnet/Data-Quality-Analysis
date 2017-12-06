@@ -1,0 +1,19 @@
+Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_Threshold
+CA-002,Person,year_of_birth,0,0
+CA-002,Death,death_date,0,0
+CA-002,Provider,year_of_birth,0,0
+CA-002,Visit_Occurrence,visit_start_date,0,0
+CA-002,Visit_Occurrence,visit_end_date,0,0
+CA-002,Condition_Occurrence,condition_start_date,0,0
+CA-002,Condition_Occurrence,condition_end_date,0,0
+CA-002,Procedure_Occurrence,procedure_date,0,0
+CA-002,Observation,observation_date,0,0
+CA-002,Observation_Period,observation_period_start_date,0,0
+CA-002,Observation_Period,observation_period_end_date,0,0
+CA-002,Drug_Exposure,drug_exposure_start_date,0,0
+CA-002,Drug_Exposure,drug_exposure_end_date,0,0
+CA-002,Drug_Exposure,drug_exposure_order_date,0,0
+CA-002,Measurement,measurement_date,0,0
+CA-002,Measurement,measurement_order_date,0,0
+CA-002,Measurement,measurement_result_date,0,0
+CA-002,Measurement_Organism,positivity_datetime,0,0
