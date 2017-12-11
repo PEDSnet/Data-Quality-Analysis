@@ -1,1 +1,1 @@
-domain_id = 'Provider Specialty' and concept_class_id = 'Specialty' and standard_concept = 'S'
+domain_id ='Provider Specialty' and vocabulary_id in ('Specialty', 'ABMS','NUCC','PEDSnet')
