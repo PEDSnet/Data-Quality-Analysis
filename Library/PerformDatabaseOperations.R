@@ -1,39 +1,4 @@
-establish_database_connection<-function(config)
-{
-    #initialize database connection parameters
-    driver <- config$db$driver;
 
-    # load the appropriate DB library
-    switch(driver,
-            PostgreSQL = library(RPostgreSQL),
-            Oracle = library(ROracle),
-            MySQL = library(RMySQL),
-            SQLite = library(RSQLite),
-            ODBC = library(RODBC)
-        )
-
-    dbname <- config$db$dbname;
-    dbuser <- config$db$dbuser;
-    dbpass <- config$db$dbpass;
-    dbhost <- config$db$dbhost;
-    dbport <- config$db$dbport;
-
-    #special handling for ODBC drivers
-    if (grepl(driver,"ODBC",ignore.case=TRUE))
-    {
-        con <- odbcConnect(dbname, uid=dbuser, pwd=dbpass)
-    }
-    else
-    {
-      if (grepl(driver,"Oracle",ignore.case=TRUE)) # special handling for Oracle drivers
-         con <- dbConnect(dbDriver(driver), host=dbhost, port=dbport, dbname=dbname, user=dbuser, password=dbpass)
-        else
-          con <- dbConnect(driver, host=dbhost, port=dbport, dbname=dbname, user=dbuser, password=dbpass)
-    }
-
-      
-	return(con)
-}
 establish_database_connection_OHDSI<-function(config)
 {
     library(DatabaseConnector);
@@ -58,7 +23,11 @@ establish_database_connection_OHDSI<-function(config)
     }
     else
     {
-      connectionDetails <- createConnectionDetails(dbms=tolower(driver), server=paste(dbhost,"/",dbname,sep=""),user=dbuser,password=dbpass,schema=dbschema,port=dbport)
+      connectionDetails <- createConnectionDetails(dbms=tolower(driver), 
+                                                   server=paste(dbhost,"/",dbname,sep=""),
+                                                   user=dbuser,password=dbpass,
+                                                   schema=dbschema,port=dbport
+                                                   ,extraSettings="ssl=true&sslmode=verify-full")
     }
         # flog.info(connectionDetails)
     con <- connect(connectionDetails)
@@ -67,22 +36,11 @@ establish_database_connection_OHDSI<-function(config)
     return(con)
 }
 
-close_database_connection <- function(con,config)
-{
-    #special handling for ODBC drivers
-  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-  {
-        dbDisconnect <- close
-    }
-    # close connection
-    dbDisconnect(con)
-    # the following statementfails
-    #dbUnloadDriver(drv)
-}
+
 close_database_connection_OHDSI <- function(con,config)
 {
     #special handling for ODBC drivers
-    dbDisconnect(con)
+    disconnect(con)
 
 }
 
@@ -99,11 +57,11 @@ retrieve_dataframe<-function(con,config,table_name)
       if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
       {
           table_name<-toupper(table_name)
-          df<-dbReadTable(con, table_name, schema = config$db$schema)
+          df<-querySql(con, table_name, schema = config$db$schema)
         }
         else
         {
-          df<-dbReadTable(con, c(config$db$schema,table_name))
+          df<-querySql(con, c(config$db$schema,table_name))
         }
     }
     #converting all names to lower case for consistency
@@ -132,12 +90,12 @@ retrieve_dataframe_count<-function(con,config,table_name,column_list)
       table_name<-toupper(table_name)
       column_list<-toupper(column_list)
       query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
       query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -164,12 +122,12 @@ retrieve_dataframe_count_group<-function(con,config,table_name,column_list, fiel
       table_name<-toupper(table_name)
       column_list<-toupper(column_list)
       query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
       query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -202,14 +160,14 @@ retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
                    field_name," is not null group by ",
                    field_name ," order by 2 desc) where rownum<=5"
                    ,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
       query<-paste("select ",field_name,", count(*) as count from ",config$db$schema,".",table_name," where ",field_name," is not null group by ",field_name
                    ," order by 2 desc limit 5"
                    ,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -242,7 +200,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
                    clause," and ",field_name," is not null group by ",
                    field_name ," order by 2 desc) where rownum<=20"
                    ,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
@@ -250,7 +208,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
                    " where ",clause," and ",field_name," is not null group by ",field_name
                    ," order by 2 desc limit 20"
                    ,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -276,14 +234,14 @@ retrieve_dataframe_clause<-function(con,config,schema,table_name,column_list,cla
       table_name<-toupper(table_name)
       column_list<-toupper(column_list)
       query<-paste("select ",column_list," from ",schema,".",table_name," where ",clauses,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
       query<-paste("select ",column_list," from ",schema,".",table_name," where ",clauses,sep="");
       # flog.info(query)
       #print(query)
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -318,7 +276,7 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
     query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
                  ,",",schema2,".",table_name2
                  ," where ",clauses,sep="");
-    df<-dbGetQuery(con, query)
+    df<-querySql(con, query)
   }
   else
   {
@@ -326,7 +284,7 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
                  ,",",schema2,".",table_name2
                  ," where ",clauses,sep="");
     # flog.info(query)
-    df<-dbGetQuery(con, query)
+    df<-querySql(con, query)
   }
   }
   #converting all names to lower case for consistency
@@ -364,7 +322,7 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
                    ," where ",clauses
                    ," group by ",column_list
                    ,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
@@ -375,7 +333,7 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
                    ," order by 2 desc"
                    ,sep="");
       # flog.info(query)
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -401,14 +359,14 @@ retrieve_dataframe_group<-function(con,config,table_name,field_name)
       table_name<-toupper(table_name)
       field_name<-toupper(field_name)
       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," group by ",field_name,sep="");
       #print(query)
       #print(con)
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
       #print(query)
     }
   }
@@ -435,12 +393,12 @@ retrieve_dataframe_group_clause<-function(con,config,table_name,field_name, clau
       table_name<-toupper(table_name)
       field_name<-toupper(field_name)
       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
     else
     {
       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
-      df<-dbGetQuery(con, query)
+      df<-querySql(con, query)
     }
   }
   #converting all names to lower case for consistency
@@ -466,12 +424,12 @@ retrieve_dataframe_ratio_group<-function(con,config,table_name,column_list, fiel
                   table_name<-toupper(table_name)
                   column_list<-toupper(column_list)
                   query<-paste("select ",field_name,", ",column_list," from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-                  df<-dbGetQuery(con, query)
+                  df<-querySql(con, query)
                }
             else
              {
                   query<-paste("select ",field_name,",",column_list," from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-                  df<-dbGetQuery(con, query)
+                  df<-querySql(con, query)
                 }
          }
      #converting all names to lower case for consistency
@@ -506,14 +464,14 @@ retrieve_dataframe_ratio_group_join<-function(con,config,table_name_1, table_nam
                   query<-paste("select ",group_by_field,", ",ratio_formula," from ",config$db$schema,".",table_name_1,",",config$db$schema,".",table_name_2,
                                                  " where ",table_name_1,".",join_field,"=",table_name_2,".",join_field,
                                                    " group by ",group_by_field,sep="");
-            df<-dbGetQuery(con, query)
+            df<-querySql(con, query)
                 }
            else
               {
                   query<-paste("select ",group_by_field,", ",ratio_formula," from ",config$db$schema,".",table_name_1,",",config$db$schema,".",table_name_2,
                                                    " where ",table_name_1,".",join_field,"=",table_name_2,".",join_field,
                                                   " group by ",group_by_field,sep="");
-                  df<-dbGetQuery(con, query)
+                  df<-querySql(con, query)
                 }
           }
      #converting all names to lower case for consistency
