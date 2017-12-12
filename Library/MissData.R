@@ -19,29 +19,22 @@ applyCheck.MissData <- function(theObject, table_list, field_list, con)
   field_name<-field_list[1]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  
-  colnames(df_table)[2] <- "Freq"
-  # identify row with null value
-  new_df_table<-subset(df_table, is.na(df_table[1]))
-  if(nrow(new_df_table)>0) # if there is a null value
-  {
-    #add a new column to this new dataframe containing the percentage frequency information rounded to 2 digits
-    
-    df_table$label <- as.character(
-      paste(
-        round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-        ,'%')	# add percentage
-    )
-    # find the row that contains the frequency for the NA value
-    na_df_table<-subset(df_table, is.na(df_table[1]))
-    missing_percent<-na_df_table[1,3]
-  } else missing_percent<-0
+  df_null<-retrieve_dataframe_clause(con, g_config,g_config$db$schema,table_name,"count(*)",paste0(field_name,' is null') )
+  #print(df_null)
+  df_count<-retrieve_dataframe_record_count(con, g_config, table_name )
+  #print(df_count)
+  missing_percent<-
+       round(
+          ((100 * df_null[1,1])/ df_count[1,1]),digits=2)
+       
+      
+  #print(missing_percent)  
+  #print(check_list_entry$Lower_Threshold)
   
   if(missing_percent<check_list_entry$Lower_Threshold || missing_percent>check_list_entry$Upper_Threshold)
   {
     # create an issue 
-    issue_obj<-Issue(theObject, table_list, field_list, missing_percent)
+    issue_obj<-Issue(theObject, table_list, field_list, paste(missing_percent,'%'))
     #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
