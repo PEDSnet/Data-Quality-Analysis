@@ -1,12 +1,17 @@
-# Data Quality Assessment (DQA) in PEDSnet
+# Data Quality Assessment  in PEDSnet
+
+## Objective
+This toolkit has been designed for conducting data quality assessments on clinical datasets modeled using the OMOP common data model. The toolkit includes a wide variety of data quality checks and a GitHub-based issue reporting mechanism. The toolkit is being routinely used by the PEDSnet CDRN. 
 
 ## Contents 
 
-- DQA_Catalog: The inventory of different types of DQA checks implemented in PEDSnet 
-- Level1: The code for DQA checks involving single variable
-- Level2: The code for DQA checks involving multiple variables 
-- Infrastructure: Constants and internal helper functions
-- Data: Historical information needed for DQA trends over time
+- Data: the data quality catalog of checks, summaries of previous data cycle, and acceptable valuesets for various fields.
+- Doc:  documentation and set up instruction for the program 
+- Infrastructure: constants and internal helper functions 
+- Library: contains data quality checks and utility functions
+- Main: single and multi-variable data quality scripts
+- Resources: configuration file 
+- Tools: scripts for GitHub-based feedback generation 
 
 ## Required Downloads
 
