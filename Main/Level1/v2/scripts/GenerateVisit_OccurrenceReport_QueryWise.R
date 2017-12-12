@@ -53,26 +53,32 @@ generateVisitOccurrenceReport <- function() {
     logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
     
     
-
+    
    flog.info(Sys.time())
 
   field_name<-"visit_end_date"
+  print('crossed1')
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
+  print('crossed2')
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
+  #message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  #fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
+  #missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  
+  
   message<-describeDateField(df_table, table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
+  
+  
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  print('crossed3')
   
-  
-
   # check for plausibility
-
+  
    flog.info(Sys.time())
 
    logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), c('visit_start_date','visit_end_date'),con)) 
@@ -86,7 +92,6 @@ generateVisitOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   #logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_percent, table_name, g_data_version));
 
-
   # visit type concept id
   field_name="visit_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
@@ -95,6 +100,7 @@ generateVisitOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "visit_type.txt")) 
   
+  #print('crossed2')
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -103,7 +109,6 @@ generateVisitOccurrenceReport <- function() {
   df_table_visit_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_visit_type);
   describeNominalField_basic(df_table_visit_type_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
 
    flog.info(Sys.time())
 

@@ -104,6 +104,38 @@ retrieve_dataframe_count<-function(con,config,table_name,column_list)
 
 }
 
+retrieve_dataframe_record_count<-function(con,config,table_name)
+{
+  
+  #special handling for ODBC drivers
+  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+  {
+    table_name<-toupper(table_name)
+    #column_list<-toupper(column_list)
+    query<-paste("select count(*) from ",config$db$schema,".",table_name,sep="");
+    df<-sqlQuery(con, query)
+  }
+  else
+  {
+    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+    {
+      table_name<-toupper(table_name)
+      #column_list<-toupper(column_list)
+      query<-paste("select count(*) from ",config$db$schema,".",table_name,sep="");
+      df<-querySql(con, query)
+    }
+    else
+    {
+      query<-paste("select count(*) from ",config$db$schema,".",table_name,sep="");
+      df<-querySql(con, query)
+    }
+  }
+  #converting all names to lower case for consistency
+  names(df) <- tolower(names(df))
+  return(df);
+  
+}
+
 retrieve_dataframe_count_group<-function(con,config,table_name,column_list, field_name)
 {
 
@@ -365,13 +397,18 @@ retrieve_dataframe_group<-function(con,config,table_name,field_name)
     {
       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," group by ",field_name,sep="");
       #print(query)
-      #print(con)
+      #print(con) 
+      querySql(con, query)
+      #print('crossed1')
+      #print(querySql(con, query))
       df<-querySql(con, query)
+      #print('crossed2')
       #print(query)
     }
   }
   #converting all names to lower case for consistency
   names(df) <- tolower(names(df))
+  print(names(df))
   return(df);
 
 }
