@@ -10,20 +10,26 @@ Note: Tested with Python version 2.7.12, has not been tested with Python 3
 ### Go
 Go version 1.8.x or above
 
+From Tools/dqa, run
+`go get`
+followed by
+`Make build`
+
+The executable pedsnet-dqa will then be available from the user's GOBIN directory.
 
 ## Investigate differences
 
 ```
 Update causes of previous secondary reports 
-./pedsnet-dqa feedback sync --cycle={Previous Cycle Name} --token={GitHub Personal Access Token} /path/to/previous/reports/
+pedsnet-dqa feedback sync --cycle={Previous Cycle Name} --token={GitHub Personal Access Token} /path/to/previous/reports/
 
 
 
 Generate templates for new secondary reports
-./pedsnet-dqa generate-templates --version={PEDSnet Convention Version} --copy-persistent=/path/to/previous/reports/ --root=/path/to/new/reports/ {Site_Name} ETLv{x}
+pedsnet-dqa generate-templates --version={PEDSnet Convention Version} --copy-persistent=/path/to/previous/reports/ --root=/path/to/new/reports/ {Site_Name} ETLv{x}
 
 Investigate differences between previous and new issues and resolve conflicts
-./pedsnet-dqa merge-issues \
+pedsnet-dqa merge-issues \
    --token=<token> \
    --program=/path/to/ConflictResolution/resolve.py \
    --resolvers=/path/to/ConflictResolution/resolvers \
@@ -34,12 +40,12 @@ Investigate differences between previous and new issues and resolve conflicts
 ## Report and Track Issues
 
 ```
-./pedsnet-dqa query - /path/to/new/reports < print_new_issues.sql
+pedsnet-dqa query - /path/to/new/reports < print_new_issues.sql
 
 ```
 ### Review new issues 
 ```
-./pedsnet-dqa feedback generate --cycle={Current Cycle Name} --token=abc123 --post /path/to/new/reports
+pedsnet-dqa feedback generate --cycle={Current Cycle Name} --token=abc123 --post /path/to/new/reports
 ```
 
 This command creates GitHub issues for the identified DQA issues
