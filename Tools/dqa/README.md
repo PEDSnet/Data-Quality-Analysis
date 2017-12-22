@@ -10,10 +10,7 @@ Note: Tested with Python version 2.7.12, has not been tested with Python 3
 ### Go
 Go version 1.8.x or above
 
-From Tools/dqa, run
-`go get`
-followed by
-`Make build`
+From Tools/dqa, run `go get` followed by `make build`
 
 The executable pedsnet-dqa will then be available from the user's GOBIN directory.
 
