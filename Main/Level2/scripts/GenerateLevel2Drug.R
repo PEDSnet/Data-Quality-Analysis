@@ -150,7 +150,7 @@ generateLevel2Drug <- function() {
   
   outlier_inpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id',my_db, 
                                            c(df_drug_counts_by_visit,'vt_counts','top_inpatient_drugs.csv',
-                                             'outlier inpatient drug:',g_top50_inpatient_drugs_path
+                                             'outlier inpatient drug (ingredient-level):',g_top50_inpatient_drugs_path
                                              , 'Drug'))
   
   if(nrow(outlier_inpatient_drugs)>0)
@@ -205,7 +205,7 @@ generateLevel2Drug <- function() {
   
   outlier_outpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id',my_db, 
                                       c(df_drug_counts_by_person,'pt_counts','top_outpatient_drugs.csv',
-                                        'outlier outpatient drug:',g_top50_outpatient_drugs_path
+                                        'outlier outpatient drug (ingredient-level):',g_top50_outpatient_drugs_path
                                         , 'Drug'))
   
   if( nrow(outlier_outpatient_drugs)>0)
