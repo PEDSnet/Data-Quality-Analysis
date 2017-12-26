@@ -110,10 +110,6 @@ generateObservationReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
-  ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "observation_source_value"),con
-  )) 
-  
 
   ###########DQA CHECKPOINT############## missing expected concepts 
   #logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
