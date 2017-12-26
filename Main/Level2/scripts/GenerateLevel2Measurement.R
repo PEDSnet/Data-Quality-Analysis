@@ -25,12 +25,13 @@ generateLevel2Measurement <- function () {
   
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
-  my_db <- src_postgres(dbname=config$db$dbname,
+ 
+  my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
                         host=config$db$dbhost,
                         user =config$db$dbuser,
-                        password =config$db$dbpass,
+                        password =config$db$dbpass, sslmode="verify-full",
                         options=paste("-c search_path=",config$db$schema,sep=""))
-
+            
   # Then reference a tbl within that src
   patient_tbl<-tbl(my_db, "person")
   measurement_tbl <- tbl(my_db, "measurement")

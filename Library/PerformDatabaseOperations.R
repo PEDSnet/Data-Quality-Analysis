@@ -23,11 +23,20 @@ establish_database_connection_OHDSI<-function(config)
     }
     else
     {
+      if(tolower(driver)=="oracle")
+      {
+        connectionDetails <- createConnectionDetails(dbms=tolower(driver), 
+                                                     server=paste(dbhost,"/",dbname,sep=""),
+                                                     user=dbuser,password=dbpass,
+                                                     schema=dbschema,port=dbport)
+      }
+      else {
       connectionDetails <- createConnectionDetails(dbms=tolower(driver), 
                                                    server=paste(dbhost,"/",dbname,sep=""),
                                                    user=dbuser,password=dbpass,
                                                    schema=dbschema,port=dbport
                                                    ,extraSettings="ssl=true&sslmode=verify-full")
+      }
     }
         # flog.info(connectionDetails)
     con <- connect(connectionDetails)

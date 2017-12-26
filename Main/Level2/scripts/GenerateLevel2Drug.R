@@ -23,12 +23,13 @@ generateLevel2Drug <- function() {
 
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
-  my_db <- src_postgres(dbname= g_config$db$dbname,
-                        host= g_config$db$dbhost,
-                        user = g_config$db$dbuser,
-                        password = g_config$db$dbpass,
-                        options=paste("-c search_path=", g_config$db$schema,sep=""))
-
+ 
+  my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
+                        host=config$db$dbhost,
+                        user =config$db$dbuser,
+                        password =config$db$dbpass, sslmode="verify-full",
+                        options=paste("-c search_path=",config$db$schema,sep=""))
+            
   # Then reference a tbl within that src
   visit_tbl <- tbl(my_db, "visit_occurrence")
   patient_tbl<-tbl(my_db, "person")

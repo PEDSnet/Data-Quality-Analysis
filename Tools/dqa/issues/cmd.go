@@ -421,8 +421,10 @@ func checkFields(fields []string) (*issueFields, error) {
 		seen++
 	}
 
+	fmt.Println(seen)
+	
 	if seen != numFields {
-		return nil, errors.New("missing fields")
+		return nil, errors.New("missing fields.")
 	}
 
 	return &head, nil
