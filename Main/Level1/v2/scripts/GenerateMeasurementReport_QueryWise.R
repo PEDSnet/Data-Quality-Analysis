@@ -393,7 +393,8 @@ generateMeasurementReport <- function() {
                                                    c(3016723,3017250,  "creatinine"))) 
 	## white blood cell
 	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3010813,  " White Blood cell (WBC) count (leukocyte)"))) 
+                                                   c(3010813, 1125563, 228323, 27245,
+                                                     " White Blood cell (WBC) count (leukocyte)"))) 
 	## red blood cell
 	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(3020416,  " Erythrocytes /volume in Blood by Automated count"))) 
@@ -406,25 +407,21 @@ generateMeasurementReport <- function() {
                                                    c(3012030,  " Erythrocyte mean corpuscular hemoglobin [Entitic mass] by Automated count"))) 
   	## RDW 
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3002385,  " Erythrocyte distribution width [Ratio]"))) 
+                                                   c(3002385,3049383, 3002888,  " Erythrocyte distribution width [Ratio]"))) 
                                                    
   	## Hct 
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3009542,  "Hematocrit"))) 
+                                                   c(3009542, 3023230, 3028813, 
+                                                     3034976, 3034037, 3013752, 3023314, 
+                                                     "Hematocrit"))) 
    
    ## MCV 
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3043111, 3007461,  " 	Platelet count"))) 
+                                                   c(3043111, 3007461,3024929,3010834,  " 	Platelet count"))) 
    
    ## Hbg 
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(3000963,  " Hemoglobin (Hbg)"))) 
-   
-		
-   ## granulocytes 
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3040168,  " Immature granulocytes [#/volume] in Blood"))) 
-                                                   
 
   concept_id_list <- unique(df_table[,1])
 
