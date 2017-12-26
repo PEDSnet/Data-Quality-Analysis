@@ -70,4 +70,4 @@ ETLv{x}:
    Personal access token generated from GitHub
 ```
 
-Generate GitHub Personal Access Token [here](https://github.com/settings/tokens)
+Generate GitHub Personal Access Token [here](https://github.com/settings/tokens). Include all permissions under the "Repo" category.
