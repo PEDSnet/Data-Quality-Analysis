@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 	"github.com/olekukonko/tablewriter"
 
 	_ "github.com/mattn/go-sqlite3"

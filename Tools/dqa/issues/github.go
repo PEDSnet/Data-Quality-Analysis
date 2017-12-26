@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/uni"
+	"../uni"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 )
 
 func TestDB(t *testing.T) {

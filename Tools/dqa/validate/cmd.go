@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 	"github.com/spf13/cobra"
 )
 

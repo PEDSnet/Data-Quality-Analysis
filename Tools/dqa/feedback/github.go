@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 	"github.com/google/go-github/github"
 )
 

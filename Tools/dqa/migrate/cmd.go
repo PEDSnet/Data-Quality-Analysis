@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/uni"
+	"../uni"
 	"github.com/spf13/cobra"
 )
 

@@ -16,8 +16,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
-	"github.com/PEDSnet/tools/cmd/dqa/uni"
+	"../results"
+	"../uni"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

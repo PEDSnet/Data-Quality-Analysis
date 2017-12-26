@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 )
 
 type Condition struct {
