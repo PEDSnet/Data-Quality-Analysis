@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 	dms "github.com/chop-dbhi/data-models-service/client"
 )
 

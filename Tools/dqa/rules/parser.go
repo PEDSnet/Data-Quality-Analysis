@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
-	"github.com/PEDSnet/tools/cmd/dqa/uni"
+	"../results"
+	"../uni"
 	dms "github.com/chop-dbhi/data-models-service/client"
 )
 

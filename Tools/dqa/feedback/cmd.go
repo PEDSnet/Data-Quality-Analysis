@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
+	"../results"
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/PEDSnet/tools/cmd/dqa/results"
-	"github.com/PEDSnet/tools/cmd/dqa/rules"
+	"../results"
+	"../rules"
 	dms "github.com/chop-dbhi/data-models-service/client"
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"

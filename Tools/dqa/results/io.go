@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/PEDSnet/tools/cmd/dqa/uni"
+	"../uni"
 )
 
 // ReadFromDir reads all files in a directory and returns reports for each.

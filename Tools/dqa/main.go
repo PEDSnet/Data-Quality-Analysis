@@ -3,13 +3,21 @@ package main
 import (
 	"os"
 
-	"github.com/PEDSnet/tools/cmd/dqa/feedback"
-	"github.com/PEDSnet/tools/cmd/dqa/generate"
-	"github.com/PEDSnet/tools/cmd/dqa/issues"
-	"github.com/PEDSnet/tools/cmd/dqa/migrate"
-	"github.com/PEDSnet/tools/cmd/dqa/query"
-	"github.com/PEDSnet/tools/cmd/dqa/rank"
-	"github.com/PEDSnet/tools/cmd/dqa/validate"
+//	"github.com/PEDSnet/tools/cmd/dqa/feedback"
+//	"github.com/PEDSnet/tools/cmd/dqa/generate"
+//	"github.com/PEDSnet/tools/cmd/dqa/issues"
+//	"github.com/PEDSnet/tools/cmd/dqa/migrate"
+//	"github.com/PEDSnet/tools/cmd/dqa/query"
+//	"github.com/PEDSnet/tools/cmd/dqa/rank"
+//	"github.com/PEDSnet/tools/cmd/dqa/validate"
+
+      "./feedback"
+      "./generate"
+      "./issues"
+      "./migrate"
+      "./query"
+      "./rank"
+      "./validate"
 	"github.com/blang/semver"
 	"github.com/spf13/cobra"
 )
