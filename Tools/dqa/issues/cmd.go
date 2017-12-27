@@ -42,9 +42,12 @@ Multiple log files can be applied:
 		}
 
 		dir := args[0]
-
+		//dir := args[1]
+		//fmt.Println(dir)
+		
 		// Map of results files by filename.
 		// Each filename corresponds to a table name.
+		//fmt.Println(results)
 		files, err := results.ReadFromDir(dir)
 		if err != nil {
 			cmd.Printf("Error reading files in '%s'\n", err)
@@ -62,6 +65,8 @@ Multiple log files can be applied:
 		appendMerge := make(map[string][]*results.Result)
 
 		var conflicts []*conflict
+		
+		//fmt.Println(args[1:])
 
 		// Process all files
 		for _, fn := range args[1:] {
@@ -71,8 +76,13 @@ Multiple log files can be applied:
 				continue
 			}
 
+			//fmt.Println(issues)
+
 			for _, issue := range issues {
 				lookup := fmt.Sprintf("%s.csv", issue.Table)
+				//fmt.Println(lookup)
+				//fmt.Println(files)
+				//fmt.Println(files[lookup])
 				report, ok := files[lookup]
 				if !ok {
 					log.Fatalf("no report file for table: %s", issue.Table)
@@ -393,39 +403,55 @@ func checkFields(fields []string) (*issueFields, error) {
 
 	for i, field := range fields {
 		switch field {
-		case "data_version", "g_data_version":
+		case "data_version", "g_data_version", "Data Version":
 			head.DataVersion = i
+			seen++
 
-		case "table":
+		case "table", "Table":
 			head.Table = i
+			seen++
 
-		case "field":
+		case "field", "Field":
 			head.Field = i
+			seen++
 
-		case "check_code", "issue_code":
+		case "check_code", "issue_code", "Check Code":
 			head.CheckCode = i
+			seen++
 
-		case "check_type", "issue_description":
+		case "check_type", "issue_description", "Check Type":
 			head.CheckType = i
+			seen++
 
-		case "check_alias", "alias":
+		case "check_alias", "alias", "Check Alias":
 			head.CheckAlias = i
+			seen++
 
-		case "finding":
+		case "finding", "Finding":
 			head.Finding = i
+			seen++
 
-		case "prevalence":
+		case "prevalence", "Prevalence":
 			head.Prevalence = i
+			seen++
+		
+		
 		}
 
-		seen++
+		//seen++
+		
+		//fmt.Println(seen)
+		//fmt.Println(head)
 	}
 
-	fmt.Println(seen)
+	//fmt.Println(seen)
+	//fmt.Println(head)
+	//fmt.Println(numFields)
 	
 	if seen != numFields {
-		return nil, errors.New("missing fields.")
+		return nil, errors.New("missing fields")
 	}
+	//fmt.Println(seen)
 
 	return &head, nil
 }
