@@ -98,7 +98,7 @@ Multiple log files can be applied:
 						os.Exit(1)
 					}
 
-					if r.Field == issue.Field && r.CheckCode == issue.CheckCode {
+					if strings.Replace(r.Field," ","", -1) == strings.Replace(issue.Field," ","", -1) && r.CheckCode == issue.CheckCode {
 						if r.IsUnresolved() || r.IsPersistent() {
 							conflicts = append(conflicts, &conflict{
 								Index:     i,
