@@ -54,6 +54,8 @@ g_level1_reports[["adt_occurrence"]] = generateAdtOccurrenceReport
 g_level1_reports[["device_exposure"]] = generateDeviceExposureReport
 
 g_level2_reports<<-new.env()
+g_level2_reports[["adt_occurrence"]] = generateLevel2ADT_Occurrence
+g_level2_reports[["death"]] = generateLevel2Death
 g_level2_reports[["patient"]] = generateLevel2Patient
 g_level2_reports[["visit_occurrence"]] = generateLevel2Visit
 g_level2_reports[["observation"]] = generateLevel2Observation

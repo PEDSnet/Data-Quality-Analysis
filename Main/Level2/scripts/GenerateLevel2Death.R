@@ -38,7 +38,7 @@ generateLevel2Death <- function () {
   # Then reference a tbl within that src
   death_tbl <- tbl(my_db, "death")
   
-  total_death_count<-  as.data.frame(summarise(death_tbl,n = n()))[1,1]
+  total_death_count<-  as.data.frame(summarise(death_tbl,n = n(death_cause_id)))[1,1]
   
   
   ##AA009 date time consistency

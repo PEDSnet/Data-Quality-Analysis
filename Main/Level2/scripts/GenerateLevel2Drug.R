@@ -24,11 +24,11 @@ generateLevel2Drug <- function() {
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
  
-  my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
-                        host=config$db$dbhost,
-                        user =config$db$dbuser,
-                        password =config$db$dbpass, sslmode="verify-full",
-                        options=paste("-c search_path=",config$db$schema,sep=""))
+  my_db <- dbConnect(RPostgres::Postgres(),dbname=g_config$db$dbname,
+                        host=g_config$db$dbhost,
+                        user =g_config$db$dbuser,
+                        password =g_config$db$dbpass, sslmode="verify-full",
+                        options=paste("-c search_path=",g_config$db$schema,sep=""))
             
   # Then reference a tbl within that src
   visit_tbl <- tbl(my_db, "visit_occurrence")
@@ -79,14 +79,14 @@ generateLevel2Drug <- function() {
 
  ### Print top 100 no matching concept source values in drug table 
   drug_no_match<- select( filter(drug_tbl, drug_concept_id==0)
-                               , drug_source_value)
+                               , drug_source_value, drug_exposure_id)
   
   no_match_drug_counts <-
     filter(
       arrange(
         summarize(
           group_by(drug_no_match, drug_source_value)
-          , count=n())
+          , count=n(drug_exposure_id))
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
@@ -113,21 +113,21 @@ generateLevel2Drug <- function() {
   
   temp_join <- inner_join(drug_concept_tbl,drug_tbl, by = c("concept_id"="drug_concept_id"))
   
-  drug_tbl_restricted <- select (temp_join, visit_occurrence_id, drug_concept_id)
+  drug_tbl_restricted <- select (temp_join, visit_occurrence_id, concept_id)
   
   drug_visit_join_tbl <- distinct(
     select (
       inner_join(inpatient_visit_gte_2days_tbl,
                  drug_tbl_restricted,
                  by = c("visit_occurrence_id" = "visit_occurrence_id"))
-      ,visit_occurrence_id, drug_concept_id)
+      ,visit_occurrence_id, concept_id)
   )
   
   drug_ingredient_visit_join_tbl<- distinct(
     select (
       inner_join(drug_visit_join_tbl,
                  drug_in_map_tbl,
-                 by = c("drug_concept_id" = "drug_concept_id"))
+                 by = c("concept_id" = "drug_concept_id"))
       ,visit_occurrence_id, in_concept_id, in_concept_name)
   )
   
@@ -136,7 +136,7 @@ generateLevel2Drug <- function() {
       arrange(
         summarize(
           group_by(drug_ingredient_visit_join_tbl, in_concept_id)
-          , count=n())
+          , count=n_distinct(visit_occurrence_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   
@@ -175,14 +175,14 @@ generateLevel2Drug <- function() {
       inner_join(outpatient_visit_tbl,
                  drug_tbl_restricted,
                  by = c("visit_occurrence_id" = "visit_occurrence_id"))
-      ,person_id, drug_concept_id)
+      ,person_id, concept_id)
   )
   
   drug_ingredient_visit_join_tbl<- distinct(
     select (
       inner_join(drug_visit_join_tbl,
                  drug_in_map_tbl,
-                 by = c("drug_concept_id" = "drug_concept_id"))
+                 by = c("concept_id" = "drug_concept_id"))
       ,person_id, in_concept_id, in_concept_name)
   )
   
@@ -191,7 +191,7 @@ generateLevel2Drug <- function() {
       arrange(
         summarize(
           group_by(drug_ingredient_visit_join_tbl, in_concept_id)
-          , count=n())
+          , count=n_distinct(person_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   

@@ -66,14 +66,14 @@ generateLevel2Procedure <- function () {
   
   ### Print top 100 no matching concept source values in procedure table 
   procedure_no_match<- select( filter(procedure_tbl, procedure_concept_id==0)
-                               , procedure_source_value)
+                               , procedure_source_value, procedure_occurrence_id)
   
   no_match_procedure_counts <-
     filter(
       arrange(
         summarize(
           group_by(procedure_no_match, procedure_source_value)
-          , count=n())
+          , count=n(procedure_occurrence_id))
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
@@ -129,7 +129,7 @@ generateLevel2Procedure <- function () {
       arrange(
         summarize(
           group_by(procedure_visit_join_tbl, concept_id)
-          , count=n())
+          , count=n(visit_occurrence_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   
@@ -177,7 +177,7 @@ generateLevel2Procedure <- function () {
       arrange(
         summarize(
           group_by(out_procedure_visit_join_tbl, concept_id)
-          , count=n())
+          , count=n(person_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   

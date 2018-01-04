@@ -21,7 +21,8 @@ generateLevel2Observation <- function () {
   fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_ObservationAutomatic.md",sep=""))
   fileContent <-get_report_header("Level 2",config)
 
-
+  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/observation_issue.csv",sep="")
+  
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
   
@@ -39,36 +40,26 @@ generateLevel2Observation <- function () {
   patient_dob_tbl <- tbl(my_db, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
-
- ##AA009 date time inconsistency 
-  mismatch_obs_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$schema,'.',table_name,
-                                                         " WHERE cast(observation_datetime as date) <> observation_date",sep=''))
-  )
   
-  df_incon<-as.data.frame(mismatch_obs_date_tbl)
-  if(nrow(df_incon)>0)
-  {
-    
-    message<-paste(nrow(df_incon)," observations with inconsistency between date and date/time fields")
-    fileContent<-c(fileContent,"\n",message)
-    ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/observation_issue.csv",sep="")
-    log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-custom_rbind(log_entry_content,
-                                    apply_check_type_2('AA-009',"observation_datetime", "observation_date",nrow(df_incon), 
-                                                       table_name, g_data_version)
-    )
-    write.csv(log_entry_content, file = log_file_name
-              ,row.names=FALSE)
-  }
+  ### AA009 datetime inconsistency
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('observation_datetime', 
+                                                                                                 'observation_date'),my_db)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  #print('PRINTING')
+  
   #filter by inpatient and outpatient visits and select visit occurrence id column
   inpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9201),visit_occurrence_id)
   outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202),visit_occurrence_id)
 
-  fileContent<-c(fileContent,
-                 get_top_concepts(inpatient_visit_tbl,observation_tbl, "observation_concept_id", "observation_id", "Inpatient Observations", concept_tbl))
-  fileContent<-c(fileContent,
-                 get_top_concepts(outpatient_visit_tbl,observation_tbl, "observation_concept_id", "observation_id", "Outpatient Observations", concept_tbl))
+  #fileContent<-c(fileContent,
+  #               get_top_concepts(inpatient_visit_tbl,observation_tbl, 
+   #                               "observation_concept_id", "observation_id", "Inpatient Observations", concept_tbl))
+  #fileContent<-c(fileContent,
+  #               get_top_concepts(outpatient_visit_tbl,observation_tbl, 
+  #                                "observation_concept_id", "observation_id", "Outpatient Observations", concept_tbl))
 
 
 
