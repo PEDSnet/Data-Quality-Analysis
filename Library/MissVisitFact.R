@@ -25,7 +25,7 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list, my_db)
   drug_tbl<-tbl(my_db, "drug_exposure")
   measurement_tbl<-tbl(my_db, "measurement")
  
-  total_visit_count<-  as.data.frame(summarise(visit_tbl,n = n()))[1,1]
+  total_visit_count<-  as.data.frame(summarise(visit_tbl,n = n(visit_occurrence_id)))[1,1]
   
   ### % of visits with no facts associated. 
   ## step 1 print # visits in 9202 , 9201, and 9203
@@ -39,7 +39,7 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list, my_db)
   
   ## step 
   result<-setdiff(key_visits,temp)
-  final_result<-summarize(result, n=n())
+  final_result<-summarize(result, n=n(visit_occurrence_id))
   key_visits_without_facts<-as.data.frame(final_result)[1,1]
   ## step 3 get % of visits that dont have any facts and are key visits. 
   no_fact_percentage<-((key_visits_without_facts)*100/total_visit_count)

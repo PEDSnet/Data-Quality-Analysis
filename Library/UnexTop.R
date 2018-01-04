@@ -71,25 +71,38 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, con, metadata)
   sibling_concepts_tbl<-
     (select (temp2,
              descendant_concept_id.x, descendant_concept_id.y)
-    )
+      )
+  
   extended_list<-list()
+  #print('PRINTING')
+  #print(top_facts_other_sites_list)
   for (list_index in 1:length(top_facts_other_sites_list))
   {
+    #print('PRINTING')
+    #print(list_index)
+    temp1<-select(
+      filter(concept_ancestor_tbl, ancestor_concept_id==top_facts_other_sites_list[list_index]
+      ), descendant_concept_id) %>% rename(final_concept_id=descendant_concept_id )
+    #print('temp1')
+    #print(glimpse(temp1))
     
-    temp<- as.data.frame(union(
-      select(
-        filter(concept_ancestor_tbl, ancestor_concept_id==top_facts_other_sites_list[list_index]
-        ), descendant_concept_id)
-      ,
-      select(
-        filter(concept_ancestor_tbl, descendant_concept_id==top_facts_other_sites_list[list_index]
-        ), ancestor_concept_id)
-    ))
-    extended_list<-(c(extended_list, unique(temp$descendant_concept_id)))
+    temp2<-select(
+      filter(concept_ancestor_tbl, descendant_concept_id==top_facts_other_sites_list[list_index]
+      ), ancestor_concept_id) %>% rename(final_concept_id=ancestor_concept_id)
+    #print('temp2')
+    #print(glimpse(temp2))
+    temp<- 
+      as.data.frame(dplyr::union(temp1 ,temp2))
+    
+    #print(temp)
+    
+    extended_list<-(c(extended_list, unique(temp$final_concept_id)))
     #if(list_index==2)
     #break;
   }
+  
   extended_list<-unique(extended_list)
+  #print('PRINTING')
   
   ## further extend by including siblings of those concepts 
   for (list_index in 1:length(top_facts_other_sites_list))
@@ -106,7 +119,7 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, con, metadata)
     extended_list<-top_facts_other_sites_list
   }
   
-
+  #print('PRINTING')
   issues_list<-matrix("",ncol=8, nrow=0)
   for(row in 1:20)
   {

@@ -38,7 +38,7 @@ generateLevel2MeasurementOrganism <- function () {
 
   ### Print top 100 no matching concept source values in measurement org table 
   measurement_organism_no_match<- select( filter(measurement_organism_tbl, organism_concept_id==0)
-                                                             , organism_source_value)
+                                                             , organism_source_value,meas_organism_id)
   
   #print(head(measurement_no_match))
   no_match_measurement_organism_counts <-
@@ -46,7 +46,7 @@ generateLevel2MeasurementOrganism <- function () {
       arrange(
         summarize(
           group_by(measurement_organism_no_match, organism_source_value)
-          , count=n())
+          , count=n(meas_organism_id))
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
@@ -73,7 +73,7 @@ generateLevel2MeasurementOrganism <- function () {
   #print("here")
   
   measurement_organism_tbl_enhanced<- distinct(select(inner_join(concept_tbl,measurement_organism_tbl, by = c("concept_id"="organism_concept_id"))
-                                           ,meas_organism_id, organism_concept_id, concept_name))
+                                           ,meas_organism_id, concept_id, concept_name))
   #head(vital_tbl_enhanced)
   
   
@@ -81,8 +81,8 @@ generateLevel2MeasurementOrganism <- function () {
     filter(
       arrange(
         summarize(
-          group_by(measurement_organism_tbl_enhanced, organism_concept_id)
-          , occurrence_counts=n())
+          group_by(measurement_organism_tbl_enhanced, concept_id)
+          , occurrence_counts=n(meas_organism_id))
         , desc(occurrence_counts))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
@@ -91,8 +91,8 @@ generateLevel2MeasurementOrganism <- function () {
   df_measurement_organism_counts_all<-as.data.frame(
     arrange(distinct(
       select(inner_join(measurement_organism_counts, measurement_organism_tbl_enhanced, 
-                        by = c("organism_concept_id"="organism_concept_id"))
-             ,organism_concept_id, concept_name, occurrence_counts)
+                        by = c("concept_id"="concept_id"))
+             ,concept_id, concept_name, occurrence_counts)
     ), desc(occurrence_counts)
     ))
   

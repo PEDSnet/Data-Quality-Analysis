@@ -12,7 +12,28 @@ get_top_concepts<-function(typed_visit_tbl,fact_tbl, fact_concept_id, fact_id, t
   column_index_2 <- which(colnames(join_table)==fact_id)
   typed_facts<-select(join_table, column_index_1,column_index_2)
   # flog.info(head(typed_facts))
-  typed_facts_count<-as.data.frame(summarize(typed_facts,n=n()))[1,1]
+  print('PRINTING')
+  #print(glimpse(typed_facts))
+  #print(column_index_1)
+  #print(class(column_index_1))
+  temp1<-typed_facts %>% 
+    group_by_(fact_concept_id) %>% 
+    
+  print(glimpse(temp1))
+  temp2<-temp1 %>% 
+    #summarise(count=n(observation_id))
+    summarise_(count=n())
+  
+    #summarise_(count = n(fact_id))
+  print(glimpse(temp2))
+  
+  typed_facts_count<-
+      as.data.frame(summarise(typed_facts,
+                              count= n( .[[2]] )
+                              )
+                    )[1,1]
+  print('PRINTING')
+  
   # flog.info(typed_facts_count)
   #column_index_3 <- which(colnames(typed_facts)==fact_concept_id)
   # flog.info(column_index_3)

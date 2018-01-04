@@ -60,16 +60,23 @@ generateLevel2Condition <- function() {
  #print(head(sibling_concepts_tbl))
   ### Print top 100 no matching concept source values in condition table 
   condition_no_match<- select( filter(condition_tbl, condition_concept_id==0)
-                               , condition_source_value)
+                               , condition_occurrence_id, condition_source_value)
   
-  no_match_condition_counts <-
-    filter(
-      arrange(
-       summarize(
-          group_by(condition_no_match, condition_source_value)
-          , count=n())
-        , desc(count))
-      , row_number()>=1 & row_number()<=100) ## printing top 100
+ 
+  
+  no_match_condition_counts <-condition_no_match %>% 
+          group_by(condition_source_value) %>%
+          summarise(count=n(condition_occurrence_id)) %>%
+          arrange (desc(count)) %>% 
+          filter(row_number()>=1 & row_number()<=100)
+  
+  #  filter(
+  #    arrange(
+  #     summarize(
+  #        group_by(condition_no_match, condition_source_value)
+  #        , count=n(condition_occurrence_id))
+  #      , desc(count))
+  #    , row_number()>=1 & row_number()<=100) ## printing top 100
   
   df_no_match_condition_counts<-as.data.frame(
     no_match_condition_counts
@@ -98,7 +105,7 @@ generateLevel2Condition <- function() {
   ,visit_occurrence_id,visit_start_date, visit_end_date)
 
 
-  
+  #print(glimpse(inpatient_visit_tbl))
   
  
   
@@ -120,30 +127,34 @@ generateLevel2Condition <- function() {
       ,visit_occurrence_id, concept_id, concept_name)
   )
 
-
+  #print(glimpse(condition_visit_join_tbl))
+  
   condition_counts_by_visit <-
     filter(
       arrange(
        summarize(
           group_by(condition_visit_join_tbl, concept_id)
-          , count=n())
+          , count=n_distinct(visit_occurrence_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
 
+  #print(glimpse(condition_counts_by_visit))
+  
+  
   df_condition_counts_by_visit<-as.data.frame(
     select(
       inner_join(condition_counts_by_visit, condition_concept_tbl,
                  by=c("concept_id"="concept_id"))
       , concept_id, concept_name, count)
   )
-
+  #print(nrow(df_condition_counts_by_visit))
   outlier_inpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id',my_db, 
                                             c(df_condition_counts_by_visit,'vt_counts','top_inpatient_conditions.csv',
                                               'outlier inpatient condition:',g_top50_inpatient_conditions_path
                                               , 'Condition'))
   
-  #print(outlier_inpatient_conditions)
-  #print(nrow(outlier_inpatient_conditions))
+  print(outlier_inpatient_conditions)
+  print(nrow(outlier_inpatient_conditions))
   
   if(nrow(outlier_inpatient_conditions)>0)
   {
@@ -166,7 +177,8 @@ generateLevel2Condition <- function() {
   outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
                                ,visit_occurrence_id, person_id)
   
- 
+  #print(glipmse(outpatient_visit_tbl))
+  
   ### implementation of unexpected top outpatient conditions check 
  
   
@@ -178,16 +190,20 @@ generateLevel2Condition <- function() {
       ,person_id, concept_id, concept_name)
   )
   
+  #print(glipmse(out_condition_visit_join_tbl))
   
   out_condition_counts_by_person <-
     filter(
       arrange(
        summarize(
           group_by(out_condition_visit_join_tbl, concept_id)
-          , count=n())
+          , count=n_distinct(person_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
-  
+
+  #print(glipmse(out_condition_counts_by_person))
+
+    
   df_out_condition_counts_by_person<-as.data.frame(
     select(
       inner_join(out_condition_counts_by_person, condition_concept_tbl,
