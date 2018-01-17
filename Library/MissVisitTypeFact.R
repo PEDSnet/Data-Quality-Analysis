@@ -13,7 +13,7 @@ MissVisitTypeFact <- function()
 }
 
 
-applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, my_db)
+applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, check_description, my_db)
 {
   table_name<-table_list[1]
   #field_name<-field_list[1]
@@ -54,7 +54,12 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, my_d
   #print(noquote(field_list[2]))
   #print(noquote(field_list[3]))
   #print(head(second_tbl))
-  temp<-filter(second_tbl, observation_concept_id==3040464) ### working 
+  if(length(field_list)==3)
+  {
+    temp<-filter(second_tbl, observation_concept_id==3040464) ### working 
+  }
+  else
+    temp<-second_tbl
   #temp<-filter(second_tbl, observation_concept_id==field_list[3]) ## working correctly 
   #temp<-filter_(second_tbl, paste0(field_list[2],"==",field_list[3])) ## working correctly 
   
@@ -74,16 +79,15 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, my_d
   
   ## step 3 get % of visits that dont have any facts and are key visits. 
   no_fact_percentage<-((key_visits_without_facts)*100/total_key_visits)
-  #print(no_fact_percentage)
+  print(no_fact_percentage)
   #print(check_list_entry$Lower_Threshold)
   #print(check_list_entry$Upper_Threshold)
   
   if(check_list_entry$Lower_Threshold >no_fact_percentage || check_list_entry$Upper_Threshold <no_fact_percentage )
   {
     # create an issue 
-    issue_obj<-Issue(theObject, table_list, paste("visit_concept_id","observation_concept_id",sep=","), 
-                     paste0(no_fact_percentage,"% (for visit_concept_id=",field_list[1], " and ",field_list[2]
-                            , "=",field_list[3]))
+    issue_obj<-Issue(theObject, table_list, paste("visit_concept_id",field_list[2],sep=","), 
+                     paste0(round(no_fact_percentage,2),"% (",check_description,")"))
     # log issue 
     return(logIssue(issue_obj))
     
