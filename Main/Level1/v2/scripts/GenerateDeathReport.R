@@ -99,7 +99,7 @@ generateDeathReport <- function() {
   field_name="cause_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
+  #no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
