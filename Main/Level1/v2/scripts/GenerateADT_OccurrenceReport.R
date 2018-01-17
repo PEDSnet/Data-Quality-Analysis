@@ -98,7 +98,9 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "service_concept_id.txt")) 
+                                                   ,con,  "service_concept_id.txt"))   
+logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+                                                 
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   df_service_concept_id <-generate_df_concepts(con, table_name,"service_concept_id.txt")
   df_service_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_service_concept_id);
@@ -113,6 +115,8 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+
   #print(logFileData)
   if(missing_percent<100)
   {
