@@ -411,6 +411,7 @@ retrieve_dataframe_group<-function(con,config,table_name,field_name)
       #print('crossed1')
       #print(querySql(con, query))
       df<-querySql(con, query)
+      #print(df)
       #print('crossed2')
       #print(query)
     }
