@@ -32,7 +32,9 @@ generateFactRelationshipReport <- function() {
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL, current_total_count)) 
   
-
+  ## write current total count to total counts 
+  write_total_counts(table_name, current_total_count)
+  
   #NOMINAL Fields
   df_relationship_concept_id <-generate_df_concepts(con, table_name,"relationship_concept_id.txt")
   

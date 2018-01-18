@@ -25,7 +25,9 @@ generatePersonReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
-
+  ## write current total count to total counts 
+  write_total_counts(table_name, current_total_count)
+  
 
   field_name<-"person_source_value"
   df_total_person_source_value<-retrieve_dataframe_count(con, g_config,table_name,field_name)
