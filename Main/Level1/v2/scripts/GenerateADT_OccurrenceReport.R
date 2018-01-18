@@ -49,10 +49,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
 
-  ### DQA checkpoint --- incosnistent visit types
 
-  logFileData<-custom_rbind(logFileData,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
-                                                   c("visit_occurrence_id", "visit_concept_id"),con, "(9202, 44814711)")) 
   
   #NOMINAL Fields
 
