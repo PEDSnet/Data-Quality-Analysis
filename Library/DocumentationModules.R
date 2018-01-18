@@ -199,3 +199,18 @@ get_percentage_diff_message<-function(percentage_diff)
     return(paste("(decreased by ",abs(percentage_diff),"%","over the previous cycle)\n"));
 
 }
+
+write_total_counts<-function(table_name, current_total_count)
+{
+  total_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
+                               "./data/total_counts.csv",sep="")
+  total_count_df<-read.csv(total_counts_filename)
+  total_count_df$site<-as.character(total_count_df$site)
+  
+  #colnames(total_count_df)<-c("table","counts")
+  total_count_df<-cbind(total_count_df, c(current_total_count))
+  #print(total_count_df)
+  colnames(total_count_df)[ncol(total_count_df)]<-table_name
+  write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
+  
+}

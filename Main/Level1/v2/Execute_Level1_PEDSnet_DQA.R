@@ -35,6 +35,16 @@ executeLevel1DQA <- function() {
   dir.create(file.path(normalize_directory_path(
     g_config$reporting$site_directory), "issues"), showWarnings = FALSE)
 
+  dir.create(file.path(normalize_directory_path( g_config$reporting$site_directory), "data"), 
+             showWarnings = FALSE)
+  
+  total_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
+                               "./data/total_counts.csv",sep="")
+  
+  total_count_df = data.frame(site=character(0))
+  total_count_df$site<-as.character(total_count_df$site)
+  total_count_df[1,1]<-g_config$reporting$site
+  write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
   ## read the check catalogue
 
   # data version

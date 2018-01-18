@@ -24,6 +24,10 @@ generateDeathReport <- function() {
    ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
+  ## write current total count to total counts 
+  write_total_counts(table_name, current_total_count)
+  
+  
   field_name<-"person_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-describeForeignKeyIdentifiers(df_table, "death_cause",field_name,big_data_flag)

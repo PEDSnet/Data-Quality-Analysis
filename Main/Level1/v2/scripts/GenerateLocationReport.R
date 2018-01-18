@@ -25,7 +25,9 @@ generateLocationReport <- function() {
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
-
+  ## write current total count to total counts 
+  write_total_counts(table_name, current_total_count)
+  
   field_name<-"location_source_value"
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ", describeIdentifier(df_table, field_name),"\n"))
   ###########DQA CHECKPOINT##############  total id different from source value

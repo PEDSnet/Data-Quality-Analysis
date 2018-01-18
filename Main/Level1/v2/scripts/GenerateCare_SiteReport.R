@@ -28,6 +28,10 @@ generateCareSiteReport <- function() {
    ### DQA CHECKPOINT ####################
    logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
   
+  
+  ## write current total count to total counts 
+  write_total_counts(table_name, current_total_count)
+  
   #add care site identifier
   field_name<-"care_site_name"
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ", describeIdentifier(df_care_site,field_name),"\n"))

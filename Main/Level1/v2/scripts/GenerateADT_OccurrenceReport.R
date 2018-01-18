@@ -30,6 +30,10 @@ fileContent<-c(fileContent,paste("The total number of",field_name,"is:", formatC
 ###########DQA CHECKPOINT############## difference from previous cycle
 logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
 
+
+  ## write current total count to total counts 
+  write_total_counts(table_name, current_total_count)
+
   #df_total_patient_count<-retrieve_dataframe_count(con, g_config,table_name,"distinct person_id")
   #fileContent<-c(fileContent,paste("The visit to patient ratio is ",round(df_total_visit_count[1][1]/df_total_patient_count[1][1],2),"\n"))
 
