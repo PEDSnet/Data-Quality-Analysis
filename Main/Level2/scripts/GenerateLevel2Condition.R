@@ -55,8 +55,28 @@ generateLevel2Condition <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                   c("condition_type_concept_id", "visit_concept_id"),my_db, c(
+                                                     "inpatient visits linked to outpatient condition headers",
+                                                     9201
+                                                     , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102
+                                                     , 2000000103))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"),my_db, c(
+                                                                 "outpatient visits linked to inpatient condition headers",
+                                                                 9202, 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  
  #print(head(sibling_concepts_tbl))
   ### Print top 100 no matching concept source values in condition table 
   condition_no_match<- select( filter(condition_tbl, condition_concept_id==0)

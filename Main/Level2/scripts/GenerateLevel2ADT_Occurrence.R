@@ -46,6 +46,20 @@ generateLevel2ADT_Occurrence <- function () {
             ,row.names=FALSE)
   
   
+  ### DQA checkpoint --- incosnistent visit types
+  log_entry_content<-(read.csv(log_file_name))
+  
+  log_entry_content<-custom_rbind(log_entry_content,
+                                      applyCheck(InconVisitType(), 
+                                                 c(table_name, "visit_occurrence"),
+                                                   c("visit_occurrence_id", "visit_concept_id"),
+                                                    my_db, 
+                                                   c("adt_occurrences linked to outpatient visits",
+                                                   9202)
+                                                 )
+                                  ) 
+  write.csv(log_entry_content, file = log_file_name
+          ,row.names=FALSE)
   
   
   #write all contents to the report file and close it.
