@@ -1,0 +1,1 @@
+domain_id='Route' and invalid_reason is null

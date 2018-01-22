@@ -99,9 +99,10 @@ generateObservationReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   order_bins <-c("4145666","44813951","4137274","4005823","4219336","4275495","3040464","0",NA)
   label_bins<-c("Admitting source (4145666)","Discharge disposition (44813951)","Discharge status (4137274)"
-                ,"Tobacco (4005823)","Tobacco Type (4219336)","Smoking (4275495)","DRG (3040464)","Others (0)","NULL")
+                ,"Tobacco (4005823)","Tobacco Type (4219336)","Smoking (4275495)","DRG (3040464)","Delivery Mode (40760190)","Others (0)","NULL")
   color_bins <-c("4145666"="lightcoral","44813951"="steelblue1","4137274"="red"
-                 ,"4005823"="grey64","4219336"="grey64","4275495"="grey64","3040464"="grey64","0"="grey64")
+                 ,"4005823"="grey64","4219336"="grey64","4275495"="grey64","3040464"="grey64",
+                 "40760190" =  "yellow, "0"="grey64")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
@@ -126,6 +127,8 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(3040464,  "DRG"))) 
   
+    logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   c(40760190,  "Delivery Mode"))) 
   
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(4005823, 4219336, 4275495,  "Tobacco"))) 
