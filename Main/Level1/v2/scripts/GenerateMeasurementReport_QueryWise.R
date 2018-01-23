@@ -400,9 +400,8 @@ generateMeasurementReport <- function() {
   # flog.info(fileContent)
 
   ## Specific lab checks
-  ## for creatinine
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3016723,3017250,  "creatinine"))) 
+  ### CBC (complete blood count) components: 
+  
 	## white blood cell
 	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(3010813, 1125563, 228323, 27245,
@@ -435,7 +434,70 @@ generateMeasurementReport <- function() {
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    c(3000963,  " Hemoglobin (Hbg)"))) 
 
-  concept_id_list <- unique(df_table[,1])
+
+  	### CMP-14 components. 
+  	
+  	## for Albumin
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3024561, 3000034, 3049506, 3001802,  "Albumin"))) 
+  	
+  	## for Blood Urea Nitrogen (BUN)
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3013682,  "Blood Urea Nitrogen (BUN)"))) 
+  	
+  	
+  	## Calcium
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3006490, 3006906, 3007501, 3021119,  "Calcium"))) 
+  	
+  	## Carbon Dioxide (Bicarbonate)
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3015632,3013290, 3031147
+  	                                                   , 3016293,  "Carbon Dioxide (Bicarbonate)"))) 
+  	## Chloride
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3014576,  "Chloride"))) 
+  	
+  		## for creatinine
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3016723, 3017250, 3030354
+  	                                                   , 3001802, 3001582,  "creatinine"))) 
+  	
+  	## for Glucose
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3015621, 3000845, 3037187, 
+  	                                                   3004501, 3022548, 3020399, 
+  	                                                   3004501, 3024629,  "Glucose"))) 
+  	## for Potassium
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3023103,  "Potassium"))) 
+  	
+  	## for Sodium
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3019550, 3000285,  "Sodium"))) 
+  	
+  	## for Total Bilirubin
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3019676, 3024128, 3007359
+  	                                                   , 3027597, 3018834,  "Total Bilirubin"))) 
+  	
+  	## for Total Protein
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3010156, 3020460, 3023221, 
+  	                                                   3017756, 3001582, 3020630, 3019473, 3005897,  "Total Protein"))) 
+  	## for Alanine Aminotransferase (ALT)
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3006923,  "Alanine Aminotransferase (ALT)"))) 
+  	
+  	## for Alkaline Phosphatase (ALP)
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3035995,  "Alkaline Phosphatase (ALP)"))) 
+  	
+  	## for Aspartate Aminotransferase (AST) 
+  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  	                                                 c(3013721,  "Aspartate Aminotransferase (AST)"))) 
+  	
+  	concept_id_list <- unique(df_table[,1])
 
 
 

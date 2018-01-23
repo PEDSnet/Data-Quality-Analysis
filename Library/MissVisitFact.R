@@ -43,7 +43,8 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list, my_db)
   key_visits_without_facts<-as.data.frame(final_result)[1,1]
   ## step 3 get % of visits that dont have any facts and are key visits. 
   no_fact_percentage<-((key_visits_without_facts)*100/total_visit_count)
-  #print(no_fact_percentage)
+  print('no fact percentage')
+  print(no_fact_percentage)
   
   if(no_fact_percentage<check_list_entry$Lower_Threshold  || 
      no_fact_percentage>check_list_entry$Upper_Threshold  )
