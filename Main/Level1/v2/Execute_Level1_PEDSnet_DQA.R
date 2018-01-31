@@ -4,6 +4,7 @@ source("../../../Library/DocumentationModules.R", chdir = T)
 source("../../../Library/CheckFunctions.R", chdir = T)
 source("../../../Library/CheckType.R", chdir = T)
 source("../../../Library/UnexDiff.R", chdir = T)
+source("../../../Library/UnexDiffFactType.R", chdir = T)
 source("../../../Library/Issue.R", chdir = T)
 source("../../../Library/MissData.R", chdir = T)
 source("../../../Library/InvalidConID.R", chdir = T)
@@ -45,6 +46,15 @@ executeLevel1DQA <- function() {
   total_count_df$site<-as.character(total_count_df$site)
   total_count_df[1,1]<-g_config$reporting$site
   write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
+  
+  total_fact_type_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
+                               "./data/total_fact_type_counts.csv",sep="")
+  
+  total_fact_type_count_df = data.frame(site=character(0))
+  total_fact_type_count_df$site<-as.character(total_fact_type_count_df$site)
+  total_fact_type_count_df[1,1]<-g_config$reporting$site
+  write.csv(total_fact_type_count_df,file=total_fact_type_counts_filename, row.names = FALSE)
+  
   ## read the check catalogue
 
   # data version

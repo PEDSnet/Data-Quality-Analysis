@@ -256,6 +256,24 @@ generateDrugExposureReport <- function() {
   #drug type concept id
   field_name="drug_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
+  #### Check for unexpected differences from prev cycle
+  fact_type_count<-df_table[df_table$drug_type_concept_id==38000175,2]
+  write_total_fact_type_counts(table_name,"Dispensing" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Dispensing",fact_type_count))) 
+  
+  fact_type_count<-df_table[df_table$drug_type_concept_id==38000180,2]
+  write_total_fact_type_counts(table_name,"InpatientMAR" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("InpatientMAR",fact_type_count))) 
+  
+  fact_type_count<-df_table[df_table$drug_type_concept_id==38000177,2]
+  write_total_fact_type_counts(table_name,"Prescriptions" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Prescriptions",fact_type_count))) 
+  
+  
   order_bins <-c("38000175","38000180","38000177","0",NA)
   label_bins<-c("Prescription dispensed in pharmacy (dispensed meds pharma information) (38000175)"
                 ,"Inpatient administration (MAR entries) (38000180)"

@@ -185,6 +185,20 @@ get_previous_cycle_total_count<-function(site_name, table_name)
   }
  return(0);
 }
+get_previous_cycle_total_fact_type_count<-function(site_name, col_name)
+{
+  #flog.info(getwd())
+  df_total_counts<-read.csv(g_total_fact_type_counts_path, header = TRUE, sep = ",", quote = "\"",
+                            dec = ".", fill = TRUE, comment.char = "")
+  # flog.info(df_total_counts)
+  column_index<-which(colnames(df_total_counts)==col_name)
+  for(row_index in 1:nrow(df_total_counts))
+  {
+    if(df_total_counts[row_index,1]==site_name)
+      return(df_total_counts[row_index, column_index])
+  }
+  return(0);
+}
 get_percentage_diff<-function(prev_total_count, current_total_count)
 {
   return(round((current_total_count-prev_total_count)*100/prev_total_count,2))
@@ -211,6 +225,20 @@ write_total_counts<-function(table_name, current_total_count)
   total_count_df<-cbind(total_count_df, c(current_total_count))
   #print(total_count_df)
   colnames(total_count_df)[ncol(total_count_df)]<-table_name
+  write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
+  
+}
+write_total_fact_type_counts<-function(table_name, fact_type,current_total_count)
+{
+  total_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
+                               "./data/total_fact_type_counts.csv",sep="")
+  total_count_df<-read.csv(total_counts_filename)
+  total_count_df$site<-as.character(total_count_df$site)
+  
+  #colnames(total_count_df)<-c("table","counts")
+  total_count_df<-cbind(total_count_df, c(current_total_count))
+  #print(total_count_df)
+  colnames(total_count_df)[ncol(total_count_df)]<-paste0(table_name, ".",fact_type)
   write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
   
 }
