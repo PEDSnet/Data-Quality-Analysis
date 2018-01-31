@@ -1,4 +1,4 @@
-generateProcedureOccurrenceReport <- function() {
+generateImmunizationReport <- function() {
   flog.info(Sys.time())
 
   big_data_flag<-TRUE # for query wise analysis

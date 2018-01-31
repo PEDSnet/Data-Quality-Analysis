@@ -52,6 +52,7 @@ g_level1_reports[["visit_payer"]] = generateVisitPayerReport
 g_level1_reports[["fact_relationship"]] = generateFactRelationshipReport
 g_level1_reports[["adt_occurrence"]] = generateAdtOccurrenceReport
 g_level1_reports[["device_exposure"]] = generateDeviceExposureReport
+g_level1_reports[["immunization"]] = generateImmunizationReport
 
 g_level2_reports<<-new.env()
 g_level2_reports[["adt_occurrence"]] = generateLevel2ADT_Occurrence
