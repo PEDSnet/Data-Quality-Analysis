@@ -38,7 +38,8 @@ generateLevel2ADT_Occurrence <- function () {
   # Then reference a tbl within that src
   adt_tbl <- tbl(my_db, "adt_occurrence")
   
-  total_adt_count<-  as.data.frame(summarise(adt_tbl,count = n(adt_occurrence_id)))[1,1]
+  total_adt_count<-  as.data.frame(dplyr::summarise(adt_tbl,count = n(adt_occurrence_id)))[1,1]
+  #total_adt_count<-  as.data.frame(summarise(adt_tbl,count = n()))[1,1]
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('adt_datetime', 
                                                                                                  'adt_date'),my_db)) 
