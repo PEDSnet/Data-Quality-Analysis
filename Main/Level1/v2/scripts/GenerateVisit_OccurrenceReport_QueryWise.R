@@ -146,6 +146,24 @@ generateVisitOccurrenceReport <- function() {
   # visit concept id
   field_name="visit_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  ### write fact type counts 
+  fact_type_count<-df_table[df_table$visit_concept_id==9201,2]
+  write_total_fact_type_counts(table_name,"Inpatient" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Inpatient",fact_type_count))) 
+  
+  fact_type_count<-df_table[df_table$visit_concept_id==9202,2]
+  write_total_fact_type_counts(table_name,"Outpatient" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Outpatient",fact_type_count))) 
+  
+  fact_type_count<-df_table[df_table$visit_concept_id==9203,2]
+  write_total_fact_type_counts(table_name,"ED" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("ED",fact_type_count))) 
+  
+  
+  
   ###########DQA CHECKPOINT##############
   df_visit <-generate_df_concepts(con, table_name,"visit_concept_id.txt")
   order_bins <-c(df_visit$concept_id, 2000000088, 0, NA)

@@ -294,6 +294,20 @@ generateMeasurementReport <- function() {
 
   field_name = "measurement_type_concept_id"
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  
+  #### Check for unexpected differences from prev cycle
+  fact_type_count<-df_table[df_table$measurement_type_concept_id==38000175,2]
+  write_total_fact_type_counts(table_name,"Labs" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Labs",fact_type_count))) 
+  
+  fact_type_count<-df_table[df_table$measurement_type_concept_id==2000000033|
+                              df_table$measurement_type_concept_id==2000000032,2]
+  write_total_fact_type_counts(table_name,"Vitals" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Vitals",fact_type_count))) 
+
+  
   order_bins <-c("2000000033","2000000032","44818702","44818703","44818704","45754907",NA)
   label_bins<-c("Vital Sign from healthcare delivery setting (2000000033)","Vital Sign from healthcare device (2000000032)",
                 "Lab result (44818702)","Pathology finding (44818703)","Patient reported value (44818704)",

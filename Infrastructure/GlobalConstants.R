@@ -8,6 +8,9 @@ g_config <<- yaml.load_file(g_config_path)
 g_total_counts_path <<- paste(getwd(),
                               "/Data/PreviousDataSummary/total_counts.csv", sep= "")
 
+g_total_fact_type_counts_path <<- paste(getwd(),
+                              "/Data/PreviousDataSummary/total_fact_type_counts.csv", sep= "")
+
 g_executive_summary_path <<- paste(getwd(),
                                    "/ExecutiveSummary/", sep="")
 g_top50_inpatient_conditions_path <<- paste(getwd(),
