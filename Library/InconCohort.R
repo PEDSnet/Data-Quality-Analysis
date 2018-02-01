@@ -13,15 +13,15 @@ InconCohort <- function()
 }
 
 
-applyCheck.InconCohort <- function(theObject, table_list, field_list, my_db)
+applyCheck.InconCohort <- function(theObject, table_list, field_list)
 {
   table_name<-table_list[1]
   #field_name<-field_list[1]
   check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
   
-  visit_tbl <- tbl(my_db, "visit_occurrence")
-  patient_tbl<-tbl(my_db, table_name)
-  condition_tbl<-tbl(my_db, "condition_occurrence")
+  visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
+  patient_tbl<-cdm_tbl(req_env$db_src, table_name)
+  condition_tbl<-cdm_tbl(req_env$db_src, "condition_occurrence")
   
   all_patients<-select(patient_tbl,person_id)
   

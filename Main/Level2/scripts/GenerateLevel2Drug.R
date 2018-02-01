@@ -24,43 +24,38 @@ generateLevel2Drug <- function() {
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
  
-  my_db <- dbConnect(RPostgres::Postgres(),dbname=g_config$db$dbname,
-                        host=g_config$db$dbhost,
-                        user =g_config$db$dbuser,
-                        password =g_config$db$dbpass, sslmode="verify-full",
-                        options=paste("-c search_path=",g_config$db$schema,sep=""))
-            
+           
   # Then reference a tbl within that src
-  visit_tbl <- tbl(my_db, "visit_occurrence")
-  patient_tbl<-tbl(my_db, "person")
-  drug_tbl <- tbl(my_db, "drug_exposure")
-  death_tbl <- tbl(my_db, "death")
+  visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
+  patient_tbl<-cdm_tbl(req_env$db_src, "person")
+  drug_tbl <- cdm_tbl(req_env$db_src, "drug_exposure")
+  death_tbl <- cdm_tbl(req_env$db_src, "death")
 
-  concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ', g_config$db$vocab_schema,'.concept',sep='')))
+  concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
   drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
-  drug_in_map_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$dqa_schema,'.drug_in_concept_id_map',sep='')))
-  
-  patient_dob_tbl <- tbl(my_db, dplyr::sql
+  drug_in_map_tbl <- dqa_tbl(req_env$db_src, 'drug_in_concept_id_map')
+
+  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
 
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_start_datetime', 
-                                                                                                 'drug_exposure_start_date'),my_db)) 
+                                                                                                 'drug_exposure_start_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_end_datetime', 
-                                                                                                 'drug_exposure_end_date'),my_db)) 
+                                                                                                 'drug_exposure_end_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_order_datetime', 
-                                                                                                 'drug_exposure_order_date'),my_db)) 
+                                                                                                 'drug_exposure_order_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
@@ -148,7 +143,7 @@ generateLevel2Drug <- function() {
   )
   print(df_drug_counts_by_visit)
   
-  outlier_inpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id',my_db, 
+  outlier_inpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id', 
                                            c(df_drug_counts_by_visit,'vt_counts','top_inpatient_drugs.csv',
                                              'outlier inpatient drug (ingredient-level):',g_top50_inpatient_drugs_path
                                              , 'Drug'))
@@ -203,7 +198,7 @@ generateLevel2Drug <- function() {
   )
  # print(df_drug_counts_by_visit)
   
-  outlier_outpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id',my_db, 
+  outlier_outpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id', 
                                       c(df_drug_counts_by_person,'pt_counts','top_outpatient_drugs.csv',
                                         'outlier outpatient drug (ingredient-level):',g_top50_outpatient_drugs_path
                                         , 'Drug'))
@@ -227,14 +222,14 @@ generateLevel2Drug <- function() {
   table_name<-"drug_exposure"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('drug_exposure_start_date', 
-                                                                                                      'birth_datetime'),my_db)) 
+                                                                                                      'birth_datetime'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   table_name<-"drug_exposure"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('drug_exposure_start_date', 
-                                                                                                      'death_date'),my_db)) 
+                                                                                                      'death_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

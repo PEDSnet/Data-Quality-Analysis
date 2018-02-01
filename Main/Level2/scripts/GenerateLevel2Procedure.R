@@ -11,40 +11,35 @@ generateLevel2Procedure <- function () {
   table_name<-"procedure_occurrence"
   # load the configuration file
   #get path for current script
-  config = yaml.load_file(g_config_path)
+  #config = yaml.load_file(g_config_path)
   log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
   
   #writing to the final DQA Report
-  fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_Procedure_Automatic.md",sep=""))
-  fileContent <-get_report_header("Level 2",config)
+  fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Procedure_Automatic.md",sep=""))
+  fileContent <-get_report_header("Level 2",g_config)
   
   
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
  
-  my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
-                        host=config$db$dbhost,
-                        user =config$db$dbuser,
-                        password =config$db$dbpass, sslmode="verify-full",
-                        options=paste("-c search_path=",config$db$schema,sep=""))
              
   # Then reference a tbl within that src
-  visit_tbl <- tbl(my_db, "visit_occurrence")
-  patient_tbl<-tbl(my_db, "person")
-  procedure_tbl<-tbl(my_db, "procedure_occurrence")
-  death_tbl <- tbl(my_db, "death")
+  visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
+  patient_tbl<-cdm_tbl(req_env$db_src, "person")
+  procedure_tbl<-cdm_tbl(req_env$db_src, "procedure_occurrence")
+  death_tbl <- cdm_tbl(req_env$db_src, "death")
   
-  concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
-  concept_ancestor_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept_ancestor',sep='')))
+  concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
+  concept_ancestor_tbl <- vocab_tbl(req_env$db_src, 'concept_ancestor')
   procedure_concept_tbl <- select(filter(concept_tbl, domain_id=='Procedure'), concept_id, concept_name)
   
-  patient_dob_tbl <- tbl(my_db, dplyr::sql
+  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
   
   ### AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_datetime', 
-                                                                                                 'procedure_date'),my_db)) 
+                                                                                                 'procedure_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
@@ -141,7 +136,7 @@ generateLevel2Procedure <- function () {
   )
   #print(df_procedure_counts_by_visit)
   
-    outlier_inpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id',my_db, 
+    outlier_inpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_procedure_counts_by_visit,'vt_counts','top_inpatient_procedure.csv',
                                              'outlier inpatient procedure:',g_top50_inpatient_procedures_path
                                              , 'Procedure'))
@@ -150,7 +145,7 @@ generateLevel2Procedure <- function () {
     for ( issue_count in 1: nrow(outlier_inpatient_procedures))
     {
     ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
+    log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
     log_entry_content<-(read.csv(log_file_name))
     log_entry_content<-
     custom_rbind(log_entry_content,c(outlier_inpatient_procedures[issue_count,1:8]))
@@ -188,7 +183,7 @@ generateLevel2Procedure <- function () {
       , concept_id, concept_name, count)
   )
   
-  outlier_outpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id',my_db, 
+  outlier_outpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_out_procedure_counts_by_person,'pt_counts','top_outpatient_procedure.csv',
                                              'outlier outpatient procedure:',g_top50_outpatient_procedures_path
                                              , 'Procedure'))
@@ -197,7 +192,7 @@ generateLevel2Procedure <- function () {
   for ( issue_count in 1: nrow(outlier_outpatient_procedures))
   {
     ### open the person log file for appending purposes.
-    log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
+    log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
     log_entry_content<-(read.csv(log_file_name))
     log_entry_content<-
       custom_rbind(log_entry_content,c(outlier_outpatient_procedures[issue_count,1:8]))
@@ -211,14 +206,14 @@ generateLevel2Procedure <- function () {
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('procedure_date', 
-                                                                                                      'birth_datetime'),my_db)) 
+                                                                                                      'birth_datetime'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   table_name<-"procedure_occurrence"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('procedure_date', 
-                                                                                                      'death_date'),my_db)) 
+                                                                                                      'death_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

@@ -13,7 +13,7 @@ InconDateTime <- function()
 }
 
 
-applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
+applyCheck.InconDateTime<- function(theObject, table_list, field_list)
 {
   table_name<-table_list[1]
   time_field<-field_list[1]
@@ -26,7 +26,7 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
   if(grepl('year', date_field)==TRUE)
   {
   
-  mismatch_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
+  mismatch_date_tbl <- tbl(req_env$db_src, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                         " WHERE extract(year from ",time_field,") <> ",date_field,sep=''))
   )
   }
@@ -34,7 +34,7 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
   if(grepl('month',date_field)==TRUE)
   {
     
-    mismatch_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
+    mismatch_date_tbl <- tbl(req_env$db_src, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                      " WHERE extract(month from ",time_field,") <> ",date_field,sep=''))
     )
   } 
@@ -42,7 +42,7 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
   if(grepl('day',date_field)==TRUE)
   {
     
-    mismatch_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
+    mismatch_date_tbl <- tbl(req_env$db_src, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                      " WHERE extract(day from ",time_field,") <> ",date_field,sep=''))
     )
   }
@@ -50,7 +50,7 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list, my_db)
   #print(grepl('date', date_field))
   if(grepl('date', date_field)==TRUE) 
   {
-    mismatch_date_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
+    mismatch_date_tbl <- tbl(req_env$db_src, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
                                                      " WHERE cast(",time_field," as date) <> ",date_field,sep='')))
   }
   #print(mismatch_date_tbl)

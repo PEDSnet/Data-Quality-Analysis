@@ -13,7 +13,7 @@ InconVisitType <- function()
 }
 
 
-applyCheck.InconVisitType<- function(theObject, table_list, field_list, con, metadata)
+applyCheck.InconVisitType<- function(theObject, table_list, field_list, metadata)
 {
   #print("inside applyCheck.InconVisitType")
   
@@ -28,8 +28,8 @@ applyCheck.InconVisitType<- function(theObject, table_list, field_list, con, met
   check_list_entry<-get_check_entry_two_variables_diff_tables(theObject$check_code, table_name_1, field_name_1, 
                                                               table_name_2, field_name_2)
   
-  fact_tbl <- tbl(con, table_name_1) 
-  visit_tbl <- tbl(con, table_name_2) %>% filter_(
+  fact_tbl <- cdm_tbl(req_env$db_src, table_name_1) 
+  visit_tbl <- cdm_tbl(req_env$db_src, table_name_2) %>% filter_(
     paste0(field_name_2,  '==', visit_type))
   
   fact_visit_tbl <- fact_tbl %>% inner_join(visit_tbl, by ="visit_occurrence_id")
