@@ -296,7 +296,7 @@ generateMeasurementReport <- function() {
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   
   #### Check for unexpected differences from prev cycle
-  fact_type_count<-df_table[df_table$measurement_type_concept_id==38000175,2]
+  fact_type_count<-df_table[df_table$measurement_type_concept_id==44818702,2]
   write_total_fact_type_counts(table_name,"Labs" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
                                                    ,c("Labs",fact_type_count))) 
