@@ -13,17 +13,17 @@ MissVisitFact <- function()
 }
 
 
-applyCheck.MissVisitFact <- function(theObject, table_list, field_list, my_db)
+applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
 {
   table_name<-table_list[1]
   #field_name<-field_list[1]
   check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
   
-  visit_tbl <- tbl(my_db, "visit_occurrence")
-  condition_tbl<-tbl(my_db, "condition_occurrence")
-  procedure_tbl<-tbl(my_db, "procedure_occurrence")
-  drug_tbl<-tbl(my_db, "drug_exposure")
-  measurement_tbl<-tbl(my_db, "measurement")
+  visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
+  condition_tbl<-cdm_tbl(req_env$db_src, "condition_occurrence")
+  procedure_tbl<-cdm_tbl(req_env$db_src, "procedure_occurrence")
+  drug_tbl<-cdm_tbl(req_env$db_src, "drug_exposure")
+  measurement_tbl<-cdm_tbl(req_env$db_src, "measurement")
  
   total_visit_count<-  as.data.frame(summarise(visit_tbl,n = n(visit_occurrence_id)))[1,1]
   

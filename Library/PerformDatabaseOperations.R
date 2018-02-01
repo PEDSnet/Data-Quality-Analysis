@@ -1,3 +1,12 @@
+cdm_tbl <- function(db, name, ...) {
+  tbl(db, dbplyr::in_schema(g_config$db$schema, name),...)
+}
+vocab_tbl <- function(db, name, ...) {
+  tbl(db, dbplyr::in_schema(g_config$db$vocab_schema, name),...)
+}
+dqa_tbl <- function(db, name, ...) {
+  tbl(db, dbplyr::in_schema(g_config$db$dqa_schema, name),...)
+}
 
 establish_database_connection_OHDSI<-function(config)
 {

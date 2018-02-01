@@ -13,7 +13,7 @@ PostDeath<- function()
 }
 
 
-applyCheck.PostDeath<- function(theObject, table_list, field_list, my_db)
+applyCheck.PostDeath<- function(theObject, table_list, field_list)
 {
   table_name_1<-table_list[1]
   table_name_2<-table_list[2]
@@ -23,10 +23,10 @@ applyCheck.PostDeath<- function(theObject, table_list, field_list, my_db)
   check_list_entry<-get_check_entry_two_variables_diff_tables(theObject$check_code, table_name_1, field_name_1, 
                                                               table_name_2, field_name_2)
   
-  fact_tbl <- tbl(my_db, table_name_1)
+  fact_tbl <- cdm_tbl(req_env$db_src, table_name_1)
   
   
-  patient_tbl<-tbl(my_db, table_name_2)
+  patient_tbl<-cdm_tbl(req_env$db_src, table_name_2)
   
  # print(field_name_1)
   df_after_death<-as.data.frame(

@@ -13,7 +13,7 @@ UnexTop <- function()
 }
 
 
-applyCheck.UnexTop <- function(theObject, table_name, field_name, con, metadata)
+applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
 {
  count_colname<-metadata[4]
  data_filename<-metadata[5]
@@ -56,10 +56,10 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, con, metadata)
   
   if(domain!='Drug')
   {
-  concept_ancestor_tbl <- tbl(con, dplyr::sql(paste('SELECT * FROM ',g_config$db$vocab_schema,'.concept_ancestor',sep='')))
+  concept_ancestor_tbl <- vocab_tbl(req_env$db_src, 'concept_ancestor')
   
   ## sibling concepts 
-  concept_tbl <- tbl(con, dplyr::sql(paste('SELECT * FROM ',g_config$db$vocab_schema,'.concept',sep='')))
+  concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
   procedure_concept_tbl <- select(filter_(concept_tbl, paste0("domain_id=='",domain,"'")), concept_id, concept_name)
   procedure_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, procedure_concept_tbl, 
                                                by = c("ancestor_concept_id" = "concept_id"))

@@ -13,7 +13,7 @@ PreBirth <- function()
 }
 
 
-applyCheck.PreBirth<- function(theObject, table_list, field_list, my_db)
+applyCheck.PreBirth<- function(theObject, table_list, field_list)
 {
   table_name_1<-table_list[1]
   table_name_2<-table_list[2]
@@ -22,10 +22,10 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list, my_db)
   
   
   #print(check_list_entry)
-  fact_tbl <- tbl(my_db, table_name_1)
+  fact_tbl <- cdm_tbl(req_env$db_src, table_name_1)
   
   
-  patient_tbl<-tbl(my_db, table_name_2) %>%
+  patient_tbl<-cdm_tbl(req_env$db_src, table_name_2) %>%
     mutate(birth_date = sql('cast(birth_datetime as date)'))
   
   #glimpse(patient_tbl)

@@ -10,7 +10,7 @@ generateLevel2Observation <- function () {
   table_name<-"observation"
   # load the configuration file
   #get path for current script
-  config = yaml.load_file(g_config_path)
+  #config = yaml.load_file(g_config_path)
 
   #establish connection to database
   #con <- establish_database_connection_OHDSI(config)
@@ -18,33 +18,28 @@ generateLevel2Observation <- function () {
   #con <- establish_database_connection(config)
 
   #writing to the final DQA Report
-  fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_ObservationAutomatic.md",sep=""))
-  fileContent <-get_report_header("Level 2",config)
+  fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_ObservationAutomatic.md",sep=""))
+  fileContent <-get_report_header("Level 2",g_config)
 
-  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/observation_issue.csv",sep="")
+  log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/observation_issue.csv",sep="")
   
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
   
-  my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
-                        host=config$db$dbhost,
-                        user =config$db$dbuser,
-                        password =config$db$dbpass, sslmode="verify-full",
-                        options=paste("-c search_path=",config$db$schema,sep=""))
             
   # Then reference a tbl within that src
-  observation_tbl <- tbl(my_db, "observation")
-  visit_tbl <- tbl(my_db, "visit_occurrence")
-  concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
+  observation_tbl <- cdm_tbl(req_env$db_src, "observation")
+  visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
+  concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
 
-  patient_dob_tbl <- tbl(my_db, dplyr::sql
+  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
   
   ### AA009 datetime inconsistency
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('observation_datetime', 
-                                                                                                 'observation_date'),my_db)) 
+                                                                                                 'observation_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

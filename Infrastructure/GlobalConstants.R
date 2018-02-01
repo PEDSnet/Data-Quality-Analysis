@@ -68,3 +68,4 @@ g_level2_reports[["procedure_occurrence"]] = generateLevel2Procedure
 g_level2_reports[["drug_exposure"]] = generateLevel2Drug
 g_level2_reports[["measurement"]] = generateLevel2Measurement
 g_level2_reports[["measurement_organism"]] = generateLevel2MeasurementOrganism
+

@@ -10,7 +10,6 @@ generateLevel2Measurement <- function () {
   big_data_flag<-TRUE
 
   # load the configuration file
-  config = yaml.load_file(g_config_path)
 
   #establish connection to database
   #con <- establish_database_connection_OHDSI(config)
@@ -18,28 +17,21 @@ generateLevel2Measurement <- function () {
   #con <- establish_database_connection(config)
 
   #writing to the final DQA Report
-  fileConn<-file(paste(normalize_directory_path(config$reporting$site_directory),"./reports/Level2_Measurement_Automatic.md",sep=""))
-  fileContent <-get_report_header("Level 2",config)
+  fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Measurement_Automatic.md",sep=""))
+  fileContent <-get_report_header("Level 2",g_config)
 
-  log_file_name<-paste(normalize_directory_path(config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
+  log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/measurement_issue.csv",sep="")
   
   # Connection basics ---------------------------------------------------------
   # To connect to a database first create a src:
  
-  my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
-                        host=config$db$dbhost,
-                        user =config$db$dbuser,
-                        password =config$db$dbpass, sslmode="verify-full",
-                        options=paste("-c search_path=",config$db$schema,sep=""))
-            
   # Then reference a tbl within that src
-  patient_tbl<-tbl(my_db, "person")
-  measurement_tbl <- tbl(my_db, "measurement")
-  death_tbl <- tbl(my_db, "death")
+  patient_tbl<-cdm_tbl(req_env$db_src, "person")
+  measurement_tbl <- cdm_tbl(req_env$db_src, "measurement")
+  death_tbl <- cdm_tbl(req_env$db_src, "death")
 
-  concept_tbl <- tbl(my_db, dplyr::sql(paste('SELECT * FROM ',config$db$vocab_schema,'.concept',sep='')))
-
-  patient_dob_tbl <- tbl(my_db, dplyr::sql
+  concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
+  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
                          ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
 
@@ -49,21 +41,21 @@ generateLevel2Measurement <- function () {
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_datetime', 
-                                                                                                 'measurement_date'),my_db)) 
+                                                                                                 'measurement_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_order_datetime', 
-                                                                                                 'measurement_order_date'),my_db)) 
+                                                                                                 'measurement_order_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_result_datetime', 
-                                                                                                 'measurement_result_date'),my_db)) 
+                                                                                                 'measurement_result_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
@@ -191,14 +183,14 @@ generateLevel2Measurement <- function () {
   table_name<-"measurement"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('measurement_date', 
-                                                                                                      'birth_datetime'),my_db)) 
+                                                                                                      'birth_datetime'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
   table_name<-"measurement"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('measurement_date', 
-                                                                                                      'death_date'),my_db)) 
+                                                                                                      'death_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

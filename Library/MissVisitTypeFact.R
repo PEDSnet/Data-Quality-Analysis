@@ -13,14 +13,14 @@ MissVisitTypeFact <- function()
 }
 
 
-applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, check_description, my_db)
+applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, check_description)
 {
   table_name<-table_list[1]
   #field_name<-field_list[1]
   check_list_entry<-get_check_entry_two_variables_diff_tables(theObject$check_code, table_name, "visit_concept_id" , table_list[2], field_list[2])
   #print(check_list_entry)
-  visit_tbl <- tbl(my_db, "visit_occurrence")
-  second_tbl<-tbl(my_db, table_list[2])
+  visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
+  second_tbl<-cdm_tbl(req_env$db_src, table_list[2])
   
   #print(head(second_tbl))
   #total_visit_count<-  as.data.frame(summarise(visit_tbl,n = n()))[1,1]

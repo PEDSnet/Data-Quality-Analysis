@@ -8,6 +8,7 @@ db:
  schema	: 
  vocab_schema : 
  dqa_schema : 
+ argos_config_file_path : 
 reporting:
  site_directory : 
  etl_script_version : 
