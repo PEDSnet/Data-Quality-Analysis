@@ -21,7 +21,8 @@ db:
  dbport	            : 5432
  schema	            : pedsnet_domain_schema (Name of schema that holds PEDSnet domain tables)
  vocab_schema       : vocabulary (Name of schema that holds OMOP vocab tables)
- dqa_schema			: dqa (Name of schema that holds intermediate tables created for DQA purposes)
+ dqa_schema         : dqa (Name of schema that holds intermediate tables created for DQA purposes)
+ argos_config_file_path : ~/Documents/.argos/config.json (User-created location of ohdsi_argos configuration JSON file)
 reporting:
  site_directory     : ~/Documents/test_directory (Temporary location for output of DQA reports)
  etl_script_version : v10
