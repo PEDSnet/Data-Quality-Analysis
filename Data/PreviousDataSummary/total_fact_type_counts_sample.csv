@@ -1,0 +1,3 @@
+site,visit_occurrence-Inpatient,visit_occurrence-Outpatient,visit_occurrence-ED,drug_exposure.Dispensing,drug_exposure.Prescriptions,drug_exposure.InpatientMAR,measurement.Vitals,measurement.Labs
+Sample Site 1,12,23,34,45,56,67,78,89
+Sample Site 2,98,87,76,65,54,43,32,21
