@@ -35,6 +35,7 @@ reporting:
 **Notes**:
 
 * See [release](https://github.com/PEDSnet/Data-Quality-Analysis/releases) for `dqa_script_verison`.  This corresponds to the latest release version of the DQA Scripts.
+* See [ohdsi-argos](https://github.com/baileych/ohdsi-argos) for installation and configuration instructions.
 
 ### Create RxNorm Reference Tables
 
