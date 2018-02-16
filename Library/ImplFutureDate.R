@@ -44,7 +44,7 @@ applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, con)
     
     if(table_name == 'death') ## due to the imputation rule in PEDSnet
     {
-      comparison_date<- as.Date("2017-12-31")
+      comparison_date<- as.Date("2018-02-28")
     } 
       if(comparison_date<max(df_table$Var1))
       {

@@ -31,9 +31,7 @@ generateLevel2Measurement <- function () {
   death_tbl <- cdm_tbl(req_env$db_src, "death")
 
   concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
-  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
-                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
-
+ 
 
   ### checking consistency between date and date/time fields. 
   ## AA009 check type 
