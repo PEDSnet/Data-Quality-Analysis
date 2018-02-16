@@ -32,8 +32,8 @@ generateLevel2Observation <- function () {
   visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
   concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
 
-  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
-                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
+  #patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
+  #                       ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
 
   
   ### AA009 datetime inconsistency

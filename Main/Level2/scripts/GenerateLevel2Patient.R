@@ -29,9 +29,10 @@ generateLevel2Patient <- function() {
   
  # concept_tbl <- tbl(my_db, dplyr::sql('SELECT * FROM vocabulary.concept'))
   
-  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
-                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob
-                            FROM person'))
+  #patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
+  #                       ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob
+  #                          FROM person'))
+  
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('birth_datetime', 

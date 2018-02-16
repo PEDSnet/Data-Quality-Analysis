@@ -235,28 +235,30 @@ field_name<-"immunization_dose" #
    flog.info(Sys.time())
 
     field_name<-"visit_occurrence_id"
-    fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-
-    count_novisit<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
-                                                            ,"visit_occurrence_id is null")
-    missing_visit_percent<-round(count_novisit*100/df_total_procedure_count,2)
-    
+    df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+    message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+    fileContent<-c(fileContent,message)
     ###########DQA CHECKPOINT -- missing information##############
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_visit_percent, table_name, g_data_version));
- 
+    missing_percent<-extract_numeric_value(message)
+    logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+    message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
+    fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
+    
     flog.info(Sys.time())
     
      field_name<-"procedure_occurrence_id"
-    fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-
-    count_novisit<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
-                                                            ,"procedure_occurrence_id is null")
-    missing_visit_percent<-round(count_novisit*100/df_total_procedure_count,2)
-    
-    ###########DQA CHECKPOINT -- missing information##############
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_visit_percent, table_name, g_data_version));
- 
-    flog.info(Sys.time())
+     df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+     message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+     fileContent<-c(fileContent,message)
+     ###########DQA CHECKPOINT -- missing information##############
+     missing_percent<-extract_numeric_value(message)
+     logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+     message<-describeForeignKeyIdentifiers(df_table, table_name, field_name,big_data_flag)
+     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
+     
+     flog.info(Sys.time())
     
 
     field_name<-"provider_id" #  4 minutes

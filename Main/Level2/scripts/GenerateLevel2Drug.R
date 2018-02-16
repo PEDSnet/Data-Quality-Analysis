@@ -35,10 +35,6 @@ generateLevel2Drug <- function() {
   drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
   drug_in_map_tbl <- dqa_tbl(req_env$db_src, 'drug_in_concept_id_map')
 
-  patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
-                         ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
-
-
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_start_datetime', 
