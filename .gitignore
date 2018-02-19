@@ -1,12 +1,13 @@
 Resources/PEDSnet_config.yml
 Resources/PCORnet_config.yml
-Data/PreviousDataSummary/top50_inpatient_procedures_ranked.csv 
+Data/PreviousDataSummary/top50_inpatient_procedures_ranked.csv
 Data/PreviousDataSummary/top50_inpatient_conditions_ranked.csv
 Data/PreviousDataSummary/top50_inpatient_drugs_ranked.csv
 Data/PreviousDataSummary/top50_outpatient_procedures_ranked.csv
 Data/PreviousDataSummary/top50_outpatient_conditions_ranked.csv
 Data/PreviousDataSummary/top50_outpatient_drugs_ranked.csv
-Data/PreviousDataSummary/total_counts.csv 
+Data/PreviousDataSummary/total_counts.csv
+Data/PreviousDataSummary/total_fact_type_counts.csv
 
 *.py?
 *.sw?
