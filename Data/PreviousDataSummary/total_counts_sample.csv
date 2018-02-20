@@ -1,3 +1,1 @@
-site,person,observation_period,death,visit_occurrence,condition_occurrence,procedure_occurrence,drug_exposure,observation,measurement,measurement_organism,fact_relationship,visit_payer,care_site,location,provider,adt_occurrence
-,,,,,,,,,,,,,,,,
-SAMPLE,123445,123445,123445,123445,123445,123445,123445,123445,123445,123445,123445,123445,123,1234,12345,12345
+site,person,observation_period,death,visit_occurrence,condition_occurrence,procedure_occurrence,drug_exposure,observation,measurement,measurement_organism,fact_relationship,visit_payer,care_site,location,provider,adt_occurrence,immunization,,,,,,,,,,,,,,,,,SITE_X,123445,123445,123445,123445,123445,123445,123445,123445,123445,123445,123445,123445,123,1234,12345,12345,12345
