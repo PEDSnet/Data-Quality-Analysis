@@ -66,8 +66,9 @@ generateProcedureOccurrenceReport <- function() {
   df_procedure_type_concept_id <-generate_list_concepts(table_name,"procedure_type_concept_id.csv")
   
   order_bins <-c(df_procedure_type_concept_id$concept_id,"0",NA)
-  label_bins<-c("EHR order list entry (38000275)","Other (0)","NULL")
-  color_bins <-c("38000275"="lightcoral","0"="steelblue1")
+  label_bins<-c("EHR order list entry (38000275)","Primary Procedure (44786630)",
+                "Secondary Procedure (44786631)","Other (0)","NULL")
+  color_bins <-c("38000275"="lightcoral","44786630"="green", "44786631"="yellow","0"="steelblue1")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
   #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
