@@ -28,15 +28,12 @@ R version 3.1.x or above, 64-bit ([Comprehensive R Archive Network](http://cran.
 ### R Packages 
 
 ```
-install.packages(c("RPostgreSQL","DBI","yaml","ggplot2","RJDBC","devtools","futile.logger"))
+install.packages(c("RPostgres","DBI","yaml","ggplot2","RJDBC","devtools","futile.logger","plyr","dplyr","dbplyr"))
 library(devtools)
-install_github("ohdsi/SqlRender") 
-install_github("ohdsi/DatabaseConnector")       
-
+install_github("ohdsi/SqlRender")
+install_github("ohdsi/DatabaseConnector")
+install_github("baileych/ohdsi-argos")
 ```
 For troubleshooting with `install_github("ohdsi/SqlRender")`, please see [here](https://github.com/OHDSI/SqlRender/issues/28). 
 
 Note: if previously installed, run `update.packages()` to get the latest version of each library
-
-
-

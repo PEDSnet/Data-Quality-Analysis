@@ -6,8 +6,8 @@
 
 ## Apply Data Quality Checks
 
-### Create Configuration File
-Create a configuration file named `PEDSnet_config.yml` using the template specified in [PEDSnet_config_sample.yml](../Resources/PEDSnet_config_sample.yml) of the same folder.
+### Create Configuration Files
+Create a DQA configuration file named `PEDSnet_config.yml` using the template specified in [PEDSnet_config_sample.yml](../Resources/PEDSnet_config_sample.yml) of the same folder and an Argos configuration file named `argos_config.json` using the template specified in [Argos Configuration File Structure](https://github.com/baileych/ohdsi-argos#configuration-file-structure).
 
 #### Example
 
@@ -21,9 +21,10 @@ db:
  dbport	            : 5432
  schema	            : pedsnet_domain_schema (Name of schema that holds PEDSnet domain tables)
  vocab_schema       : vocabulary (Name of schema that holds OMOP vocab tables)
- dqa_schema			: dqa (Name of schema that holds intermediate tables created for DQA purposes)
+ dqa_schema         : dqa (Name of schema that holds intermediate tables created for DQA purposes)
+ argos_config_file_path : ~/Documents/.argos/argos_config.json (User-created location of ohdsi_argos configuration JSON file)
 reporting:
- site_directory     : ~/Documents/test_directory (Temporary location for output of DQA reports)
+ site_directory     : ~/Documents/test_directory (User-created temporary location for output of DQA reports)
  etl_script_version : v10
  dqa_script_version : 2.5.0_1 (See note)
  site               : SiteName 
@@ -33,7 +34,9 @@ reporting:
 
 **Notes**:
 
+* User created directories can be replaced with other locations, so long as the settings indicate them appropriately
 * See [release](https://github.com/PEDSnet/Data-Quality-Analysis/releases) for `dqa_script_verison`.  This corresponds to the latest release version of the DQA Scripts.
+* See [ohdsi-argos](https://github.com/baileych/ohdsi-argos) for installation and configuration instructions.
 
 ### Create RxNorm Reference Tables
 
