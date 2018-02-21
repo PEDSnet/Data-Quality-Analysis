@@ -230,6 +230,8 @@ write_total_counts<-function(table_name, current_total_count)
 }
 write_total_fact_type_counts<-function(table_name, fact_type,current_total_count)
 {
+  if(length(current_total_count)==0)
+    current_total_count<-0
   total_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
                                "./data/total_fact_type_counts.csv",sep="")
   total_count_df<-read.csv(total_counts_filename)
