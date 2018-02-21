@@ -26,10 +26,13 @@ applyCheck.UnexDiffFactType <- function(theObject, table_list, field_list, metad
   
   percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
   
+  
   check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
   #print(check_list_entry)
   
   #print(table_list)
+  if (is.na(percentage_diff)==FALSE)
+  {
   if(percentage_diff<check_list_entry$Lower_Threshold || percentage_diff>check_list_entry$Upper_Threshold)
   {
     # create an issue 
@@ -40,7 +43,7 @@ applyCheck.UnexDiffFactType <- function(theObject, table_list, field_list, metad
     return(logIssue(issue_obj))
     
   }
-  
+  }
   NextMethod("applyCheck",theObject)
   return(c())
 }
