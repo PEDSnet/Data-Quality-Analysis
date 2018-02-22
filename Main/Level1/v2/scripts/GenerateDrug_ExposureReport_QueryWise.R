@@ -259,7 +259,8 @@ generateDrugExposureReport <- function() {
   
   #### Check for unexpected differences from prev cycle
   
-  
+
+  fact_type_count<-df_table[df_table$drug_type_concept_id==38000175,2]
   write_total_fact_type_counts(table_name,"Dispensing" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
                                                    ,c("Dispensing",fact_type_count))) 
