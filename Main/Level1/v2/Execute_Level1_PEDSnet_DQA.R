@@ -26,37 +26,33 @@ source("../../../Library/ImplEvent.R", chdir = T)
 source("../../../Library/UnexTop.R", chdir = T)
 
 
-executeLevel1DQA <- function() {
-  dir.create(file.path(normalize_directory_path(
-    g_config$reporting$site_directory), "reports"), showWarnings = FALSE)
-
-  dir.create(file.path(normalize_directory_path(
-    g_config$reporting$site_directory), "images"), showWarnings = FALSE)
-
-  dir.create(file.path(normalize_directory_path(
-    g_config$reporting$site_directory), "issues"), showWarnings = FALSE)
-
-  dir.create(file.path(normalize_directory_path( g_config$reporting$site_directory), "data"), 
-             showWarnings = FALSE)
+generateReportDependencies <- function(){
+  norm_path <- normalize_directory_path(g_config$reporting$site_directory)
   
-  total_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
-                               "./data/total_counts.csv",sep="")
+  dir.create(file.path(norm_path, "reports"), showWarnings = FALSE)
+  dir.create(file.path(norm_path, "images"),  showWarnings = FALSE)
+  dir.create(file.path(norm_path, "issues"),  showWarnings = FALSE)
+  dir.create(file.path(norm_path, "data"),    showWarnings = FALSE)
+  
+  total_counts_filename<-paste(norm_path,"./data/total_counts.csv",sep="")
   
   total_count_df = data.frame(site=character(0))
   total_count_df$site<-as.character(total_count_df$site)
   total_count_df[1,1]<-g_config$reporting$site
   write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
   
-  total_fact_type_counts_filename<-paste(normalize_directory_path(g_config$reporting$site_directory),
-                               "./data/total_fact_type_counts.csv",sep="")
+  total_fact_type_counts_filename<-paste(norm_path,"./data/total_fact_type_counts.csv",sep="")
   
   total_fact_type_count_df = data.frame(site=character(0))
   total_fact_type_count_df$site<-as.character(total_fact_type_count_df$site)
   total_fact_type_count_df[1,1]<-g_config$reporting$site
   write.csv(total_fact_type_count_df,file=total_fact_type_counts_filename, row.names = FALSE)
+}
+
+executeLevel1DQA <- function() {
+  prebuildDependencies()
   
   ## read the check catalogue
-
   # data version
   g_data_version<-paste("pedsnet-",g_config$reporting$conventions_version,"-",g_config$reporting$site,"-ETL",g_config$reporting$etl_script_version, sep="")
 

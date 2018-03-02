@@ -60,10 +60,14 @@ runDQA(level=1)
 
 #### Single Table
 ```R
+generateReportDependencies()
+
 generateSingleReport(level=1, report="table_name")
 
 "table_name" examples include: "person", "fact_relationship", "visit_occurrence", etc
 ```
+
+** Note: `generateReportDependencies()` only needs to be run once, before generating any number of single reports. It is included in the beginning of `runDQA(level=1)`, and does not need to be run if `runDQA(level=1)` was used.
 
 ### Level 2
 
