@@ -15,8 +15,10 @@ Data/PreviousDataSummary/total_fact_type_counts.csv
 *.idea/
 *.Rhistory
 
+.RData
 .DS_Store
 dqa.log
+errorReport.txt
 
 vendor/
 
