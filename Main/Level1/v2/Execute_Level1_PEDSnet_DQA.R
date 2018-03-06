@@ -50,7 +50,7 @@ generateReportDependencies <- function(){
 }
 
 executeLevel1DQA <- function() {
-  prebuildDependencies()
+  generateReportDependencies()
   
   ## read the check catalogue
   # data version
