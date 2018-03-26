@@ -432,7 +432,7 @@ generateMeasurementReport <- function() {
                                                    c(3012030,  " Erythrocyte mean corpuscular hemoglobin [Entitic mass] by Automated count"))) 
   	## RDW 
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3002385,3049383, 3002888,  " Erythrocyte distribution width [Ratio]"))) 
+                                                   c(3002385,3049383, 3002888,  3019897, " Erythrocyte distribution width [Ratio]"))) 
                                                    
   	## Hct 
   	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
