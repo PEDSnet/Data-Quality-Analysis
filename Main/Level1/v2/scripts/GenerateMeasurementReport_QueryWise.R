@@ -387,7 +387,7 @@ generateMeasurementReport <- function() {
   acceptable_fevs<-generate_list_concepts(table_name,"fev_list.csv")$concept_id ## read from fev list
   acceptable_vitals<-rbind(acceptable_vitals, acceptable_fevs)
   unexpected_message<- reportUnexpected(df_vitals,table_name,field_name,acceptable_vitals,big_data_flag)
-  if(length(trim(unexpected_message))>0)
+  if(length(trim(unexpected_message))>1)
 	  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("VITALS: ",unexpected_message), table_name, 
                                                            g_data_version));
   
@@ -395,7 +395,7 @@ generateMeasurementReport <- function() {
    df_vitals<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (44818704)")
   acceptable_pt_reported<-generate_list_concepts(table_name,"patient_reported_list.csv")$concept_id ## read from vitals list
   unexpected_message<- reportUnexpected(df_vitals,table_name,field_name,acceptable_pt_reported,big_data_flag)
-  if(length(trim(unexpected_message))>0)
+  if(length(trim(unexpected_message))>1)
 	  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("Patient reported: "
 	  ,unexpected_message), table_name, 
                                                            g_data_version));
