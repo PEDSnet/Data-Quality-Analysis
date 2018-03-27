@@ -38,7 +38,7 @@ reporting:
 * User created directories can be replaced with other locations, so long as the settings indicate them appropriately
 * See [release](https://github.com/PEDSnet/Data-Quality-Analysis/releases) for `dqa_script_verison`.  This corresponds to the latest release version of the DQA Scripts.
 * See [ohdsi-argos](https://github.com/baileych/ohdsi-argos) for installation and configuration instructions.
-* * For Oracle users, Argos `src_name` should be `"oracle"`, and Argos `dbname` should be a connection string formatted as `"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=your_host)(PORT=1521))(CONNECT_DATA=(SID=your_sid)))"`.
+  * For Oracle users, Argos `src_name` should be `"oracle"`, and Argos `dbname` should be a connection string formatted as `"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=your_host)(PORT=1521))(CONNECT_DATA=(SID=your_sid)))"`.
 
 ### Create RxNorm Reference Tables
 
