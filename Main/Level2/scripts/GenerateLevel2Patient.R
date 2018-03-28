@@ -27,12 +27,7 @@ generateLevel2Patient <- function() {
   
   log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/person_issue.csv",sep="")
   
- # concept_tbl <- tbl(my_db, dplyr::sql('SELECT * FROM vocabulary.concept'))
-  
-  #patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
-  #                       ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob
-  #                          FROM person'))
-  
+ 
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('birth_datetime', 
@@ -52,6 +47,7 @@ generateLevel2Patient <- function() {
                                                                                                  'day_of_birth'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
+  
   #table_name<-"person"
   ## total patients
   ###########DQA CHECKPOINT############## 
@@ -60,7 +56,7 @@ generateLevel2Patient <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-  
+
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

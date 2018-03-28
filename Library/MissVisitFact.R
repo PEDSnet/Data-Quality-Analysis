@@ -25,26 +25,49 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
   drug_tbl<-cdm_tbl(req_env$db_src, "drug_exposure")
   measurement_tbl<-cdm_tbl(req_env$db_src, "measurement")
  
+  if(g_config$db$driver=='Oracle')
+  total_visit_count<-  as.data.frame(summarise(visit_tbl,n = n()))[1,1]
+  else
   total_visit_count<-  as.data.frame(summarise(visit_tbl,n = n(visit_occurrence_id)))[1,1]
   
   ### % of visits with no facts associated. 
   ## step 1 print # visits in 9202 , 9201, and 9203
   key_visits<-select(filter(visit_tbl, visit_concept_id==9201| visit_concept_id==9202|visit_concept_id==9203)
                      , visit_occurrence_id)
-  total_key_visits<-nrow(key_visits)
   
+  if(g_config$db$driver=='Oracle')
+    total_key_visits<-  as.data.frame(summarise(key_visits,n = n()))[1,1]
+  else
+    total_key_visits<-  as.data.frame(summarise(key_visits,n = n(visit_occurrence_id)))[1,1]
+  
+
   ## step 2 get  key visits that dont have any associated facts 
   temp<-union(select(condition_tbl, visit_occurrence_id), select(procedure_tbl, visit_occurrence_id), 
               select(measurement_tbl, visit_occurrence_id),   select(drug_tbl, visit_occurrence_id))
   
+  #print(glimpse(key_visits))
+  #print(glimpse(temp))
+  
+  #print(class(key_visits))
+  #print(class(temp))
+  
   ## step 
-  result<-setdiff(key_visits,temp)
+  result<-anti_join(key_visits,temp, by ="visit_occurrence_id")
+  
+  #print(result)
+  
+  if(g_config$db$driver=='Oracle')
+  final_result<-summarize(result, n=n())
+  else
   final_result<-summarize(result, n=n(visit_occurrence_id))
+  
+
   key_visits_without_facts<-as.data.frame(final_result)[1,1]
-  ## step 3 get % of visits that dont have any facts and are key visits. 
+
+    ## step 3 get % of visits that dont have any facts and are key visits. 
   no_fact_percentage<-((key_visits_without_facts)*100/total_visit_count)
-  print('no fact percentage')
-  print(no_fact_percentage)
+  #print('no fact percentage')
+  #print(no_fact_percentage)
   
   if(no_fact_percentage<check_list_entry$Lower_Threshold  || 
      no_fact_percentage>check_list_entry$Upper_Threshold  )

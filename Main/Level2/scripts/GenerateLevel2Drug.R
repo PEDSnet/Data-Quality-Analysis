@@ -72,6 +72,16 @@ generateLevel2Drug <- function() {
   drug_no_match<- select( filter(drug_tbl, drug_concept_id==0)
                                , drug_source_value, drug_exposure_id)
   
+  if(g_config$db$driver=='Oracle')
+    no_match_drug_counts <-
+    filter(
+      arrange(
+        summarize(
+          group_by(drug_no_match, drug_source_value)
+          , count=n())
+        , desc(count))
+      , row_number()>=1 & row_number()<=100) ## printing top 100
+  else    
   no_match_drug_counts <-
     filter(
       arrange(

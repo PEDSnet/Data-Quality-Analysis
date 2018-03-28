@@ -1,12 +1,51 @@
-cdm_tbl <- function(db, name, ...) {
-  tbl(db, dbplyr::in_schema(g_config$db$schema, name),...)
+.qual_tbl <- function(db, name, schema_tag) {
+  if (! is.na(config(schema_tag))) {
+    con <- if (inherits(db, 'src_dbi')) db$con else db
+    name <- dbplyr::in_schema(config(schema_tag),
+                              DBI::dbQuoteIdentifier(con, name))
+  }
+  #print(config(schema_tag))
+  #print(DBI::dbQuoteIdentifier(con, name))
+  #print(name)
+  tbl(db, name) #%>% show_query()
+  #print(name)
 }
-vocab_tbl <- function(db, name, ...) {
-  tbl(db, dbplyr::in_schema(g_config$db$vocab_schema, name),...)
-}
-dqa_tbl <- function(db, name, ...) {
-  tbl(db, dbplyr::in_schema(g_config$db$dqa_schema, name),...)
-}
+
+
+#' Connect to a CDM data table
+#' @md
+#'
+#' @param db The database connection
+#' @param name The name of the table
+#'
+#' @return A [dplyr::tbl()]] pointing to the table
+cdm_tbl <-
+  function(db, name)
+    .qual_tbl(db, config('table_names')[[name]], 'cdm_schema')
+
+
+#' Connect to a CDM vocabulary table
+#' @md
+#'
+#' @param db The database connection
+#' @param name The name of the table
+#'
+#' @return A [dplyr::tbl()]] pointing to the table
+vocabulary_tbl <-
+  function(db, name)
+    .qual_tbl(db, config('table_names')[[name]], 'vocabulary_schema')
+
+
+#' Connect to a result table
+#' @md
+#'
+#' @param db The database connection
+#' @param name The name of the table
+#'
+#' @return A [dplyr::tbl()]] pointing to the table
+results_tbl <-
+  function(db, name)
+    .qual_tbl(db, config('table_names')[[name]], 'results_schema')
 
 establish_database_connection_OHDSI<-function(config)
 {
