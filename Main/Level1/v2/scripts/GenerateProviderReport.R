@@ -91,9 +91,14 @@ generateProviderReport <- function() {
   describeNominalField(df_provider,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8532, "female"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   list(
+                                                    list(8507, "male"), 
+                                                    list(8532, "female")
+                                                    )
+                                                   )) 
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8507, "male"))) 
+ # logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8507, "male"))) 
 
 
   # flog.info("here")
@@ -162,12 +167,15 @@ generateProviderReport <- function() {
   describeNominalField_basic(df_table_specialty_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   ## check for providers with specific specialties
-  ## for nephrology
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38004479,45756813, "nephrology"))) 
+  ## for nephrology, GI
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   list(
+                                                      list(38004479,45756813, "nephrology"), 
+                                                      list(45756810,38004455, "GI(Gastroenterology)")
+                                                      )
+                                                   )
+                            ) 
   
-  
-  ## for GI
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(45756810,38004455, "GI(Gastroenterology)"))) 
   
 
   #FOREIGN KEY fields

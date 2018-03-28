@@ -89,8 +89,12 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
   # flog.info("here")
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8532, "female"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8507, "male"))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   list(
+                                                   list(8532, "female"),
+                                                   list(8507, "male")
+                                                   )
+                                                   )) 
  
   #Race Source Value
   field_name="race_source_value"
@@ -130,9 +134,12 @@ generatePersonReport <- function() {
   describeNominalField_basic(df_table_race_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8527, "white"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(8516, "black"))) 
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+            list(                                               
+                                                    list(8527, "white"),
+                                                   list(8516, "black")
+                  )
+                                                   )) 
 
 
   #Ethnicity Source Value
@@ -174,9 +181,12 @@ generatePersonReport <- function() {
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins,big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38003563, "hispanic"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38003564, "non-hispanic"))) 
-
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   list(
+                                                   list(38003563, "hispanic"),
+                                                   list(38003564, "non-hispanic")
+                                                   )
+                                                   )) 
 
   ### language field
   #language Source Value

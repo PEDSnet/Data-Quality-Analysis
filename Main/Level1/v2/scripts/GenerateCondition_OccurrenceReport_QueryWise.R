@@ -88,19 +88,13 @@ generateConditionOccurrenceReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(2000000092,2000000093,2000000094,  "inpatient header primary"))) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(2000000095,2000000096,2000000097,  "outpatient header 1st position"))) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(2000000098,2000000099,2000000100,  "inaptient header 2nd position"))) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(2000000101,2000000102,2000000103,  "outpatient header 2nd position"))) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(2000000089,2000000090,2000000091,  "EHR problem list entry"))) 
+                                                   list(
+                                                   list(2000000092,2000000093,2000000094,  "inpatient header primary"),
+                                                   list(2000000095,2000000096,2000000097,  "outpatient header 1st position"), 
+                                                   list(2000000098,2000000099,2000000100,  "inaptient header 2nd position"), 
+                                                   list(2000000101,2000000102,2000000103,  "outpatient header 2nd position"), 
+                                                   list(2000000089,2000000090,2000000091,  "EHR problem list entry")
+                                                   ))) 
   
   
   # ORDINAL Fields
