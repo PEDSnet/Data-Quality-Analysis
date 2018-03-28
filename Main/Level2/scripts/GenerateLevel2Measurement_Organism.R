@@ -34,8 +34,17 @@ generateLevel2MeasurementOrganism <- function () {
   ### Print top 100 no matching concept source values in measurement org table 
   measurement_organism_no_match<- select( filter(measurement_organism_tbl, organism_concept_id==0)
                                                              , organism_source_value,meas_organism_id)
-  
+  if(g_config$db$driver=='Oracle')
+    no_match_measurement_organism_counts <-
+    filter(
+      arrange(
+        summarize(
+          group_by(measurement_organism_no_match, organism_source_value)
+          , count=n())
+        , desc(count))
+      , row_number()>=1 & row_number()<=100) ## printing top 100
   #print(head(measurement_no_match))
+  else
   no_match_measurement_organism_counts <-
     filter(
       arrange(

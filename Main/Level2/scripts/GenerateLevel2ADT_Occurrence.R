@@ -34,11 +34,16 @@ generateLevel2ADT_Occurrence <- function () {
   #                      password =config$db$dbpass, sslmode="verify-full",
   #                      options=paste("-c search_path=",config$db$schema,sep=""))
             
-  
+  #print(req_env$db_src)  
   # Then reference a tbl within that src
-  adt_tbl <- cdm_tbl(req_env$db_src, "adt_occurrence")
+  adt_tbl <- cdm_tbl(req_env$db_src, 'adt_occurrence')
   
+
+  if(g_config$db$driver=='Oracle')
+  total_adt_count<-  as.data.frame(dplyr::summarise(adt_tbl,count = n()))[1,1]
+  else
   total_adt_count<-  as.data.frame(dplyr::summarise(adt_tbl,count = n(adt_occurrence_id)))[1,1]
+  
   #total_adt_count<-  as.data.frame(summarise(adt_tbl,count = n()))[1,1]
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('adt_datetime', 

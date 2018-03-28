@@ -26,7 +26,7 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list)
   
   
   patient_tbl<-cdm_tbl(req_env$db_src, table_name_2) %>%
-    mutate(birth_date = sql('cast(birth_datetime as date)'))
+    mutate(birth_date = sql('cast("birth_datetime" as date)'))
   
   #glimpse(patient_tbl)
   field_name_2<-"birth_date"

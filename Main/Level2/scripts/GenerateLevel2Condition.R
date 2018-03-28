@@ -33,6 +33,7 @@ generateLevel2Condition <- function() {
   death_tbl <- cdm_tbl(req_env$db_src, "death")
 
   concept_tbl <- vocab_tbl(req_env$db_src,'concept')
+  print(glimpse(concept_tbl))
   condition_concept_tbl <- select(filter(concept_tbl, domain_id=='Condition'), concept_id, concept_name)
 
   ##AA009 date time inconsistency 
@@ -77,7 +78,13 @@ generateLevel2Condition <- function() {
                                , condition_occurrence_id, condition_source_value)
   
  
-  
+  if(g_config$db$driver=='Oracle')
+    no_match_condition_counts <-condition_no_match %>% 
+    group_by(condition_source_value) %>%
+    summarise(count=n()) %>%
+    arrange (desc(count)) %>% 
+    filter(row_number()>=1 & row_number()<=100)
+  else
   no_match_condition_counts <-condition_no_match %>% 
           group_by(condition_source_value) %>%
           summarise(count=n(condition_occurrence_id)) %>%
@@ -128,9 +135,8 @@ generateLevel2Condition <- function() {
   inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
                                         , visit_occurrence_id)
 
-  
-  temp_join <- inner_join(condition_concept_tbl,condition_tbl, by = c("concept_id"="condition_concept_id"))
 
+  temp_join <- inner_join(condition_concept_tbl,condition_tbl, by = c("concept_id"="condition_concept_id"))
   condition_tbl_restricted <- select (temp_join, visit_occurrence_id, concept_id, concept_name)
 
   condition_visit_join_tbl <- distinct(

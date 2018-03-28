@@ -40,7 +40,12 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
   
   #print(head(key_visits))
   
-  
+  if(g_config$db$driver=='Oracle')
+    total_key_visits<-#nrow(key_visits)
+    as.data.frame(
+      key_visits %>% summarise(count=n()) 
+    )[1,1]
+  else    
   total_key_visits<-#nrow(key_visits)
     as.data.frame(
     key_visits %>% summarise(count=n(visit_occurrence_id)) 
@@ -71,15 +76,20 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
   #print(head(second_tbl_with_facts))
   ## step 
   #result<-setdiff(key_visits$visit_occurrence_id,second_tbl_with_facts$visit_occurrence_id)
-  result<-setdiff(key_visits,second_tbl_with_facts)
+  result<-anti_join(key_visits,second_tbl_with_facts, by ="visit_occurrence_id")
   
   #print(nrow(result))
+  if(g_config$db$driver=='Oracle')
+  final_result<-dplyr::summarize(result, n=n())
+  else  
   final_result<-dplyr::summarize(result, n=n(visit_occurrence_id))
+  
+  
   key_visits_without_facts<-as.data.frame(final_result)[1,1]
   
   ## step 3 get % of visits that dont have any facts and are key visits. 
   no_fact_percentage<-((key_visits_without_facts)*100/total_key_visits)
-  print(no_fact_percentage)
+  #print(no_fact_percentage)
   #print(check_list_entry$Lower_Threshold)
   #print(check_list_entry$Upper_Threshold)
   
