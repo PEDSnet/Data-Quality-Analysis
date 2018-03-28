@@ -326,10 +326,10 @@ generateMeasurementReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(2000000033,  2000000032, "vital signs"))) 
+                                                   list(
+                                                   list(2000000033,  2000000032, "vital signs"),
+                                                   list(44818702, "lab records"))) )
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(44818702, "lab records"))) 
   
 
   #print (fileContent)
@@ -371,15 +371,6 @@ generateMeasurementReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   
   
-  ###########DQA CHECKPOINT############## FOR LABS only 
-  #df_labs<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id=44818702")
-  #acceptable_fevs<-generate_list_concepts(table_name,"fev_list.csv")$concept_id ## read from lablist
-  #acceptable_labs<-generate_list_concepts(table_name,"lab_list.csv")$concept_id ## read from lablist
-  #acceptable_labs<-c(acceptable_labs, acceptable_fevs)
-  #unexpected_message<- reportUnexpected(df_labs,table_name,field_name,acceptable_labs,big_data_flag)
-  #logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("LABS: ",unexpected_message), table_name, 
-  #                                                         g_data_version));
-  
   
   ### Vitals 
   df_vitals<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (2000000033, 2000000032)")
@@ -392,9 +383,9 @@ generateMeasurementReport <- function() {
                                                            g_data_version));
   
   ### patient reported 
-   df_vitals<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (44818704)")
+   df_pro<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (44818704)")
   acceptable_pt_reported<-generate_list_concepts(table_name,"patient_reported_list.csv")$concept_id ## read from vitals list
-  unexpected_message<- reportUnexpected(df_vitals,table_name,field_name,acceptable_pt_reported,big_data_flag)
+  unexpected_message<- reportUnexpected(df_pro,table_name,field_name,acceptable_pt_reported,big_data_flag)
   if(length(trim(unexpected_message))>1)
 	  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("Patient reported: "
 	  ,unexpected_message), table_name, 
@@ -418,98 +409,39 @@ generateMeasurementReport <- function() {
   
 	## white blood cell
 	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3010813, 1125563, 228323, 27245,
-                                                     " White Blood cell (WBC) count (leukocyte)"))) 
-	## red blood cell
-	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3020416,  " Erythrocytes /volume in Blood by Automated count"))) 
-    ##MCHC
-   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3009744,  " Erythrocyte mean corpuscular hemoglobin concentration [Mass/volume] by Automated count"))) 
-    
-	## MCH 
- 	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3012030,  " Erythrocyte mean corpuscular hemoglobin [Entitic mass] by Automated count"))) 
-  	## RDW 
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3002385,3049383, 3002888,  3019897, " Erythrocyte distribution width [Ratio]"))) 
-                                                   
-  	## Hct 
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3009542, 3023230, 3028813, 
+	                                                 list(
+                                                   list(3010813, 1125563, 228323, 27245,
+                                                     " White Blood cell (WBC) count (leukocyte)"),
+                                                   list(3020416,  " Erythrocytes /volume in Blood by Automated count"),
+                                                   list(3009744,  " Erythrocyte mean corpuscular hemoglobin concentration [Mass/volume] by Automated count"), 
+                                                   list(3012030,  " Erythrocyte mean corpuscular hemoglobin [Entitic mass] by Automated count"), 
+                                                   list(3002385,3049383, 3002888,  3019897, " Erythrocyte distribution width [Ratio]"), 
+                                                   list(3009542, 3023230, 3028813, 
                                                      3034976, 3034037, 3013752, 3023314, 
-                                                     "Hematocrit"))) 
-   
-   ## MCV 
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3043111, 3007461,3024929,3010834,  " 	Platelet count"))) 
-   
-   ## Hbg 
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3000963,  " Hemoglobin (Hbg)"))) 
-
-
-  	### CMP-14 components. 
-  	
-  	## for Albumin
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3024561, 3000034, 3049506, 3001802,  "Albumin"))) 
-  	
-  	## for Blood Urea Nitrogen (BUN)
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3013682,  "Blood Urea Nitrogen (BUN)"))) 
-  	
-  	
-  	## Calcium
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3006490, 3006906, 3007501, 3021119,  "Calcium"))) 
-  	
-  	## Carbon Dioxide (Bicarbonate)
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3015632,3013290, 3031147
-  	                                                   , 3016293,  "Carbon Dioxide (Bicarbonate)"))) 
-  	## Chloride
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3014576,  "Chloride"))) 
-  	
-  		## for creatinine
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3016723, 3017250, 3030354
-  	                                                   , 3001802, 3001582,  "creatinine"))) 
-  	
-  	## for Glucose
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3015621, 3000845, 3037187, 
+                                                     "Hematocrit"), 
+                                                   list(3043111, 3007461,3024929,3010834,  " 	Platelet count"), 
+                                                   list(3000963,  " Hemoglobin (Hbg)"), 
+                                      ### CMP 14
+  	                                                 list(3024561, 3000034, 3049506, 3001802,  "Albumin"),  
+  	                                                 list(3013682,  "Blood Urea Nitrogen (BUN)"),
+  	                                                 list(3006490, 3006906, 3007501, 3021119,  "Calcium"), 
+  	                                                 list(3016293,  "Carbon Dioxide (Bicarbonate)"), 
+  	                                                 list(3014576,  "Chloride"), 
+  	                                                 list(3016723, 3017250, 3030354
+  	                                                   , 3001802, 3001582,  "creatinine"), 
+  	                                                 list(3015621, 3000845, 3037187, 
   	                                                   3004501, 3022548, 3020399, 
-  	                                                   3004501, 3024629,  "Glucose"))) 
-  	## for Potassium
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3023103,  "Potassium"))) 
-  	
-  	## for Sodium
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3019550, 3000285,  "Sodium"))) 
-  	
-  	## for Total Bilirubin
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3019676, 3024128, 3007359
-  	                                                   , 3027597, 3018834,  "Total Bilirubin"))) 
-  	
-  	## for Total Protein
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3010156, 3020460, 3023221, 
-  	                                                   3017756, 3001582, 3020630, 3019473, 3005897,  "Total Protein"))) 
-  	## for Alanine Aminotransferase (ALT)
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3006923,  "Alanine Aminotransferase (ALT)"))) 
-  	
-  	## for Alkaline Phosphatase (ALP)
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3035995,  "Alkaline Phosphatase (ALP)"))) 
-  	
-  	## for Aspartate Aminotransferase (AST) 
-  	logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  	                                                 c(3013721,  "Aspartate Aminotransferase (AST)"))) 
+  	                                                   3004501, 3024629,  "Glucose"), 
+  	                                                 list(3023103,  "Potassium"), 
+  	                                                 list(3019550, 3000285,  "Sodium"), 
+  	                                                 list(3019676, 3024128, 3007359
+  	                                                   , 3027597, 3018834,  "Total Bilirubin"), 
+  	                                                 list(3010156, 3020460, 3023221, 
+  	                                                   3017756, 3001582, 3020630, 3019473, 3005897,  "Total Protein"), 
+  	                                                 list(3006923,  "Alanine Aminotransferase (ALT)"), 
+  	                                                 list(3035995,  "Alkaline Phosphatase (ALP)"),
+  	                                                 list(3013721,  "Aspartate Aminotransferase (AST)")
+  	                                                 ))) 
   	
   	concept_id_list <- unique(df_table[,1])
 

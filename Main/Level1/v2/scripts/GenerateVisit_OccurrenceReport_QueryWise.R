@@ -181,12 +181,14 @@ generateVisitOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(9201, "inpatient"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(9202, "outpatient"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(9203, "ED"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(44814711,
-                                                                                                  "other ambulatory"))) 
-  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   list(
+                                                   list(9201, "inpatient"),
+                                            list(9202, "outpatient") ,
+                                  list(9203, "ED") ,
+                                      list(44814711,"other ambulatory")
+                                          )))
+
   #fileContent<-c(fileContent,unexpected_message)
   df_table_visit_enhanced<-EnhanceFieldValues(df_table,field_name,df_visit);
   describeNominalField_basic(df_table_visit_enhanced,table_name,field_name,big_data_flag);

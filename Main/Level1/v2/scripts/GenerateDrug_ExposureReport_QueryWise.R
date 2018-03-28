@@ -297,11 +297,11 @@ generateDrugExposureReport <- function() {
   ## DQA check for recall of various drug types
   
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(38000175,  "Dispensing"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(38000180,  "Inpatient Administration"))) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(38000177,  "prescription"))) 
+                                                   list(
+                                                     list(38000175,  "Dispensing"),
+                                                   list(38000180,  "Inpatient Administration"),
+                                                   list(38000177,  "prescription") 
+  )))
   
 
   field_name<-"stop_reason"

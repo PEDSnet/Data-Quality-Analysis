@@ -120,12 +120,13 @@ generateCareSiteReport <- function() {
   
   
   ## check for caresites with specific specialties
-  ## for nephrology
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(38004479,45756813, "nephrology"))) 
+  ## for nephrology and GI 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   list(
+                                                   list(38004479,45756813, "nephrology") ,
+                                                    list(45756810,38004455, "GI(Gastroenterology)")
+                                                          )))
   
- 
-  ## for GI
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, c(45756810,38004455, "GI(Gastroenterology)"))) 
 
 
   #FOREIGN KEY fields

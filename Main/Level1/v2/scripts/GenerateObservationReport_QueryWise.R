@@ -121,23 +121,15 @@ generateObservationReport <- function() {
 
 
   ###########DQA CHECKPOINT############## missing expected concepts 
-  #logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  #                                                 c(4145666,  "admitting source"))) 
-  
-  #logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-  #                                                 c(4137274,  "discharge disposition"))) 
   
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(44813951,  " discharge status "))) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(3040464,  "DRG"))) 
-  
-    logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(40760190,  "Delivery Mode"))) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-                                                   c(4005823, 4219336, 4275495,  "Tobacco"))) 
+                                                   list(
+                                                     list(44813951,  " discharge status ") ,
+                                                     list(3040464,  "DRG") ,
+                                                    list(40760190,  "Delivery Mode") ,
+                                                    list(4005823, 4219336, 4275495,  "Tobacco")
+                                                    ))
+)
   
   
   #NOMINAL Fields
