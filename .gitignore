@@ -1,4 +1,6 @@
 Resources/PEDSnet_config.yml
+Resources/PEDSnet_config.yml.oracle
+Resources/PEDSnet_config.yml.postgres*
 Resources/PCORnet_config.yml
 Data/PreviousDataSummary/top50_inpatient_procedures_ranked.csv
 Data/PreviousDataSummary/top50_inpatient_conditions_ranked.csv
