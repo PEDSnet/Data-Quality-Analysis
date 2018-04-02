@@ -27,18 +27,17 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
   
   #print('here')
   
-  visit_tbl_new<- visit_tbl %>%  mutate(visit_start_date_new = sql('cast("visit_start_date" as date)')) %>%
-        select (visit_start_date_new, visit_concept_id, person_id)
-
   
   #print(glimpse(visit_tbl_new))
-  temp<-visit_tbl_new %>% 
-      filter(visit_start_date_new >='2009-01-01')
-  
-  print(glimpse(temp))
+  visit_tbl_new<-visit_tbl %>% 
+     dplyr::mutate(visit_year = sql('extract(year from "visit_start_date")')) %>%
+    select(visit_concept_id, visit_year, person_id) 
+     
+
+  #print(glimpse(temp))
                 
   ## Patients  satisfying inclusion criteria
-  valid_patients_by_visit<-select(filter(visit_tbl_new,visit_start_date_new >='2009-01-01'
+  valid_patients_by_visit<-select(filter(visit_tbl_new,visit_year >=2009
                                          & (visit_concept_id ==9201
                                             |visit_concept_id== 9202
                                             |visit_concept_id== 9203
@@ -51,22 +50,23 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
 
 
   condition_tbl_new<- condition_tbl %>%  
-    filter(!is.na(condition_start_date)) %>%
-    mutate(condition_start_date_new = sql('cast("condition_start_date" as date)')) %>%
-    select (condition_start_date_new, person_id)
+    dplyr::mutate(condition_year = sql('extract(year from "condition_start_date")')) %>%
+    select (condition_year, person_id)
   
   
   #print(glimpse(condition_tbl_new))
   
   valid_patients_by_condition<-condition_tbl_new %>% 
-    filter(condition_start_date_new >='2009-01-01') %>%
+    filter(condition_year >=2009) %>%
                   select(person_id)
   
   #print('here')
   #print(glimpse(valid_patients_by_condition))
   #print('here')
+  all_valid_patients<-inner_join(valid_patients_by_visit,valid_patients_by_condition, by ="person_id")
+  #print(glimpse(all_valid_patients))
   #patients not satisfying inclusion criteria
-  invalid_patients<-setdiff(all_patients,intersect(valid_patients_by_visit,valid_patients_by_condition))
+  invalid_patients<-anti_join(all_patients,all_valid_patients, by ="person_id")
   #print(head(invalid_patients))
   df_invalid_patients<-as.data.frame(invalid_patients)
 

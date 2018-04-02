@@ -51,7 +51,7 @@ and b.concept_id_2 = c.SCD_concept_id;
 
 
 ---- drug-ingredient map 
-drop table dqa.drug_in_concept_id_map; 
+--drop table dqa.drug_in_concept_id_map; 
 --- taking 5 min 
 --- creating mapping table from drug concept id to in concept id
 create table dqa.drug_in_concept_id_map as 

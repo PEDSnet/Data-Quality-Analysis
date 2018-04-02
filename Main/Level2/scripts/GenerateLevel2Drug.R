@@ -31,9 +31,9 @@ generateLevel2Drug <- function() {
   drug_tbl <- cdm_tbl(req_env$db_src, "drug_exposure")
   death_tbl <- cdm_tbl(req_env$db_src, "death")
 
-  concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
+  concept_tbl <- vocab_tbl(req_env$db_src, "concept")
   drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
-  drug_in_map_tbl <- dqa_tbl(req_env$db_src, 'drug_in_concept_id_map')
+  drug_in_map_tbl <- dqa_tbl(req_env$db_src, "drug_in_concept_id_map")
 
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
@@ -54,7 +54,7 @@ generateLevel2Drug <- function() {
                                                                                                  'drug_exposure_order_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
+
   
   #filter by inpatient and outpatient visits and select visit occurrence id column
   inpatient_visit_tbl<-select(filter(visit_tbl,
@@ -71,29 +71,23 @@ generateLevel2Drug <- function() {
  ### Print top 100 no matching concept source values in drug table 
   drug_no_match<- select( filter(drug_tbl, drug_concept_id==0)
                                , drug_source_value, drug_exposure_id)
-  
-  if(g_config$db$driver=='Oracle')
+
+    
     no_match_drug_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(drug_no_match, drug_source_value)
           , count=n())
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
-  else    
-  no_match_drug_counts <-
-    filter(
-      arrange(
-        summarize(
-          group_by(drug_no_match, drug_source_value)
-          , count=n(drug_exposure_id))
-        , desc(count))
-      , row_number()>=1 & row_number()<=100) ## printing top 100
+  
   
   df_no_match_drug_counts<-as.data.frame(
     no_match_drug_counts
   )
+  
+  
   
   if(nrow(df_no_match_drug_counts)>0)
   {
@@ -107,6 +101,8 @@ generateLevel2Drug <- function() {
             ,row.names=FALSE)
   }
 
+  
+  
   ###### Identifying outliers in top inpatient drugs 
   inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
                                         , visit_occurrence_id)
@@ -132,10 +128,11 @@ generateLevel2Drug <- function() {
       ,visit_occurrence_id, in_concept_id, in_concept_name)
   )
   
+  
   drug_counts_by_visit <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(drug_ingredient_visit_join_tbl, in_concept_id)
           , count=n_distinct(visit_occurrence_id))
         , desc(count))
@@ -189,8 +186,8 @@ generateLevel2Drug <- function() {
   
   drug_counts_by_person <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(drug_ingredient_visit_join_tbl, in_concept_id)
           , count=n_distinct(person_id))
         , desc(count))

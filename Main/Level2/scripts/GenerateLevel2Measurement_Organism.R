@@ -34,26 +34,16 @@ generateLevel2MeasurementOrganism <- function () {
   ### Print top 100 no matching concept source values in measurement org table 
   measurement_organism_no_match<- select( filter(measurement_organism_tbl, organism_concept_id==0)
                                                              , organism_source_value,meas_organism_id)
-  if(g_config$db$driver=='Oracle')
-    no_match_measurement_organism_counts <-
+
+  no_match_measurement_organism_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(measurement_organism_no_match, organism_source_value)
           , count=n())
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
-  #print(head(measurement_no_match))
-  else
-  no_match_measurement_organism_counts <-
-    filter(
-      arrange(
-        summarize(
-          group_by(measurement_organism_no_match, organism_source_value)
-          , count=n(meas_organism_id))
-        , desc(count))
-      , row_number()>=1 & row_number()<=100) ## printing top 100
-  
+ 
   
   df_no_match_measurement_organism_counts<-as.data.frame(
     no_match_measurement_organism_counts
@@ -83,17 +73,17 @@ generateLevel2MeasurementOrganism <- function () {
   
   measurement_organism_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(measurement_organism_tbl_enhanced, concept_id)
-          , occurrence_counts=n(meas_organism_id))
+          , occurrence_counts=n())
         , desc(occurrence_counts))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
   #print(head(measurement_organism_counts))
   
   df_measurement_organism_counts_all<-as.data.frame(
-    arrange(distinct(
+    dplyr::arrange(distinct(
       select(inner_join(measurement_organism_counts, measurement_organism_tbl_enhanced, 
                         by = c("concept_id"="concept_id"))
              ,concept_id, concept_name, occurrence_counts)

@@ -71,10 +71,10 @@ generateLevel2Measurement <- function () {
   #head(measurement_no_match)
   no_match_measurement_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(measurement_no_match, measurement_source_value)
-          , count=n(measurement_id))
+          , count=n())
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
@@ -108,17 +108,17 @@ generateLevel2Measurement <- function () {
   
   vital_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(vital_tbl_enhanced,concept_id)
-          , occurrence_counts=n(measurement_id))
+          , occurrence_counts=n())
         , desc(occurrence_counts))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
   #head(vital_counts)
   
   df_vital_counts_all<-as.data.frame(
-    arrange(distinct(
+    dplyr::arrange(distinct(
       select(inner_join(vital_counts, vital_tbl_enhanced, 
                         by = c("concept_id"="concept_id"))
              ,concept_id, concept_name, occurrence_counts)
@@ -147,17 +147,17 @@ generateLevel2Measurement <- function () {
   
   lab_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(lab_tbl_enhanced, concept_id)
-          , occurrence_counts=n(measurement_id))
+          , occurrence_counts=n())
         , desc(occurrence_counts))
       , row_number()>=1 & row_number()<=100) ## printing top 100
   
   #print(head(lab_counts))
   
   df_lab_counts_all<-as.data.frame(
-    arrange(distinct(
+    dplyr::arrange(distinct(
       select(inner_join(lab_counts, lab_tbl_enhanced, 
                         by = c("concept_id"="concept_id"))
              ,concept_id, concept_name, occurrence_counts)

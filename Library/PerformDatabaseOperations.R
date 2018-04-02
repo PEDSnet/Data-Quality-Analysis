@@ -31,21 +31,21 @@ cdm_tbl <-
 #' @param name The name of the table
 #'
 #' @return A [dplyr::tbl()]] pointing to the table
-vocabulary_tbl <-
+vocab_tbl <-
   function(db, name)
     .qual_tbl(db, config('table_names')[[name]], 'vocabulary_schema')
 
 
-#' Connect to a result table
+#' Connect to a dqa table
 #' @md
 #'
 #' @param db The database connection
 #' @param name The name of the table
 #'
 #' @return A [dplyr::tbl()]] pointing to the table
-results_tbl <-
+dqa_tbl <-
   function(db, name)
-    .qual_tbl(db, config('table_names')[[name]], 'results_schema')
+    .qual_tbl(db, config('table_names')[[name]], 'dqa_schema')
 
 establish_database_connection_OHDSI<-function(config)
 {
