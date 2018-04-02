@@ -56,7 +56,8 @@ generateLevel2Patient <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-
+  #print('here')
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

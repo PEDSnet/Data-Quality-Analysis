@@ -62,12 +62,13 @@ generateLevel2Procedure <- function () {
   
   no_match_procedure_counts <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(procedure_no_match, procedure_source_value)
-          , count=n(procedure_occurrence_id))
+          , count=n())
         , desc(count))
       , row_number()>=1 & row_number()<=100) ## printing top 100
+  
   
   df_no_match_procedure_counts<-as.data.frame(
     no_match_procedure_counts
@@ -118,10 +119,10 @@ generateLevel2Procedure <- function () {
   #print(head(main_tbl))
   procedure_counts_by_visit <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(procedure_visit_join_tbl, concept_id)
-          , count=n(visit_occurrence_id))
+          , count=n())
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   
@@ -166,10 +167,10 @@ generateLevel2Procedure <- function () {
   
   out_procedure_counts_by_person <-
     filter(
-      arrange(
-        summarize(
+      dplyr::arrange(
+        dplyr::summarize(
           group_by(out_procedure_visit_join_tbl, concept_id)
-          , count=n(person_id))
+          , count=n())
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   

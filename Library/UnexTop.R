@@ -82,13 +82,15 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
     #print(list_index)
     temp1<-select(
       filter(concept_ancestor_tbl, ancestor_concept_id==top_facts_other_sites_list[list_index]
-      ), descendant_concept_id) %>% rename(final_concept_id=descendant_concept_id )
+      ), descendant_concept_id) %>% 
+      dplyr::rename(final_concept_id=descendant_concept_id )
     #print('temp1')
     #print(glimpse(temp1))
     
     temp2<-select(
       filter(concept_ancestor_tbl, descendant_concept_id==top_facts_other_sites_list[list_index]
-      ), ancestor_concept_id) %>% rename(final_concept_id=ancestor_concept_id)
+      ), ancestor_concept_id) %>% 
+      dplyr::rename(final_concept_id=ancestor_concept_id)
     #print('temp2')
     #print(glimpse(temp2))
     temp<- 

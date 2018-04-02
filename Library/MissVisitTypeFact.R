@@ -40,16 +40,11 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
   
   #print(head(key_visits))
   
-  if(g_config$db$driver=='Oracle')
     total_key_visits<-#nrow(key_visits)
     as.data.frame(
-      key_visits %>% summarise(count=n()) 
+      key_visits %>%  dplyr::summarise(count=n()) 
     )[1,1]
-  else    
-  total_key_visits<-#nrow(key_visits)
-    as.data.frame(
-    key_visits %>% summarise(count=n(visit_occurrence_id)) 
-    )[1,1]
+ 
   
   #print(total_key_visits)
   
@@ -79,11 +74,8 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
   result<-anti_join(key_visits,second_tbl_with_facts, by ="visit_occurrence_id")
   
   #print(nrow(result))
-  if(g_config$db$driver=='Oracle')
   final_result<-dplyr::summarize(result, n=n())
-  else  
-  final_result<-dplyr::summarize(result, n=n(visit_occurrence_id))
-  
+
   
   key_visits_without_facts<-as.data.frame(final_result)[1,1]
   

@@ -50,9 +50,9 @@ config('cdm_schema',  g_config$db$schema)
 #> If `NA`, no schema qualifier is added.
 config('vocabulary_schema', g_config$db$vocab_schema)
 
-#> Name of the schema, if any, to be added to result schema tables
+#> Name of the schema, if any, to be added to dqa schema tables
 #> If `NA`, no schema qualifier is added.
-config('result_schema', NA)
+config('dqa_schema', g_config$db$dqa_schema)
 
 #> Names of standard tables used in queries.  Please edit only the
 #> right-hand side of each assignment.  Table names must be lower-case.
@@ -77,6 +77,7 @@ config('table_names',
             visit_payer = 'visit_payer',
             concept = 'concept',
             concept_ancestor = 'concept_ancestor',
-            concept_relationship = 'concept_relationship'))
+            concept_relationship = 'concept_relationship',
+            drug_in_concept_id_map = 'drug_in_concept_id_map'))
 
 #> ##################### End of site-specific configuration

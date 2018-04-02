@@ -39,10 +39,7 @@ generateLevel2ADT_Occurrence <- function () {
   adt_tbl <- cdm_tbl(req_env$db_src, 'adt_occurrence')
   
 
-  if(g_config$db$driver=='Oracle')
   total_adt_count<-  as.data.frame(dplyr::summarise(adt_tbl,count = n()))[1,1]
-  else
-  total_adt_count<-  as.data.frame(dplyr::summarise(adt_tbl,count = n(adt_occurrence_id)))[1,1]
   
   #total_adt_count<-  as.data.frame(summarise(adt_tbl,count = n()))[1,1]
   log_entry_content<-(read.csv(log_file_name))
