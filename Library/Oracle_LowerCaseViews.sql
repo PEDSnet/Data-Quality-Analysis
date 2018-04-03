@@ -45,6 +45,8 @@ grant select on "CDM_VIEW"."visit_payer" to CDM_VIEW;
 -- Replace "DQA_VIEW" with the correct schema
 create or replace view "DQA_VIEW"."drug_in_concept_id_map" as select "DRUG_CONCEPT_ID" as "drug_concept_id", "IN_CONCEPT_ID" as "in_concept_id", "IN_CONCEPT_NAME" as "in_concept_name" from "DQA_VIEW"."DRUG_IN_CONCEPT_ID_MAP";
 
+grant select on "DQA_VIEW"."drug_in_concept_id_map" to DQA_VIEW;
+
 -- Replace "VOCAB_VIEW" with the correct schema
 create or replace view "VOCAB_VIEW"."concept" as select "CONCEPT_CLASS_ID" as "concept_class_id", "CONCEPT_CODE" as "concept_code", "CONCEPT_ID" as "concept_id", "CONCEPT_LEVEL" as "concept_level", "CONCEPT_NAME" as "concept_name", "DOMAIN_ID" as "domain_id", "INVALID_REASON" as "invalid_reason", "STANDARD_CONCEPT" as "standard_concept", "VALID_END_DATE" as "valid_end_date", "VALID_START_DATE" as "valid_start_date", "VOCABULARY_ID" as "vocabulary_id" from "VOCAB_VIEW"."CONCEPT";
 create or replace view "VOCAB_VIEW"."concept_ancestor" as select "ANCESTOR_CONCEPT_ID" as "ancestor_concept_id", "DESCENDANT_CONCEPT_ID" as "descendant_concept_id", "MAX_LEVELS_OF_SEPARATION" as "max_levels_of_separation", "MIN_LEVELS_OF_SEPARATION" as "min_levels_of_separation" from "VOCAB_VIEW"."CONCEPT_ANCESTOR";
@@ -55,5 +57,3 @@ grant select on "VOCAB_VIEW"."concept" to VOCAB_VIEW;
 grant select on "VOCAB_VIEW"."concept_ancestor" to VOCAB_VIEW;
 grant select on "VOCAB_VIEW"."concept_relationship" to VOCAB_VIEW;
 grant select on "VOCAB_VIEW"."vocabulary" to VOCAB_VIEW;
-
-grant select on "DQA_VIEW"."drug_in_concept_id_map" to DQA_VIEW;
