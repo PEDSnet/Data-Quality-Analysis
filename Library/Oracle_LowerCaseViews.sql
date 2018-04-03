@@ -1,3 +1,4 @@
+-- Replace "CDM_VIEW" with the correct schema
 create or replace view "CDM_VIEW"."adt_occurrence" as select "ADT_DATE" as "adt_date", "ADT_DATETIME" as "adt_datetime", "ADT_OCCURRENCE_ID" as "adt_occurrence_id", "ADT_TYPE_CONCEPT_ID" as "adt_type_concept_id", "ADT_TYPE_SOURCE_VALUE" as "adt_type_source_value", "CARE_SITE_ID" as "care_site_id", "NEXT_ADT_OCCURRENCE_ID" as "next_adt_occurrence_id", "PERSON_ID" as "person_id", "PRIOR_ADT_OCCURRENCE_ID" as "prior_adt_occurrence_id", "SERVICE_CONCEPT_ID" as "service_concept_id", "SERVICE_SOURCE_VALUE" as "service_source_value", "VISIT_OCCURRENCE_ID" as "visit_occurrence_id" from "PEDSNET_ORACLE_TBLS"."ADT_OCCURRENCE";
 create or replace view "CDM_VIEW"."care_site" as select "CARE_SITE_ID" as "care_site_id", "CARE_SITE_NAME" as "care_site_name", "CARE_SITE_SOURCE_VALUE" as "care_site_source_value", "LOCATION_ID" as "location_id", "PLACE_OF_SERVICE_CONCEPT_ID" as "place_of_service_concept_id", "PLACE_OF_SERVICE_SOURCE_VALUE" as "place_of_service_source_value", "SPECIALTY_CONCEPT_ID" as "specialty_concept_id", "SPECIALTY_SOURCE_VALUE" as "specialty_source_value" from "PEDSNET_ORACLE_TBLS"."CARE_SITE";
 create or replace view "CDM_VIEW"."condition_era" as select "CONDITION_CONCEPT_ID" as "condition_concept_id", "CONDITION_ERA_END_DATE" as "condition_era_end_date", "CONDITION_ERA_ID" as "condition_era_id", "CONDITION_ERA_START_DATE" as "condition_era_start_date", "CONDITION_OCCURRENCE_COUNT" as "condition_occurrence_count", "PERSON_ID" as "person_id" from "PEDSNET_ORACLE_TBLS"."CONDITION_ERA";
@@ -20,14 +21,6 @@ create or replace view "CDM_VIEW"."visit_occurrence" as select "ADMITTING_SOURCE
  "DISCHARGE_TO_SOURCE_VALUE" as "discharge_to_source_value", "PERSON_ID" as "person_id", "PRECEDING_VISIT_OCCURRENCE_ID" as "preceding_visit_occurrence_id", "PROVIDER_ID" as "provider_id", "VISIT_CONCEPT_ID" as "visit_concept_id", "VISIT_END_DATE" as "visit_end_date", "VISIT_END_DATETIME" as "visit_end_datetime", "VISIT_OCCURRENCE_ID" as "visit_occurrence_id", "VISIT_SOURCE_CONCEPT_ID" as "visit_source_concept_id", "VISIT_SOURCE_VALUE" as "visit_source_value", "VISIT_START_DATE" as "visit_start_date", "VISIT_START_DATETIME" as "visit_start_datetime", "VISIT_TYPE_CONCEPT_ID" as "visit_type_concept_id" from "PEDSNET_ORACLE_TBLS"."VISIT_OCCURRENCE";
 create or replace view "CDM_VIEW"."visit_payer" as select "PLAN_CLASS" as "plan_class", "PLAN_NAME" as "plan_name", "PLAN_TYPE" as "plan_type", "VISIT_OCCURRENCE_ID" as "visit_occurrence_id", "VISIT_PAYER_ID" as "visit_payer_id" from "PEDSNET_ORACLE_TBLS"."VISIT_PAYER";
 
-create or replace view "VOCAB_VIEW"."concept" as select "CONCEPT_CLASS_ID" as "concept_class_id", "CONCEPT_CODE" as "concept_code", "CONCEPT_ID" as "concept_id", "CONCEPT_LEVEL" as "concept_level", "CONCEPT_NAME" as "concept_name", "DOMAIN_ID" as "domain_id", "INVALID_REASON" as "invalid_reason", "STANDARD_CONCEPT" as "standard_concept", "VALID_END_DATE" as "valid_end_date", "VALID_START_DATE" as "valid_start_date", "VOCABULARY_ID" as "vocabulary_id" from "VOCAB_VIEW"."CONCEPT";
-create or replace view "VOCAB_VIEW"."concept_ancestor" as select "ANCESTOR_CONCEPT_ID" as "ancestor_concept_id", "DESCENDANT_CONCEPT_ID" as "descendant_concept_id", "MAX_LEVELS_OF_SEPARATION" as "max_levels_of_separation", "MIN_LEVELS_OF_SEPARATION" as "min_levels_of_separation" from "VOCAB_VIEW"."CONCEPT_ANCESTOR";
-create or replace view "VOCAB_VIEW"."concept_relationship" as select "CONCEPT_ID_1" as "concept_id_1", "CONCEPT_ID_2" as "concept_id_2", "INVALID_REASON" as "invalid_reason", "RELATIONSHIP_ID" as "relationship_id", "VALID_END_DATE" as "valid_end_date", "VALID_START_DATE" as "valid_start_date" from "VOCAB_VIEW"."CONCEPT_RELATIONSHIP";
-create or replace view "VOCAB_VIEW"."vocabulary" as select "VOCABULARY_CONCEPT_ID" as "vocabulary_concept_id", "VOCABULARY_ID" as "vocabulary_id", "VOCABULARY_NAME" as "vocabulary_name", "VOCABULARY_REFERENCE" as "vocabulary_reference", "VOCABULARY_VERSION" as "vocabulary_version" from "VOCAB_VIEW"."VOCABULARY";
-
-create or replace view "DQA_VIEW"."drug_in_concept_id_map" as select "DRUG_CONCEPT_ID" as "drug_concept_id", "IN_CONCEPT_ID" as "in_concept_id", "IN_CONCEPT_NAME" as "in_concept_name" from "DQA_VIEW"."DRUG_IN_CONCEPT_ID_MAP";
-
-
 grant select on "CDM_VIEW"."adt_occurrence" to CDM_VIEW;
 grant select on "CDM_VIEW"."care_site" to CDM_VIEW;
 grant select on "CDM_VIEW"."condition_era" to CDM_VIEW;
@@ -48,6 +41,15 @@ grant select on "CDM_VIEW"."procedure_occurrence" to CDM_VIEW;
 grant select on "CDM_VIEW"."provider" to CDM_VIEW;
 grant select on "CDM_VIEW"."visit_occurrence" to CDM_VIEW;
 grant select on "CDM_VIEW"."visit_payer" to CDM_VIEW;
+
+-- Replace "DQA_VIEW" with the correct schema
+create or replace view "DQA_VIEW"."drug_in_concept_id_map" as select "DRUG_CONCEPT_ID" as "drug_concept_id", "IN_CONCEPT_ID" as "in_concept_id", "IN_CONCEPT_NAME" as "in_concept_name" from "DQA_VIEW"."DRUG_IN_CONCEPT_ID_MAP";
+
+-- Replace "VOCAB_VIEW" with the correct schema
+create or replace view "VOCAB_VIEW"."concept" as select "CONCEPT_CLASS_ID" as "concept_class_id", "CONCEPT_CODE" as "concept_code", "CONCEPT_ID" as "concept_id", "CONCEPT_LEVEL" as "concept_level", "CONCEPT_NAME" as "concept_name", "DOMAIN_ID" as "domain_id", "INVALID_REASON" as "invalid_reason", "STANDARD_CONCEPT" as "standard_concept", "VALID_END_DATE" as "valid_end_date", "VALID_START_DATE" as "valid_start_date", "VOCABULARY_ID" as "vocabulary_id" from "VOCAB_VIEW"."CONCEPT";
+create or replace view "VOCAB_VIEW"."concept_ancestor" as select "ANCESTOR_CONCEPT_ID" as "ancestor_concept_id", "DESCENDANT_CONCEPT_ID" as "descendant_concept_id", "MAX_LEVELS_OF_SEPARATION" as "max_levels_of_separation", "MIN_LEVELS_OF_SEPARATION" as "min_levels_of_separation" from "VOCAB_VIEW"."CONCEPT_ANCESTOR";
+create or replace view "VOCAB_VIEW"."concept_relationship" as select "CONCEPT_ID_1" as "concept_id_1", "CONCEPT_ID_2" as "concept_id_2", "INVALID_REASON" as "invalid_reason", "RELATIONSHIP_ID" as "relationship_id", "VALID_END_DATE" as "valid_end_date", "VALID_START_DATE" as "valid_start_date" from "VOCAB_VIEW"."CONCEPT_RELATIONSHIP";
+create or replace view "VOCAB_VIEW"."vocabulary" as select "VOCABULARY_CONCEPT_ID" as "vocabulary_concept_id", "VOCABULARY_ID" as "vocabulary_id", "VOCABULARY_NAME" as "vocabulary_name", "VOCABULARY_REFERENCE" as "vocabulary_reference", "VOCABULARY_VERSION" as "vocabulary_version" from "VOCAB_VIEW"."VOCABULARY";
 
 grant select on "VOCAB_VIEW"."concept" to VOCAB_VIEW;
 grant select on "VOCAB_VIEW"."concept_ancestor" to VOCAB_VIEW;
