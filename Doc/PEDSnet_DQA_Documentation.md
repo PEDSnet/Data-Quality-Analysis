@@ -4,6 +4,9 @@
 
 [Required Downloads](https://github.com/PEDSnet/Data-Quality-Analysis#required-downloads)
 
+(Oracle-only) Create views in database by running [Library/Oracle_LowerCaseViews.sql](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Library/Oracle_LowerCaseViews.sql)
+  * Replace "CDM_VIEW", "DQA_VIEW", and "VOCABULARY_VIEW" with appropriate schemas before running
+
 ## Apply Data Quality Checks
 
 ### Create Configuration Files
