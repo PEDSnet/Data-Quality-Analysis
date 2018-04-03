@@ -7,6 +7,9 @@ source('Resources/site_info.R')
 source("./Main/Level1/v2/Execute_Level1_PEDSnet_DQA.R", chdir=T)
 source("./Main/Level2/Execute_Level2_PEDSnet_DQA.R", chdir = T)
 
+Sys.setenv(TZ="GMT")
+Sys.setenv(ORA_SDTZ="GMT") 
+
 #Fixes rJava out of memory exception
 options(java.parameters = "-Xmx1024m")
 
