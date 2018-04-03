@@ -39,12 +39,8 @@ generateLevel2Death <- function () {
   death_tbl <- cdm_tbl(req_env$db_src, "death")
   
   
-  ## Is there an elegant way to determine whether a site is using ROracle, or RPostgres or RPostgreSQL
-  if(g_config$db$driver=='Oracle')
-    total_death_count<-  as.data.frame(summarise(death_tbl,n = n()))[1,1]
-  else
-    total_death_count<-  as.data.frame(summarise(death_tbl,n = n(death_cause_id)))[1,1]
-  
+  total_death_count<-  as.data.frame(dplyr::summarise(death_tbl,n = n()))[1,1]
+
   
   ##AA009 date time consistency
   log_entry_content<-(read.csv(log_file_name))
