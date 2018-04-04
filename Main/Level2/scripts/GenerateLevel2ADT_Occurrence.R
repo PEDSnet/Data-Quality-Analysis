@@ -1,3 +1,7 @@
+library(DBI)
+library(yaml)
+library(dplyr)
+
 generateLevel2ADT_Occurrence <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
   
