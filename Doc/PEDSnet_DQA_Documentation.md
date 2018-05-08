@@ -79,6 +79,7 @@ generateSingleReport(level=1, report="table_name")
 
 #### All Tables:
 ``` R
+source("Run_DQA.R")
 runDQA(level=2)
 ```
 
@@ -89,5 +90,5 @@ generateSingleReport(level=2, report="table_name")
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```
 
-## Generate feedback (GitHub)
+## Generate feedback (GitHub) (DCC-Only)
 To investigate differences between the previous data version and the current and generate feedback, follow the instructions [here](../Tools/dqa/README.md).
