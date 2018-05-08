@@ -79,9 +79,9 @@ generateSingleReport(level=1, report="table_name")
 
 #### All Tables:
 ``` R
-source("Run_DQA.R")
 runDQA(level=2)
 ```
+  * After Level 1, the database connection may occasionally close. To re-establish it, run `source("Run_DQA.R")` again before starting Level 2
 
 #### Single Table:
 ```R
