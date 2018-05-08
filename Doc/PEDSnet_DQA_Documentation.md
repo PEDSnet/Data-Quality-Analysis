@@ -77,12 +77,12 @@ generateSingleReport(level=1, report="table_name")
 
 ### Level 2
 
-#### All Tables: Postgres
+#### All Tables:
 ``` R
 runDQA(level=2)
 ```
 
-#### Single Table: Postgres
+#### Single Table:
 ```R
 generateSingleReport(level=2, report="table_name")
 
