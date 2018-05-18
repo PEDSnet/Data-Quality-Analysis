@@ -31,8 +31,26 @@ generateLevel2Measurement <- function () {
 
   concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
  
-
+  ## CA008 temporal outliers
+  field_name = 'measurement_date'
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'measurement_type_concept_id'), c(2000000033,'vitals'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"vitals","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-vitals')));
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'measurement_type_concept_id'), c(44818702,'labs'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(labs)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-labs')));
+  
   ### checking consistency between date and date/time fields. 
+  
   ## AA009 check type 
   
   
