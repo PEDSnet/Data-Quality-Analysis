@@ -28,7 +28,7 @@ R version 3.1.x or above, 64-bit ([Comprehensive R Archive Network](http://cran.
 ### R Packages 
 
 ```
-install.packages(c("DBI","yaml","ggplot2","RJDBC","devtools","futile.logger","plyr","dplyr","dbplyr"))
+install.packages(c("DBI","yaml","ggplot2","RJDBC","devtools","futile.logger","plyr","dplyr","dbplyr","lubridate"))
 
 install.packages("RPostgres")
 library(devtools)

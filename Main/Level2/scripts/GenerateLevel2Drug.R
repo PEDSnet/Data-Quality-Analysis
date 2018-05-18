@@ -34,6 +34,34 @@ generateLevel2Drug <- function() {
   drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
   drug_in_map_tbl <- dqa_tbl(req_env$db_src, "drug_in_concept_id_map")
 
+  ### temporal outlier check 
+  field_name<-"drug_exposure_start_date"
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000175,'dispensing'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(dispensing)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-dispensing')));
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000180,'inpatient-mar'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(inpatient MAR)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-inpatient-mar')));
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000177,'prescriptions'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(prescriptions)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-prescriptions')));
+  
+  
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_start_datetime', 

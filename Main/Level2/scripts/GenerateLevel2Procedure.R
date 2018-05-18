@@ -31,6 +31,18 @@ generateLevel2Procedure <- function () {
   concept_ancestor_tbl <- vocab_tbl(req_env$db_src, 'concept_ancestor')
   procedure_concept_tbl <- select(filter(concept_tbl, domain_id=='Procedure'), concept_id, concept_name)
   
+  ### CA008 temporal outlier check 
+  field_name<-"procedure_date"
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name), NULL)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm')));
+  
+  
   ### AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_datetime', 
