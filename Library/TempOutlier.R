@@ -25,7 +25,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   {
   date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
              group_by_(date_field) %>% 
-              summarise(date_level_count = n()) %>%
+              dplyr::summarise(date_level_count = n()) %>%
               collect()
   } else 
   {
@@ -35,7 +35,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
       filter_(paste0(fact_type_concept_id_colname,'==',fact_type_concept_id)) %>%
       group_by_(date_field) %>% 
-      summarise(date_level_count = n()) %>%
+      dplyr::summarise(date_level_count = n()) %>%
       collect()
   }
   
@@ -57,9 +57,9 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
       filter(year<= 2017) %>%
     mutate(yyyymm = paste0(year,'-',month)) %>%
     group_by (yyyymm) %>%
-    summarise(yyyymm_level_count = sum(date_level_count)) %>%
-    mutate(rnum = row_number()) %>%
-    mutate(next_rnum = rnum+1)
+    dplyr::summarise(yyyymm_level_count = sum(date_level_count)) %>%
+    dplyr::mutate(rnum = row_number()) %>%
+    dplyr::mutate(next_rnum = rnum+1)
   
   ## plot this table 
   describeYYMMField(date_dist_tbl_simplified%>% select(yyyymm, yyyymm_level_count)
@@ -71,7 +71,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   ## this table contains deltas and the data points used for outlier detection 
   date_dist_delta<- date_dist_tbl_simplified %>% 
       inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) %>%
-      mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
+      dplyr::mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
       select(yyyymm.y, change_over_last_month)
   
   #print(glimpse(date_dist_delta))  

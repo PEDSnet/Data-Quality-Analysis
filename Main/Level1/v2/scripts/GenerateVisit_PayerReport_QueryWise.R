@@ -82,6 +82,28 @@ generateVisitPayerReport <- function() {
 
    flog.info(Sys.time())
 
+  ### visit payer type concept id 
+  field_name<-"visit_payer_type_concept_id" #
+  df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
+  order_bins <-c("31968","31969","44814653", "44814649","44814650","0",NA)
+  label_bins<-c("primary (31968)","secondary (31969)","0 (No matching)","Unknown (44814653)",
+                "Other (44814649)","No Information (44814650 )","NULL")
+  color_bins <-c("31968"="lightcoral","31969"="steelblue1","0"="red","44814653"="grey64","44814649"="grey64","44814650 "="grey64")
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent<- extract_numeric_value(missing_percent_message)
+  fileContent<-c(fileContent,missing_percent_message)
+  ###########DQA CHECKPOINT##############
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "visit_payer_type_concept_id.csv")) 
+  
+  describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+  
+  
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

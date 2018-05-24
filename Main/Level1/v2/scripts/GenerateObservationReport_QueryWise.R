@@ -71,14 +71,14 @@ generateObservationReport <- function() {
   message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   missing_percent_source_value<-extract_numeric_value(message)
-  describeOrdinalField(df_table, table_name, field_name,big_data_flag)
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  df_table<-retrieve_dataframe_top_5(con, g_config, table_name, field_name)
-  fileContent<-c(fileContent,paste("The most frequent values for",field_name,"are:"))
-  for(row_count in 1:5)
-  {
-    fileContent<-c(fileContent,paste(df_table[row_count,1],"(count=",df_table[row_count,2],")"))
-  }
+  #describeOrdinalField(df_table, table_name, field_name,big_data_flag)
+  #fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+  #df_table<-retrieve_dataframe_top_5(con, g_config, table_name, field_name)
+  #fileContent<-c(fileContent,paste("The most frequent values for",field_name,"are:"))
+  #for(row_count in 1:5)
+  #{
+  #  fileContent<-c(fileContent,paste(df_table[row_count,1],"(count=",df_table[row_count,2],")"))
+  #}
 
   field_name="observation_source_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -291,6 +291,8 @@ logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650 ,big_data_flag)
+  
+  
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "qualifier_source_value"),con
   )) 
