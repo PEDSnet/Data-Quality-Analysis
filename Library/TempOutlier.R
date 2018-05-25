@@ -82,6 +82,8 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   
   date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
   
+  if(nrow(date_dist_delta)>0)
+  {
   date_dist_delta$outlier<-FALSE
   for(i in 1:nrow(date_dist_delta))
   {
@@ -116,7 +118,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     return(logIssue(issue_obj))
     
   }
-  
+  }
   NextMethod("applyCheck",theObject)
   return(c())
 }
