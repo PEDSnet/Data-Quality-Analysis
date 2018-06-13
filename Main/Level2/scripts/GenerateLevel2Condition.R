@@ -172,6 +172,8 @@ generateLevel2Condition <- function() {
       , concept_id, concept_name, count)
   )
   #print(nrow(df_condition_counts_by_visit))
+  if(nrow(df_condition_counts_by_visit)>0)
+  {
   outlier_inpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id', 
                                             c(df_condition_counts_by_visit,'vt_counts','top_inpatient_conditions.csv',
                                               'outlier inpatient condition:',g_top50_inpatient_conditions_path
@@ -193,7 +195,7 @@ generateLevel2Condition <- function() {
     write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
   }
   }
-  
+  }
 
   
   
@@ -235,6 +237,8 @@ generateLevel2Condition <- function() {
       , concept_id, concept_name, count)
   )
   
+  if(nrow(df_out_condition_counts_by_person)>0)
+  {
   outlier_outpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id', 
                                            c(df_out_condition_counts_by_person,'pt_counts','top_outpatient_conditions.csv',
                                              'outlier outpatient condition:',g_top50_outpatient_conditions_path
@@ -252,11 +256,11 @@ generateLevel2Condition <- function() {
     write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
   }
   
-  
+  }
   fileContent<-c(fileContent,"##Unexpected Events")
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('condition_start_date', 
-                                                                                                      'birth_datetime'))) 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name), 
+                                                               c('condition_start_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

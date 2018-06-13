@@ -15,34 +15,36 @@ PreBirth <- function()
 
 applyCheck.PreBirth<- function(theObject, table_list, field_list)
 {
-  table_name_1<-table_list[1]
-  table_name_2<-table_list[2]
-  field_name_1<-field_list[1]
-  field_name_2<-field_list[2]
-  
+  fact_table_name<-table_list[1]
+  date_field<-field_list[1]
+
   
   #print(check_list_entry)
-  fact_tbl <- cdm_tbl(req_env$db_src, table_name_1)
+  fact_tbl <- cdm_tbl(req_env$db_src, fact_table_name)
   
   
-  patient_tbl<-cdm_tbl(req_env$db_src, table_name_2) %>%
-    dplyr::mutate(birth_date = sql('cast("birth_datetime" as date)'))
+  patient_tbl<-cdm_tbl(req_env$db_src, 'person') %>% 
+    select(person_id, birth_datetime) 
+    #%>% 
+    #collect() %>%
+    #dplyr::mutate(birth_date = lubridate::date(birth_datetime)) %>%
+    #select(person_id, birth_date)
+    #copy_to(req_env$db_src,'patient_birth_date')
   
-  #glimpse(patient_tbl)
-  field_name_2<-"birth_date"
+  #patient_tbl<-create_database_copy(patient_tbl, 'patient_birth_date')
+  
                    
-  df_before_dob<-as.data.frame(
-    select_(
-      filter_(inner_join(fact_tbl,patient_tbl, by =c("person_id"="person_id")),
-              paste0(field_name_1, '<', field_name_2))
-      ,quote(person_id), field_name_1
-    ))
-
+  df_before_dob<- fact_tbl %>% 
+      inner_join(patient_tbl, by =c("person_id"="person_id")
+                             ) %>%
+    filter_(paste0('birth_datetime >', date_field)) %>%
+    select_(quote(person_id), date_field) %>% collect() 
+  
   print(nrow(df_before_dob))  
    if(nrow(df_before_dob)>0)
   {
     # create an issue 
-    issue_obj<-Issue(theObject, table_list, field_list, (nrow(df_before_dob)))
+    issue_obj<-Issue(theObject, fact_table_name, date_field, (nrow(df_before_dob)))
     #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))

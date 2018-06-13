@@ -144,11 +144,16 @@ generateLevel2Procedure <- function () {
   )
   #print(df_procedure_counts_by_visit)
   
+     if(nrow(df_procedure_counts_by_visit)>0)
+     {
     outlier_inpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
-                                           c(df_procedure_counts_by_visit,'vt_counts','top_inpatient_procedure.csv',
-                                             'outlier inpatient procedure:',g_top50_inpatient_procedures_path
+                                           c(df_procedure_counts_by_visit,'vt_counts',
+                                             'top_inpatient_procedure.csv',
+                                             'outlier inpatient procedure:',
+                                             g_top50_inpatient_procedures_path
                                              , 'Procedure'))
-
+     
+  
     if(nrow(outlier_inpatient_procedures)>0)
     for ( issue_count in 1: nrow(outlier_inpatient_procedures))
     {
@@ -161,6 +166,7 @@ generateLevel2Procedure <- function () {
     write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
     }
   
+     }
   ### implementation of unexpected top outpatient procedures check 
   outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
                                ,visit_occurrence_id, person_id)
@@ -191,6 +197,8 @@ generateLevel2Procedure <- function () {
       , concept_id, concept_name, count)
   )
   
+  if(nrow(df_out_procedure_counts_by_person)>0)
+  {
   outlier_outpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_out_procedure_counts_by_person,'pt_counts','top_outpatient_procedure.csv',
                                              'outlier outpatient procedure:',g_top50_outpatient_procedures_path
@@ -208,13 +216,13 @@ generateLevel2Procedure <- function () {
     write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
   }
   
-  
+  }
   
   fileContent<-c(fileContent,"##Implausible Events")
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('procedure_date', 
-                                                                                                      'birth_datetime'))) 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name), c('procedure_date')
+                                                               )) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
