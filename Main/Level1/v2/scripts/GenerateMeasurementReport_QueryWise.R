@@ -425,7 +425,7 @@ generateMeasurementReport <- function() {
   	                                                 list(3024561, 3000034, 3049506, 3001802,  "Albumin"),  
   	                                                 list(3013682,  "Blood Urea Nitrogen (BUN)"),
   	                                                 list(3006490, 3006906, 3007501, 3021119,  "Calcium"), 
-  	                                                 list(3016293,  "Carbon Dioxide (Bicarbonate)"), 
+  	                                                 list(3016293,3015632,  "Carbon Dioxide (Bicarbonate)"), 
   	                                                 list(3014576,  "Chloride"), 
   	                                                 list(3016723, 3017250, 3030354
   	                                                   , 3001802, 3001582,  "creatinine"), 
