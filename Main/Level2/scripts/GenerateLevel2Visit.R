@@ -83,8 +83,8 @@ generateLevel2Visit <- function () {
   ## Temporal checks --- facts before birth date
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('visit_start_date', 
-                                                                                                 'birth_datetime'))) 
+  log_entry_content<-custom_rbind(log_entry_content,
+                                  applyCheck(PreBirth(), c(table_name), c('visit_start_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

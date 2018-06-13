@@ -197,8 +197,7 @@ generateLevel2Measurement <- function () {
   fileContent<-c(fileContent,"##Implausible Events")
   table_name<-"measurement"
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('measurement_date', 
-                                                                                                      'birth_datetime'))) 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name), c('measurement_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
