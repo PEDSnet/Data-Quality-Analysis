@@ -26,15 +26,9 @@ applyCheck.MissConID<- function(theObject, table_list, field_list, con)
   
   df_total<-retrieve_dataframe_record_count(con,g_config,table_name)
 
-  #print(df_table)
- # no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,TRUE)
-  #print(no_matching_message)
-  #no_matching_perc<-extract_numeric_value(no_matching_message)
-  #print(df_nomatch[1,1])
-  #print(df_total[1,1])
-  no_matching_perc<-round(df_nomatch[1,1]/df_total[1,1], 2)
 
-  #print(no_matching_perc)
+  no_matching_perc<-round(df_nomatch[1,1]*100/df_total[1,1], 2)
+
   #print(no_matching_perc)
   if(no_matching_perc<check_list_entry$Lower_Threshold || no_matching_perc>check_list_entry$Upper_Threshold)
   {
