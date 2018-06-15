@@ -1,7 +1,6 @@
 library(DBI)
 library(yaml)
 library(dplyr)
-library(RPostgreSQL)
 
 generateLevel2Observation <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
@@ -32,9 +31,17 @@ generateLevel2Observation <- function () {
   visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
   concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
 
-  #patient_dob_tbl <- tbl(req_env$db_src, dplyr::sql
-  #                       ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
-
+  
+  ### CA008 temporal outlier check 
+  field_name<-"observation_date"
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name), NULL)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm')));
   
   ### AA009 datetime inconsistency
   log_entry_content<-(read.csv(log_file_name))

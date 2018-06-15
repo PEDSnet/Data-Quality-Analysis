@@ -425,7 +425,7 @@ generateMeasurementReport <- function() {
   	                                                 list(3024561, 3000034, 3049506, 3001802,  "Albumin"),  
   	                                                 list(3013682,  "Blood Urea Nitrogen (BUN)"),
   	                                                 list(3006490, 3006906, 3007501, 3021119,  "Calcium"), 
-  	                                                 list(3016293,  "Carbon Dioxide (Bicarbonate)"), 
+  	                                                 list(3016293,3015632,  "Carbon Dioxide (Bicarbonate)"), 
   	                                                 list(3014576,  "Chloride"), 
   	                                                 list(3016723, 3017250, 3030354
   	                                                   , 3001802, 3001582,  "creatinine"), 
@@ -455,6 +455,7 @@ generateMeasurementReport <- function() {
   #logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
   
   
+  
   ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
   count_lab_no_specimen<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
                                                           ,"specimen_source_value is null and measurement_type_concept_id = 44818702")
@@ -465,11 +466,26 @@ generateMeasurementReport <- function() {
  ###########DQA CHECKPOINT -- missing information##############
   #missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_specimen_percent_lab, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
+                                                   ,con,  2))  ## number of components in _source_value
   
   #message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
   #fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
   
+ # specimen concept id
+  df_concept_id<- generate_df_concepts(con, table_name,"specimen_concept_id.txt")
+  order_bins <-c(df_concept_id$concept_id,0)
+  field_name<-"specimen_concept_id" #
+  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,con,  "specimen_concept_id.txt")) 
   
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  ###########DQA CHECKPOINT -- missing information##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  message<-describeOrdinalField(df_table,table_name,field_name,big_data_flag);
+  fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   
   #generating concept wise graphs for numerical readings
 

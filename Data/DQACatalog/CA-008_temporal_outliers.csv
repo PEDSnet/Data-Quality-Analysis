@@ -1,13 +1,1 @@
-Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_Threshold
-CA-008,Death,death_date,0,0
-CA-008,Visit_Occurrence,visit_start_date,0,0
-CA-008,Visit_Occurrence,visit_end_date,0,0
-CA-008,Condition_Occurrence,condition_start_date,0,0
-CA-008,Condition_Occurrence,condition_end_date,0,0
-CA-008,Procedure_Occurrence,procedure_date,0,0
-CA-008,Observation,observation_date,0,0
-CA-008,Drug_Exposure,drug_exposure_start_date,0,0
-CA-008,Drug_Exposure,drug_exposure_end_date,0,0
-CA-008,Measurement,measurement_date,0,0
-CA-008,Measurement,measurement_order_date,0,0
-CA-008,Measurement,measurement_result_date,0,0
+Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_ThresholdCA-008,Death,death_date,0,0CA-008,Visit_Occurrence,visit_start_date,0,0CA-008,Visit_Occurrence,visit_end_date,0,0CA-008,Condition_Occurrence,condition_start_date,0,0CA-008,Procedure_Occurrence,procedure_date,0,0CA-008,Observation,observation_date,0,0CA-008,Drug_Exposure,drug_exposure_start_date,0,0CA-008,Drug_Exposure,drug_exposure_end_date,0,0CA-008,Measurement,measurement_date,0,0CA-008,Measurement,measurement_order_date,0,0CA-008,Measurement,measurement_result_date,0,0CA-008,ADT_Occurrence,adt_date,0,0

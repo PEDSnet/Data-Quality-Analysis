@@ -1,7 +1,6 @@
 library(DBI)
 library(yaml)
 library(dplyr)
-library(RPostgreSQL)
 
 generateLevel2Patient <- function() {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work

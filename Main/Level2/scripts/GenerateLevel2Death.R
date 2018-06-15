@@ -1,7 +1,6 @@
 library(DBI)
 library(yaml)
 library(dplyr)
-library(RPostgreSQL)
 
 generateLevel2Death <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
@@ -10,20 +9,7 @@ generateLevel2Death <- function () {
   table_name<-"death"
   
   
-  # load the configuration file
-  #get path for current script
-  #config = yaml.load_file(g_config_path)
-  
-  #my_db <- dbConnect(RPostgres::Postgres(),dbname=config$db$dbname,
-  #                   host=config$db$dbhost,
-  #                   user =config$db$dbuser,
-  #                   password =config$db$dbpass, sslmode="verify-full",
-  #                   options=paste("-c search_path=",config$db$schema,sep=""))
-  
-  #establish connection to database
-  #con <- establish_database_connection_OHDSI(config)
-  
-  #con <- establish_database_connection(config)
+ 
   
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Death_Report_Automatic.md",sep=""))
@@ -41,11 +27,22 @@ generateLevel2Death <- function () {
   
   total_death_count<-  as.data.frame(dplyr::summarise(death_tbl,n = n()))[1,1]
 
+  ### temporal outlier check 
+  field_name<-"death_date"
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name), NULL)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm')));
+  
   
   ##AA009 date time consistency
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('death_datetime', 
-                                                                                                 'death_date'))) 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), 
+                                                               c('death_datetime', 'death_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

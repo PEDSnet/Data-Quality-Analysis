@@ -23,6 +23,9 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, con, for
   #print(head(df_table))   
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
+  ## dropping NAs
+  df_table<-df_table[!is.na(df_table[,1]),]
+  
   invalid_message<-""
   #print(check_list_entry)
    ## check is source value has 2 pipes
@@ -31,12 +34,13 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, con, for
       source_value<-  df_table[i,1]
       #print(length(unlist(strsplit(source_value, '\\|'))))
       #print(format)
+      #print(source_value)
       if(length(unlist(strsplit(source_value, '\\|')))!=format) 
       {
         invalid_message<-paste(invalid_message, source_value, sep=";")
       }
       
-      if (i==1000)
+      if(nchar(trim(invalid_message)>500)) ## if sufficient examples have been collected
         break;
     }
   

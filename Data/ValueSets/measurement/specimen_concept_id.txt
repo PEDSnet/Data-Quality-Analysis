@@ -1,0 +1,1 @@
+domain_id='Specimen' and vocabulary_id='SNOMED' and concept_class_id='Specimen' and standard_concept='S' and invalid_reason is null
