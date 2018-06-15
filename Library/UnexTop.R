@@ -123,7 +123,6 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
   
   #print('PRINTING')
   issues_list<-matrix("",ncol=8, nrow=0)
-  #print(data_file)
   for(row in 1:20)
   {
     ## add to descriptive report
@@ -144,6 +143,13 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
     }
     
   }
+  
+  #if(nrow(issues_list)==1)
+   #return(c(issues_list[1,1:8]))
+  
+  #if(nrow(issues_list)>1)
+  #  issues_matrix<-t(issues_list)
+  #return()
   NextMethod("applyCheck",theObject)
   return(issues_list)
 }

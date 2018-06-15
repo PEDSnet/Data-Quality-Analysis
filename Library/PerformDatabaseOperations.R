@@ -12,7 +12,6 @@
 }
 
 
-
 #' Connect to a CDM data table
 #' @md
 #'
@@ -47,26 +46,6 @@ vocab_tbl <-
 dqa_tbl <-
   function(db, name)
     .qual_tbl(db, config('table_names')[[name]], 'dqa_schema')
-
-### write to a remote source 
-create_database_copy<-function(db_tbl, table_name)
-{
-  print(table_name)
-  if(db_has_table(req_env$db_src, table_name))
-  {
-    db_drop_table(req_env$db_src, table_name, force = FALSE)
-    print(table_name)
-  }
-  print('here')
-  print(table_name)
-  dplyr::copy_to(req_env$db_src, db_tbl, name  = table_name, overwrite = FALSE)
-  print(table_name)
-  db_tbl<- tbl(req_env$db_src, table_name)
-  
-  return(db_tbl)
-  
-}
-
 
 establish_database_connection_OHDSI<-function(config)
 {
