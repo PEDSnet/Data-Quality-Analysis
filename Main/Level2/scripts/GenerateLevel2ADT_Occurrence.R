@@ -1,7 +1,6 @@
 library(DBI)
 library(yaml)
 library(dplyr)
-library(RPostgreSQL)
 
 generateLevel2ADT_Occurrence <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
@@ -40,6 +39,18 @@ generateLevel2ADT_Occurrence <- function () {
   
 
   total_adt_count<-  as.data.frame(dplyr::summarise(adt_tbl,count = n()))[1,1]
+  
+  ### temporal outlier check 
+  field_name<-"adt_date"
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name), NULL)) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm')));
+  
   
   #total_adt_count<-  as.data.frame(summarise(adt_tbl,count = n()))[1,1]
   log_entry_content<-(read.csv(log_file_name))

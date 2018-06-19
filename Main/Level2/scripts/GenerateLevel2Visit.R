@@ -1,7 +1,6 @@
 library(DBI)
 library(yaml)
 library(dplyr)
-library(RPostgreSQL)
 
 generateLevel2Visit <- function () {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
@@ -37,6 +36,33 @@ generateLevel2Visit <- function () {
   
   #patient_dob_tbl <- tbl(my_db, dplyr::sql
    #                      ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
+  ### temporal outlier check 
+  field_name<-"visit_start_date"
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), c(9201,'inpatient'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(inpatient)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-inpatient')));
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), c(9202,'outpatient'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(outpatient)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-outpatient')));
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), c(9203,'ED'))) 
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(ED)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-ED')));
+  
   
   ### AA009 datetime inconsistency
   log_entry_content<-(read.csv(log_file_name))
@@ -57,8 +83,8 @@ generateLevel2Visit <- function () {
   ## Temporal checks --- facts before birth date
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name, "person"), c('visit_start_date', 
-                                                                                                 'birth_datetime'))) 
+  log_entry_content<-custom_rbind(log_entry_content,
+                                  applyCheck(PreBirth(), c(table_name), c('visit_start_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

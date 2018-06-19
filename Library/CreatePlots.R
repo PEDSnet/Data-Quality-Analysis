@@ -642,6 +642,37 @@ describeDateField<-function(df_table, table_name,field_name,big_data_flag)
 
 }
 
+describeYYMMField<-function(df_table, table_name,field_name,fact_type)
+{
+  #  flog.info(paste("Plotting for Field: ", field_name))
+  
+    df_table<-subset(df_table,!is.na(df_table[,1]))
+    if(nrow(df_table)>0)
+    {
+      # df table is actually a dataframe of two dataframes
+      colnames(df_table)[1] <- "Var1"
+         # creare a raw vector and then create a table
+      colnames(df_table)[2] <- "Freq"
+      df_table$Freq<- as.integer(df_table$Freq)
+      total_values<- nrow(df_table)
+      ggplot(data=df_table, aes(x=Var1, y=Freq, group=1)) + geom_line() + 
+        xlab(field_name)+ ylab('counts') + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      
+      
+      if(is.null(fact_type)) 
+      ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
+                        get_image_name(table_name,paste0(field_name, "-yyyy-mm")),sep=""))
+      else
+        ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
+                          get_image_name(table_name,paste0(field_name, "-yyyy-mm-", fact_type[2])),sep=""))
+     
+       
+      
+      #dev.off()
+    }
+  
+}
 
 
 # Ordinal Fields (with large number of values)

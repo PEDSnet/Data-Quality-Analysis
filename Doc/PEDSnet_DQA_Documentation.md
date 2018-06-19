@@ -4,6 +4,18 @@
 
 [Required Downloads](https://github.com/PEDSnet/Data-Quality-Analysis#required-downloads)
 
+
+### Create RxNorm Reference Tables
+
+Execute [DDL_RxNorm_Tables.sql](../Library/DDL_RxNorm_Tables.sql)  
+
+**Note**: If using a custom schema for DQA tables, please change all references to schema "dqa" in the above script into the custom schema. 
+
+### (Oracle-only) Create Views
+
+Create views in database by running [Library/Oracle_LowerCaseViews.sql](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Library/Oracle_LowerCaseViews.sql)
+  * Replace "CDM_VIEW", "DQA_VIEW", and "VOCABULARY_VIEW" with appropriate schemas before running
+
 ## Apply Data Quality Checks
 
 ### Create Configuration Files
@@ -40,13 +52,6 @@ reporting:
 * See [ohdsi-argos](https://github.com/baileych/ohdsi-argos) for installation and configuration instructions.
   * For Oracle users, Argos `src_name` should be `"oracle"`, and Argos `dbname` should be a connection string formatted as `"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=your_host)(PORT=1521))(CONNECT_DATA=(SID=your_sid)))"`.
 
-### Create RxNorm Reference Tables
-
-Execute [DDL_RxNorm_Tables.sql](../Library/DDL_RxNorm_Tables.sql)  
-
-**Note**: If using a custom schema for DQA tables, please change all references to schema "dqa" in the above script into the custom schema.  
-
-
 ### Setup
 ```R
 setwd("/path/to/repo/")
@@ -73,17 +78,18 @@ generateSingleReport(level=1, report="table_name")
 
 ### Level 2
 
-#### All Tables: Postgres
+#### All Tables:
 ``` R
 runDQA(level=2)
 ```
+  * After Level 1, the database connection may occasionally close. To re-establish it, run `source("Run_DQA.R")` again before starting Level 2
 
-#### Single Table: Postgres
+#### Single Table:
 ```R
 generateSingleReport(level=2, report="table_name")
 
 "table_name" examples include: "procedure", "drug", "measurement", etc
 ```
 
-## Generate feedback (GitHub)
+## Generate feedback (GitHub) (DCC-Only)
 To investigate differences between the previous data version and the current and generate feedback, follow the instructions [here](../Tools/dqa/README.md).

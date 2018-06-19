@@ -50,8 +50,17 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
   #print(grepl('date', date_field))
   if(grepl('date', date_field)==TRUE) 
   {
-    mismatch_date_tbl <- tbl(req_env$db_src, dplyr::sql(paste('SELECT * FROM ',g_config$db$schema,'.',table_name,
-                                                     " WHERE cast(",time_field," as date) <> ",date_field,sep='')))
+   mismatch_date_tbl <- 
+     cdm_tbl(req_env$db_src, table_name) %>%
+      select(date_field, time_field) %>%
+     rename_(time_field = time_field) %>% 
+     distinct() %>%
+     collect() %>%
+     mutate(time_field_as_date = lubridate::date(time_field)) %>%
+      #mutate_(time_field_as_date = paste0("sql('cast(",time_field," as date)')")) %>%
+     filter_(paste0(date_field,'!=time_field_as_date')) 
+     #%>%
+    #  collect()
   }
   #print(mismatch_date_tbl)
   df_incon<-as.data.frame(mismatch_date_tbl)
