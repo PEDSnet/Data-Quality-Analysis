@@ -77,8 +77,10 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   #print(glimpse(date_dist_delta))  
   
   iqr_value<- IQR(date_dist_delta$change_over_last_month)
-  lower_bound<- -1.5*iqr_value
-  upper_bound<-1.5*iqr_value
+  q1<-quantile(date_dist_delta$change_over_last_month)[2]  
+  q3<-quantile(date_dist_delta$change_over_last_month)[4]  
+  lower_bound<- q1-1.5*iqr_value
+  upper_bound<-q3+1.5*iqr_value
   
   date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
   
