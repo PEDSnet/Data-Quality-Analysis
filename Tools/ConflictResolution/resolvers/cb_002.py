@@ -15,9 +15,8 @@ def resolve(log_issue, secondary_issue, threshold_l, threshold_u):
         return
                 
 
-    # mutate the old issue in the secondary report with latest findings
-    mutated_issue = secondary_issue.copy()
-    mutated_issue.finding = log_issue.finding
+    # create a new issue based off the log issue 
+    mutated_issue = log_issue.copy()
     mutated_issue.status = 'new'
 
  
