@@ -36,7 +36,7 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
   
 
   ## step 2 get  key visits that dont have any associated facts 
-  temp<-union(select(condition_tbl, visit_occurrence_id), select(procedure_tbl, visit_occurrence_id), 
+  temp<-dplyr::union(select(condition_tbl, visit_occurrence_id), select(procedure_tbl, visit_occurrence_id), 
               select(measurement_tbl, visit_occurrence_id),   select(drug_tbl, visit_occurrence_id))
   
   #print(glimpse(key_visits))
