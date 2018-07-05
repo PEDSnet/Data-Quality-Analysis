@@ -172,7 +172,7 @@ def resolve_issue(issue):
     secondary_issue = Issue(**issue['secondary'])
     threshold_low = issue['threshold_low']
     threshold_high = issue['threshold_high']
-
+    
     if not log_issue.check_code:
         return
 
@@ -222,6 +222,7 @@ def main(issues):
     out = []
 
     for issue in issues:
+             
         try:
             res = resolve_issue(issue)
         except Exception:

@@ -40,6 +40,8 @@ pedsnet-dqa merge-issues \
 pedsnet-dqa query - /path/to/new/reports < print_new_issues.sql
 
 ```
+* print_new_issues.sql can be found in the Data Quality Results repo in the Queries directory
+
 ### Review new issues 
 ```
 pedsnet-dqa feedback generate --cycle={Current Cycle Name} --token=abc123 --post /path/to/new/reports

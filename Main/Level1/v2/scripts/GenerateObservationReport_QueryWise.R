@@ -259,7 +259,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   order_bins <-c("38000280","44814721",NA)
   label_bins<-c("observation recorded from EMR (38000280)","Patient reported (44814721)","NULL")
-  color_bins <-c("38000280"="lightcoral","44814721"="steelblue1")
+  color_bins <-c("38000280"="lightcoral","44814721"="steelblue1", "NA"="gray")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
