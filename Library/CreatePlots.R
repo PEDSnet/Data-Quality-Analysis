@@ -271,17 +271,40 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
 	#4. order_bins: a fixed order for various bins on the plot
 	#5: color_bins: colors assigned to each bin
 #Output: write the barplot to a file
-describeNominalField<-function(df_table, table_name,field_name, label_bins, order_bins, color_bins, big_data_flag)
+describeNominalField<-function(df_table, table_name,field_name, label_bins, order_bins, color_bins, big_data_flag, expected_levels = NULL)
 {
-
-	 flog.info(paste("Plotting for Field: ", field_name))
+  
+	# flog.info(paste("Plotting for Field: ", field_name))
   # flog.info()
-
+  
+  column_index <- which(colnames(df_table)==field_name)
+  
+  if(length(levels(df_table[,column_index])) != length(color_bins)){
+    print(paste("Warning additional levels found for ", field_name))
+    df_table[,column_index] <- as.factor(df_table[,column_index])
+    keep_levels <- NULL
+    if(!is.null(expected_levels)){
+      keep_levels <- which(levels(df_table[,column_index]) %in% expected_levels) #if provided, keep expected levels
+      print(paste("Found additional levels ", levels(df_table[,column_index])[-keep_levels]))
+      keep_levels <- levels(df_table[,column_index])[keep_levels]
+      print(keep_levels)
+    }
+    else{
+      keep_levels <- levels(df_table[,column_index])[1:length(color_bins)]
+    }
+    keep_indices <- which(df_table[,column_index] %in% keep_levels)
+    df_table[,column_index] <- as.character(df_table[,column_index])
+    df_table[-keep_indices, column_index] <- "Other"
+    df_table[,column_index] <- as.factor(df_table[,column_index])
+    color_bins <- c(color_bins, "Other" = "black")
+    order_bins <- c(order_bins, "Other")
+    label_bins <- c(label_bins, "Other")
+  }
+  
     if(big_data_flag==FALSE)
     {
 	# retrieve the column index for the field
 	#column_index<-(grep(field_name, colnames(df_table))
-	column_index <- which(colnames(df_table)==field_name)
 	# flog.info(c("columns index is ",column_index))
 
 	# saving the frequencies and percentage in a separate dataframe including NA values
