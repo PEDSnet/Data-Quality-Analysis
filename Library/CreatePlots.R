@@ -242,8 +242,8 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
 
     else # with dplyr package or query wise scripts
     {
-           current_values<-c(df_table[,1])
-
+        current_values<-c(df_table[,1])
+        if(nrow(df_table) > 0){
            for(i in 1:nrow(df_table))
             {
                value <-df_table[i,1]
@@ -252,9 +252,7 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
                    return_message<-paste(return_message, "invalid value found: ",value,";")
 
            }
-
-
-
+        }
     }
 
     return(return_message)
@@ -279,15 +277,13 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
   
   #column_index<-(grep(field_name, colnames(df_table))
   column_index <- which(colnames(df_table)==field_name)
-  if(length(levels(df_table[,column_index])) != length(color_bins)){
+  if(length(levels(as.factor(df_table[,column_index]))) > length(color_bins)){
     print(paste("Warning additional levels found for ", field_name))
     df_table[,column_index] <- as.factor(df_table[,column_index])
     keep_levels <- NULL
     if(!is.null(expected_levels)){
       keep_levels <- which(levels(df_table[,column_index]) %in% expected_levels) #if provided, keep expected levels
-      print(paste("Found additional levels ", levels(df_table[,column_index])[-keep_levels]))
       keep_levels <- levels(df_table[,column_index])[keep_levels]
-      print(keep_levels)
     }
     else{
       keep_levels <- levels(df_table[,column_index])[1:length(color_bins)]
