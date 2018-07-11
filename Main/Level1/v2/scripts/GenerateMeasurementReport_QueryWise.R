@@ -220,7 +220,7 @@ generateMeasurementReport <- function() {
   order_bins <-c("4171754","4171755","4171756","4172703","4172704","0",NA)
   label_bins<-c("<= (4171754)",">= (4171755)","< (4171756)","= (4172703)","> (4172704)","No Match (0 )","NULL")
   color_bins <-c("4171754"="lightcoral","4171755"="steelblue1","4171756"="red","4172703"="grey64","4172704"="grey64","0 "="grey64")
-  expected_levels <- c(4171754,4171755,  4171756, 4172703, 4172704, "0 ")
+  expected_levels <- c(4171754,4171755,  4171756, 4172703, 4172704, 0)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
   #
