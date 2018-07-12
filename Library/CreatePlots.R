@@ -1,3 +1,4 @@
+ 
 #primary key field
 #functionName: reportTotalCount
 #Description: generate the total number of unique values for the primary key field of a given table
@@ -568,9 +569,7 @@ describeDateField<-function(df_table, table_name,field_name,big_data_flag)
           {
             #calculate the total number of locations
             # flog.info(colnames(dfTab))
-            newdata <- df <- as.data.frame(dfTab)
-            # flog.info(newdata)
-            ordered_data<-newdata[order(newdata[,2], decreasing = TRUE),]
+            ordered_data<-as.data.frame(dfTab)[order(as.data.frame(dfTab)[,2], decreasing = TRUE),]
             # flog.info(ordered_data)
 
             # counting the total number of unique values
@@ -722,9 +721,7 @@ describeOrdinalField_large<-function(df_table, table_name,field_name,big_data_fl
 		{
 		#calculate the total number of locations
         # flog.info(colnames(dfTab))
-        newdata <- df <- as.data.frame(dfTab)
-        # flog.info(newdata)
-        ordered_data<-newdata[order(newdata[,2], decreasing = TRUE),]
+        ordered_data<-as.data.frame(dfTab)[order(as.data.frame(dfTab)[,2], decreasing = TRUE),]
         # flog.info(ordered_data)
 
         # counting the total number of unique values
@@ -830,9 +827,7 @@ describeTimeField<-function(df_table, table_name,field_name,big_data_flag)
 
                 #calculate the total number of locations
                 # flog.info(colnames(dfTab))
-                newdata <- as.data.frame(dfTab)
-                # flog.info(newdata)
-                ordered_data<-newdata[order(newdata[,2], decreasing = TRUE),]
+                ordered_data<-as.data.frame(dfTab)[order(as.data.frame(dfTab)[,2], decreasing = TRUE),]
                 # flog.info(ordered_data)
 
                 # counting the total number of unique values

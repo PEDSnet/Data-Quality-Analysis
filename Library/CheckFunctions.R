@@ -9,8 +9,6 @@ generate_df_concepts<-function(con,table_name, filename)
 
   #check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
 
-  #print(clause_trunc)
-  #print(class(clause_trunc))
   concept_id_list <-retrieve_dataframe_clause(con, g_config, g_config$db$vocab_schema,"concept"
                                             ,"concept_id,concept_name"
  
