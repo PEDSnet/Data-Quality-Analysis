@@ -13,7 +13,7 @@ MissFact <- function()
 }
 
 
-applyCheck.MissFact <- function(theObject, table_list, field_list, con, list_of_facts)
+applyCheck.MissFact <- function(theObject, table_list, field_list, con, list_of_facts, table_df)
 {
   issue_list<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
                           issue_description=character(0), alias=character(0)
@@ -23,7 +23,7 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, con, list_of_
   
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  df_table<-retrieve_dataframe_group(table_df, field_name)
   #print(length(list_of_facts))
   
   for(list_index in 1:length(list_of_facts))

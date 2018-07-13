@@ -13,7 +13,7 @@ InvalidValue <- function()
 }
 
 
-applyCheck.InvalidValue <- function(theObject, table_list, field_list, con, metadata)
+applyCheck.InvalidValue <- function(theObject, table_list, field_list, con, metadata, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
@@ -30,7 +30,7 @@ applyCheck.InvalidValue <- function(theObject, table_list, field_list, con, meta
   #order_bins<-value_set
   #print(order_bins)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  df_table<-retrieve_dataframe_group(table_df,field_name)
   current_values<-c(df_table[,1])
   unexpected_message<-""
   for(i in 1:nrow(df_table))

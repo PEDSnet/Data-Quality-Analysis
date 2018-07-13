@@ -1,4 +1,5 @@
- 
+source("/Users/callahanc5/Documents/code/dqa/Data-Quality-Analysis/Library/new_utils.R") 
+
 #primary key field
 #functionName: reportTotalCount
 #Description: generate the total number of unique values for the primary key field of a given table
@@ -569,7 +570,7 @@ describeDateField<-function(df_table, table_name,field_name,big_data_flag)
           {
             #calculate the total number of locations
             # flog.info(colnames(dfTab))
-            ordered_data<-as.data.frame(dfTab)[order(as.data.frame(dfTab)[,2], decreasing = TRUE),]
+            ordered_data<-quickdf(dfTab)[order(quickdf(dfTab)[,2], decreasing = TRUE),]
             # flog.info(ordered_data)
 
             # counting the total number of unique values

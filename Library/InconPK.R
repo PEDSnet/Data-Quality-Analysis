@@ -13,7 +13,7 @@ InconPK <- function()
 }
 
 
-applyCheck.InconPK <- function(theObject, table_list, field_list, con)
+applyCheck.InconPK <- function(theObject, table_list, field_list, con, table_df)
 {
   table_name<-table_list[1]
   field_name_1<-field_list[1]
@@ -21,10 +21,10 @@ applyCheck.InconPK <- function(theObject, table_list, field_list, con)
   
   check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, field_name_1, field_name_2)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name_1)
+  df_table<-retrieve_dataframe_group(table_df,field_name_1)
   count1<-describeIdentifier(df_table,field_name_1)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name_2)
+  df_table<-retrieve_dataframe_group(table_df,field_name_2)
   count2<-describeIdentifier(df_table,field_name_2)
   
   diff<-count1-count2

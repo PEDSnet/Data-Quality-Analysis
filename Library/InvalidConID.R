@@ -13,7 +13,7 @@ InvalidConID <- function()
 }
 
 
-applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, metadata)
+applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, metadata, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
@@ -32,7 +32,7 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, meta
   order_bins <-c(concept_id_list$concept_id,0,44814650,44814653, 44814649,NA)
   #print(order_bins)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  df_table<-retrieve_dataframe_group(table_df,field_name)
   current_values<-c(df_table[,1])
   unexpected_message<-""
   for(i in 1:nrow(df_table))

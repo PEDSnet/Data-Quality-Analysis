@@ -148,39 +148,52 @@ retrieve_dataframe<-function(con,config,table_name)
 
 }
 
+# 
+# # retrieve counts
+# retrieve_dataframe_count<-function(con,config,table_name,column_list)
+# {
+# 
+#   #special handling for ODBC drivers
+#   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+#   {
+#     table_name<-toupper(table_name)
+#     column_list<-toupper(column_list)
+#     query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
+#     df<-sqlQuery(con, query)
+#   }
+#   else
+#   {
+#     if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+#     {
+#       table_name<-toupper(table_name)
+#       column_list<-toupper(column_list)
+#       query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
+#       df<-querySql(con, query)
+#     }
+#     else
+#     {
+#       query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
+#       df<-querySql(con, query)
+#     }
+#   }
+#   #converting all names to lower case for consistency
+#   names(df) <- tolower(names(df))
+#   return(df);
+# 
+# }
 
-# retrieve counts
-retrieve_dataframe_count<-function(con,config,table_name,column_list)
-{
 
-  #special handling for ODBC drivers
-  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-  {
-    table_name<-toupper(table_name)
-    column_list<-toupper(column_list)
-    query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
-    df<-sqlQuery(con, query)
-  }
-  else
-  {
-    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-    {
-      table_name<-toupper(table_name)
-      column_list<-toupper(column_list)
-      query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
-      df<-querySql(con, query)
-    }
-    else
-    {
-      query<-paste("select count(",column_list,") from ",config$db$schema,".",table_name,sep="");
-      df<-querySql(con, query)
-    }
-  }
-  #converting all names to lower case for consistency
-  names(df) <- tolower(names(df))
-  return(df);
-
+retrieve_dataframe_count<-function(table_name, column_list){
+  require(testthat)
+  require(dplyr)
+  counts  = as.data.frame(distinct(table_name %>%
+                                     filter(!is.null(column_list)) %>%
+                                     mutate(counts = n()) %>%
+                                     select(counts)))
+  test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
+  return(counts)
 }
+
 
 retrieve_dataframe_record_count<-function(con,config,table_name)
 {
@@ -214,37 +227,53 @@ retrieve_dataframe_record_count<-function(con,config,table_name)
   
 }
 
-retrieve_dataframe_count_group<-function(con,config,table_name,column_list, field_name)
-{
+# retrieve_dataframe_count_group<-function(con,config,table_name,column_list, field_name)
+# {
+# 
+#   #special handling for ODBC drivers
+#   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+#   {
+#     table_name<-toupper(table_name)
+#     column_list<-toupper(column_list)
+#     query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
+#     df<-sqlQuery(con, query)
+#   }
+#   else
+#   {
+#     if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+#     {
+#       table_name<-toupper(table_name)
+#       column_list<-toupper(column_list)
+#       query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
+#       df<-querySql(con, query)
+#     }
+#     else
+#     {
+#       query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
+#       df<-querySql(con, query)
+#     }
+#   }
+#   #converting all names to lower case for consistency
+#   names(df) <- tolower(names(df))
+#   return(df);
+# 
+# }
 
-  #special handling for ODBC drivers
-  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-  {
-    table_name<-toupper(table_name)
-    column_list<-toupper(column_list)
-    query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-    df<-sqlQuery(con, query)
-  }
-  else
-  {
-    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-    {
-      table_name<-toupper(table_name)
-      column_list<-toupper(column_list)
-      query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-      df<-querySql(con, query)
-    }
-    else
-    {
-      query<-paste("select ",field_name,", count(distinct ",column_list,") from ",config$db$schema,".",table_name," group by ",field_name,sep="");
-      df<-querySql(con, query)
-    }
-  }
-  #converting all names to lower case for consistency
-  names(df) <- tolower(names(df))
-  return(df);
 
+
+retrieve_dataframe_count_group<-function(table_name, column_list, field_name){
+  require(dplyr)
+  require(testthat)
+  counts = as.data.frame(distinct(table_name %>%
+    group_by(field_name) %>%
+    filter(!is.null(column_list)) %>%
+      mutate(counts = n()) %>%
+      select(counts)))
+   test_that("Testing Retrieve Dataframe Count Group", expect_equal(length(counts), 1))
+   return(counts)
 }
+
+
 # printing top 5 values
 retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
 {

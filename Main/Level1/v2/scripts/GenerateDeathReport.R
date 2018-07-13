@@ -1,3 +1,5 @@
+require(tictoc)
+
 generateDeathReport <- function() {
   #establish connection to database
   con <- establish_database_connection_OHDSI( g_config)
@@ -19,7 +21,9 @@ generateDeathReport <- function() {
 
   #PRIMARY FIELD(s)
   field_name<-"death_cause_id"
+  tic()
   current_total_count<-as.numeric(describeIdentifier(df_table,field_name))
+  toc()
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
    ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
@@ -30,7 +34,9 @@ generateDeathReport <- function() {
   
   field_name<-"person_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
+  tic()
   message<-describeForeignKeyIdentifiers(df_table, "death_cause",field_name,big_data_flag)
+  toc()
   fileContent<-c(fileContent,paste_image_name("death_cause",field_name),paste_image_name_sorted("death_cause",field_name),message);
 
 
@@ -38,7 +44,9 @@ generateDeathReport <- function() {
 
   field_name="death_date"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  tic()
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
+  toc()
   
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
