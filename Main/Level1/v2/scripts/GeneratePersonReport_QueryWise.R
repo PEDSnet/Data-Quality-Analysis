@@ -3,6 +3,10 @@ generatePersonReport <- function() {
   big_data_flag<-TRUE
   #establish connection to database
   con <- establish_database_connection_OHDSI( g_config)
+  
+  print(g_config_path)
+  config <- yaml.load_file(g_config_path)
+  person_tbl <- cdm_tbl(req_env$db_src, "person")
 
   # read a database table into an R dataframe
   table_name<-"person"
@@ -16,8 +20,6 @@ generatePersonReport <- function() {
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
                           issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
-  
-  person_tbl <- cdm_tbl(req_env$db_src, "person")
 
   #PRIMARY FIELD
   field_name<-"person_id"
