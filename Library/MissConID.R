@@ -13,17 +13,22 @@ MissConID <- function()
 }
 
 
-applyCheck.MissConID<- function(theObject, table_list, field_list, con)
-{
+applyCheck.MissConID<- function(theObject, table_list, field_list, con, table_df)
+{ 
   table_name<-table_list[1]
   field_name<-field_list[1]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
 
-  df_nomatch<-retrieve_dataframe_clause(con, g_config,g_config$db$schema, table_name,"count(*)", paste0(field_name,"=0"))
+  df_nomatch<-retrieve_dataframe_clause(table_df,"count(*)", paste0(field_name,"==0"))
   
-  df_total<-retrieve_dataframe_record_count(con,g_config,table_name)
-
-
+  print("THIS FAR")
+  df_total<-retrieve_dataframe_record_count(table_df)
+  print("IS IT COUNT?")
+  
+  print(df_nomatch)
+  print(df_total)
+  print("THESE WORK?")
+  
   no_matching_perc<-round(df_nomatch[1,1]*100/df_total[1,1], 2)
 
   #print(no_matching_perc)
@@ -36,7 +41,7 @@ applyCheck.MissConID<- function(theObject, table_list, field_list, con)
     return(logIssue(issue_obj))
     
   }
-  
+  print("EXITS")
   NextMethod("applyCheck",theObject)
   return(c())
 }

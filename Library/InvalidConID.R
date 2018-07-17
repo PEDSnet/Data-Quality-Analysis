@@ -18,7 +18,6 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, meta
   table_name<-table_list[1]
   field_name<-field_list[1]
 
-  
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
   if(grepl('csv$', metadata)==TRUE)
@@ -26,7 +25,9 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, meta
     concept_id_list<-generate_list_concepts(table_name, metadata)
     } else
   {
-    concept_id_list <-generate_df_concepts(con, table_name, metadata)
+    print("HERE IS META DATA")
+    print(table_name)
+    concept_id_list <-generate_df_concepts(con, table_name, metadata, table_df)
     
   }
   order_bins <-c(concept_id_list$concept_id,0,44814650,44814653, 44814649,NA)

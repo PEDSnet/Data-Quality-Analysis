@@ -13,15 +13,16 @@ MissData <- function()
 }
 
 
-applyCheck.MissData <- function(theObject, table_list, field_list, con)
+applyCheck.MissData <- function(theObject, table_list, field_list, con, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
-  df_null<-retrieve_dataframe_clause(con, g_config,g_config$db$schema,table_name,"count(*)",paste0(field_name,' is null') )
-  #print(df_null)
-  df_count<-retrieve_dataframe_record_count(con, g_config, table_name )
+  #df_null<-retrieve_dataframe_clause(con, g_config,g_config$db$schema, table_name,"count(*)",paste0(field_name,' is null') )
+  df_null<-retrieve_dataframe_clause(table_df,"count(*)",paste0('is.null(',field_name,')') )
+   #print(df_null)
+  df_count<-retrieve_dataframe_record_count(table_df)
   #print(df_count)
   missing_percent<-
        round(
