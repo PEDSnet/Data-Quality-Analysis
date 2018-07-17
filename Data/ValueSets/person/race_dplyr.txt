@@ -1,0 +1,1 @@
+((domain_id=='Race' & vocabulary_id == 'Race') | (vocabulary_id=='PCORNet' & concept_class_id=='Undefined') |  concept_id %in% c(44814659,44814660)) & is.na(invalid_reason) 
