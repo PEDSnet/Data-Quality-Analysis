@@ -13,7 +13,7 @@ generate_df_concepts<-function(con,table_name, filename, table_df)
 
   concept_id_list <-retrieve_dataframe_clause(table_df,c(
                                             "concept_id","concept_name"), clause_trunc)
-return(concept_id_list)
+  return(concept_id_list)
 }
 
 generate_list_concepts<-function(table_name, filename)
