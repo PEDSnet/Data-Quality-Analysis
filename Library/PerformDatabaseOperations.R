@@ -190,6 +190,8 @@ retrieve_dataframe_count<-function(table_name, column_list){
                   filter(!is.null(column_list)) %>%
                   mutate(counts = n()) %>%
                   select(counts))
+  print("COUNT")
+  print(dim(counts))
   test_that("Retrieve_dataframe_count Not Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
@@ -561,7 +563,10 @@ retrieve_dataframe_group <- function(table_df, field_name){
     group_by_(field_name) %>%
     mutate(freq = n()) %>%
     select(c(field_name,freq)) %>%
+    distinct() %>%
     collect()
+  print("_GROUP")
+  print(dim(table_df))
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)
