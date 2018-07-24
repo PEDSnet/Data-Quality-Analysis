@@ -276,7 +276,7 @@ retrieve_dataframe_record_count<-function(table_df)
 retrieve_dataframe_count_group<-function(table_name, column_list, field_name){
   counts = as.data.frame(distinct(table_name %>%
       group_by(field_name) %>%
-      filter(!is.null(column_list)) %>%
+      filter(paste('!is.null(',column_list,')')) %>%
       mutate(counts = n()) %>%
       select(counts)))
    test_that("Testing Retrieve Dataframe Count Group", expect_equal(length(counts), 1))
@@ -556,11 +556,12 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
 # }
 
 retrieve_dataframe_group <- function(table_df, field_name){
-  table_df = as.data.frame(table_df %>%
-    filter(!is.null(field_name)) %>%
+  table_df = table_df %>%
+    filter_(paste('!is.null(', field_name, ')')) %>%
     group_by_(field_name) %>%
     mutate(freq = n()) %>%
-    select(c(field_name,freq)))
+    select(c(field_name,freq)) %>%
+    collect()
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)
@@ -568,7 +569,7 @@ retrieve_dataframe_group <- function(table_df, field_name){
 
 retrieve_dataframe_count<-function(table_name, column_list){
   counts  = distinct(table_name %>%
-                  filter(!is.null(column_list)) %>%
+                  filter_(paste('!is.null(', column_list, ')')) %>%
                   mutate(counts = n()) %>%
                   select(counts)) %>%
                   collect()
