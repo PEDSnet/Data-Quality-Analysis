@@ -1,4 +1,5 @@
 ### implementation of the unexpected difference class 
+library(tictoc)
 InvalidConID <- function()
 {
   check_code="AA-002"
@@ -13,7 +14,7 @@ InvalidConID <- function()
 }
 
 
-applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, metadata, table_df)
+applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, metadata, table_df, table_df2)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
@@ -25,34 +26,23 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, meta
     concept_id_list<-generate_list_concepts(table_name, metadata)
     } else
   {
-    print("HERE IS META DATA")
-    print(table_name)
     concept_id_list <-generate_df_concepts(con, table_name, metadata, table_df)
     
   }
+  
   order_bins <-c(concept_id_list$concept_id,0,44814650,44814653, 44814649,NA)
-  #print(order_bins)
   
-  df_table<-retrieve_dataframe_group(table_df,field_name)
-  current_values<-c(df_table[,1])
-  unexpected_message<-""
-  for(i in 1:nrow(df_table))
-  {
-    value <-df_table[i,1]
-    # flog.info(df_table[i,1])
-    if(!is.element(value,order_bins) && !is.na(value))
-      unexpected_message<-paste(unexpected_message, value,";")
-    
-  }
-  
+  df_table<-retrieve_dataframe_group(table_df2,field_name)
+  current_values<-c(df_table[,1])  
+  unexpected_message<-  paste("",df_table[(!is.element(df_table[[1]], order_bins)
+                                        & !is.na(df_table[[1]]))], collapse = ';')
+
   if( nchar(trim(unexpected_message))>0)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, unexpected_message)
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
-    
   }
   
   NextMethod("applyCheck",theObject)

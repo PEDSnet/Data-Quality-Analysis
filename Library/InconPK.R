@@ -19,13 +19,11 @@ applyCheck.InconPK <- function(theObject, table_list, field_list, con, table_df)
   field_name_1<-field_list[1]
   field_name_2<-field_list[2]
   
-  check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, field_name_1, field_name_2)
+  check_list_entry<-get_check_entry_two_variables(theObject$check_code,
+                                                  table_name, field_name_1, field_name_2)
   
-  print("This 1")
   df_table<-retrieve_dataframe_group(table_df,field_name_1)
-  print("THis 2")
   count1<-describeIdentifier(df_table,field_name_1)
-  print("THIS 3")
   df_table<-retrieve_dataframe_group(table_df,field_name_2)
   count2<-describeIdentifier(df_table,field_name_2)
   diff<-count1-count2

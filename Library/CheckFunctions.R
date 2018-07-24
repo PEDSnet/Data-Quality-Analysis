@@ -8,7 +8,6 @@ generate_df_concepts<-function(con,table_name, filename, table_df)
   clause <- readChar(file_txt, file.info(file_txt)$size)
   clause_trunc <- gsub("\n", '', noquote(clause), fixed = T) # takes off extra characters
   clause_trunc<-as.character(clause_trunc)
-  print(clause_trunc)
   #check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
 
   concept_id_list <-retrieve_dataframe_clause(table_df,c(

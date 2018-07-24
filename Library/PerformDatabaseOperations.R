@@ -2,6 +2,7 @@ require(testthat)
 require(DBI)
 require(dplyr)
 library(yaml)
+library(tictoc)
 source("new_utils.R")
 
 .qual_tbl <- function(db, name, schema_tag) {
@@ -10,11 +11,7 @@ source("new_utils.R")
     name <- dbplyr::in_schema(config(schema_tag),
                               DBI::dbQuoteIdentifier(con, name))
   }
-  #print(config(schema_tag))
-  #print(DBI::dbQuoteIdentifier(con, name))
-  #print(name)
   tbl(db, name) #%>% show_query()
-  #print(name)
 }
 
 
@@ -189,12 +186,10 @@ retrieve_dataframe<-function(con,config,table_name)
 
 
 retrieve_dataframe_count<-function(table_name, column_list){
-  require(testthat)
-  require(dplyr)
-  counts  = as.data.frame(distinct(table_name %>%
-                                     filter(!is.null(column_list)) %>%
-                                     mutate(counts = n()) %>%
-                                     select(counts)))
+  counts  = as.data.frame(table_name %>%
+                  filter(!is.null(column_list)) %>%
+                  mutate(counts = n()) %>%
+                  select(counts))
   test_that("Retrieve_dataframe_count Not Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
@@ -236,8 +231,6 @@ retrieve_dataframe_count<-function(table_name, column_list){
 
 retrieve_dataframe_record_count<-function(table_df)
 {
-  require(testthat)
-  require(dplyr)
    table_df = as.data.frame(distinct(table_df %>%
      mutate(counts = n()) %>%
      select(counts)))
@@ -281,11 +274,9 @@ retrieve_dataframe_record_count<-function(table_df)
 
 
 retrieve_dataframe_count_group<-function(table_name, column_list, field_name){
-  require(dplyr)
-  require(testthat)
   counts = as.data.frame(distinct(table_name %>%
-    group_by(field_name) %>%
-    filter(!is.null(column_list)) %>%
+      group_by(field_name) %>%
+      filter(!is.null(column_list)) %>%
       mutate(counts = n()) %>%
       select(counts)))
    test_that("Testing Retrieve Dataframe Count Group", expect_equal(length(counts), 1))
@@ -413,14 +404,9 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
 
 retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
 {
-  print("HI IT REACHED THIS")
-  print(column_list)
-  print(colnames(table_df))
-  write.csv(table_df, "testing2.csv")
   table_df = table_df %>%
     filter_(clauses) 
-  print("SURVIVED")
-  if(column_list == "count(*)"){
+  if(column_list[1] == "count(*)"){
     if(is.na(nrow(table_df))){
       table_df <- as.data.frame(0);
       colnames(table_df) <- "count"
@@ -431,14 +417,9 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
     }
   }
   else{
-    print("THERE")
-    print(column_list)
-    print(table_df)
     table_df = as.data.frame(table_df %>%
-      select_(column_list))
+      select_(.dots = column_list))
   }
-  print("NEW DF")
-  print(table_df)
   return(table_df)
 }
 
@@ -586,10 +567,11 @@ retrieve_dataframe_group <- function(table_df, field_name){
 }
 
 retrieve_dataframe_count<-function(table_name, column_list){
-  counts  = as.data.frame(distinct(table_name %>%
-                                     filter(!is.null(column_list)) %>%
-                                     mutate(counts = n()) %>%
-                                     select(counts)))
+  counts  = distinct(table_name %>%
+                  filter(!is.null(column_list)) %>%
+                  mutate(counts = n()) %>%
+                  select(counts)) %>%
+                  collect()
   test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
