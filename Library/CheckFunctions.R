@@ -1,5 +1,5 @@
 ## generate concept_id from clause 
-generate_df_concepts<-function(con,table_name, filename, table_df)
+generate_df_concepts<-function(table_name, filename, table_df)
 {
   file_txt<-as.character(paste("Data/ValueSets",table_name, 
                                filename, sep="/"))

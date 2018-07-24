@@ -13,7 +13,7 @@ MissFact <- function()
 }
 
 
-applyCheck.MissFact <- function(theObject, table_list, field_list, con, list_of_facts, table_df)
+applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts, table_df)
 {
   issue_list<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
                           issue_description=character(0), alias=character(0)
@@ -44,7 +44,7 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, con, list_of_
         values<-paste(values,",", metadata[value_index])   
         else values<-paste(values, metadata[value_index]) 
       }
-      number_of_records<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,
+      number_of_records<-retrieve_dataframe_clause(g_config, g_config$db$schema,table_name,
                                                 "count(*)",
                                                 paste(field_name,"in (",values,")")
                                                 )[1,1]

@@ -14,7 +14,7 @@ InvalidConID <- function()
 }
 
 
-applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, metadata, table_df, table_df2)
+applyCheck.InvalidConID <- function(theObject, table_list, field_list, metadata, table_df, table_df2)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
@@ -26,7 +26,7 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, con, meta
     concept_id_list<-generate_list_concepts(table_name, metadata)
     } else
   {
-    concept_id_list <-generate_df_concepts(con, table_name, metadata, table_df)
+    concept_id_list <-generate_df_concepts(table_name, metadata, table_df)
     
   }
   

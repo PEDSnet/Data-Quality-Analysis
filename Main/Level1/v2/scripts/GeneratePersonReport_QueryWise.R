@@ -42,14 +42,14 @@ generatePersonReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name),
-                                                   c("person_id",field_name),con, person_tbl)) 
+                                                   c("person_id",field_name),person_tbl)) 
     
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),person_tbl)) 
   
     null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
 
@@ -76,8 +76,7 @@ generatePersonReport <- function() {
 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), person_tbl)) 
   
   #Gender Concept Id
   
@@ -90,26 +89,26 @@ generatePersonReport <- function() {
  
   
   ###########DQA CHECKPOINT############## For gender only 
-  df_gender <-generate_df_concepts(con, table_name,"gender_dplyr.txt", concept_tbl)
+  df_gender <-generate_df_concepts(table_name,"gender_dplyr.txt", concept_tbl)
   order_bins <-c(df_gender$concept_id,NA)
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "gender_dplyr.txt", concept_tbl, person_tbl)) 
+                                                    ,"gender_dplyr.txt", concept_tbl, person_tbl)) 
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), person_tbl)) 
 
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
 
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
                                                    list(
                                                    list(8532, "female"),
                                                    list(8507, "male")
                                                    ), person_tbl
                                                    )) 
+
   #Race Source Value
   field_name="race_source_value"
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
@@ -122,8 +121,7 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), person_tbl)) 
   
   #Race Concept Id
   
@@ -132,20 +130,19 @@ generatePersonReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "race_dplyr.txt", concept_tbl, person_tbl)) 
-  df_race <- generate_df_concepts(con, table_name,"race_dplyr.txt", concept_tbl)
+                                                   ,"race_dplyr.txt", concept_tbl, person_tbl)) 
+  df_race <- generate_df_concepts( table_name,"race_dplyr.txt", concept_tbl)
 
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), person_tbl)) 
   #update values of the field before plotting
   df_table_race_enhanced<-EnhanceFieldValues(df_table,field_name,df_race);
   describeNominalField_basic(df_table_race_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
-            list(                                               
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
+                                              list(                                               
                                                     list(8527, "white"),
                                                    list(8516, "black")), person_tbl
                                                    )) 
@@ -162,8 +159,7 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),person_tbl)) 
   
   #Ethnicity Concept Id
   field_name="ethnicity_concept_id"
@@ -171,20 +167,19 @@ generatePersonReport <- function() {
 
 
   ###########DQA CHECKPOINT############## For ethinicity only 
-  df_ethnicity<-generate_df_concepts(con, table_name,"ethnicity_dplyr.txt", concept_tbl)
+  df_ethnicity<-generate_df_concepts( table_name,"ethnicity_dplyr.txt", concept_tbl)
   order_bins <-c(df_ethnicity$concept_id,NA)
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "ethnicity_dplyr.txt", concept_tbl, person_tbl)) 
+                                                   ,"ethnicity_dplyr.txt", concept_tbl, person_tbl)) 
   
 
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),person_tbl)) 
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins,big_data_flag)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
                                                    list(
                                                    list(38003563, "hispanic"),
                                                    list(38003564, "non-hispanic")
@@ -205,8 +200,7 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),person_tbl)) 
   
 
   #language Concept Id
@@ -215,7 +209,7 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "language.csv", concept_tbl, person_tbl)) 
+                                                   ,"language.csv", concept_tbl, person_tbl)) 
   df_lang <-generate_list_concepts(table_name,"language.csv")
 
   ###########DQA CHECKPOINT##############
@@ -224,8 +218,7 @@ generatePersonReport <- function() {
   df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_lang);
   describeNominalField_basic(df_table_language_enhanced,table_name,field_name,big_data_flag);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),person_tbl)) 
   
   # ORDINAL Fields
   #Year of Birth
@@ -246,14 +239,13 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), person_tbl)) 
   describeOrdinalField(df_table, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   
   #######DQA CHECKPOINT################
-  logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
-                                                   ,con,  "month_of_birth.csv", person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name),
+                                                   "month_of_birth.csv", person_tbl)) 
 
   #Day of Birth
   field_name="day_of_birth"
@@ -264,13 +256,12 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),person_tbl)) 
   describeOrdinalField(df_table,table_name, field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA checkpoint#####################
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
-                                                   ,con,  "day_of_birth.csv", person_tbl)) 
+                                                   ,  "day_of_birth.csv", person_tbl)) 
 
   #birth_datetime --
   field_name<-"birth_datetime"
@@ -281,12 +272,11 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),person_tbl)) 
   message<-describeDateField(df_table, table_name,field_name,big_data_flag)
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), 
-                                                   c(field_name),con, person_tbl)) 
+                                                   c(field_name), person_tbl)) 
 
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
@@ -302,14 +292,13 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),person_tbl)) 
   message<-describeRatioField(df_table, table_name, field_name, unit,big_data_flag)
   if (missing_percent<100)
   {
   ###########DQA CHECKPOINT############## gestational age cannot be above 45
     logFileData<-custom_rbind(logFileData,applyCheck(NumOutlier(), c(table_name),
-                                                     c(field_name),con, person_tbl)) 
+                                                     c(field_name),person_tbl)) 
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
@@ -323,8 +312,7 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),
-                                                   con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),person_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
@@ -337,7 +325,7 @@ generatePersonReport <- function() {
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con, person_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),person_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 

@@ -13,7 +13,7 @@ MissConID <- function()
 }
 
 
-applyCheck.MissConID<- function(theObject, table_list, field_list, con, table_df)
+applyCheck.MissConID<- function(theObject, table_list, field_list, table_df)
 { 
   table_name<-table_list[1]
   field_name<-field_list[1]

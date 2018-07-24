@@ -272,7 +272,7 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
 {
 
   column_index <- which(colnames(df_table)==field_name)
-
+   
   if(length(levels(df_table[,column_index])) < length(color_bins)){
     print(paste("Warning additional levels found for ", field_name))
     df_table[,column_index] <- as.factor(df_table[,column_index])

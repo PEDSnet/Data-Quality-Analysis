@@ -74,8 +74,6 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
       )
   
   extended_list<-list()
-  #print('PRINTING')
-  #print(top_facts_other_sites_list)
   for (list_index in 1:length(top_facts_other_sites_list))
   {
     #print('PRINTING')

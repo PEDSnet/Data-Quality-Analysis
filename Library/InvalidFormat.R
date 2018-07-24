@@ -13,7 +13,7 @@ InvalidFormat <- function()
 }
 
 
-applyCheck.InvalidFormat <- function(theObject, table_list, field_list, con, format, table_df)
+applyCheck.InvalidFormat <- function(theObject, table_list, field_list, format, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]

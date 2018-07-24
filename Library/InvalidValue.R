@@ -13,7 +13,7 @@ InvalidValue <- function()
 }
 
 
-applyCheck.InvalidValue <- function(theObject, table_list, field_list, con, metadata, table_df)
+applyCheck.InvalidValue <- function(theObject, table_list, field_list,metadata, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]

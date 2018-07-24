@@ -13,7 +13,7 @@ InconSource <- function()
 }
 
 
-applyCheck.InconSource<- function(theObject, table_list, field_list, con, table_df)
+applyCheck.InconSource<- function(theObject, table_list, field_list,table_df)
 {
   table_name<-table_list[1]
   concept_id_field<-field_list[1]
