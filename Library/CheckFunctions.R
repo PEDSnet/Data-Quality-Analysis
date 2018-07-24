@@ -3,8 +3,7 @@ generate_df_concepts<-function(con,table_name, filename, table_df)
 {
   file_txt<-as.character(paste("Data/ValueSets",table_name, 
                                filename, sep="/"))
-  print(filename)
-  #print(file_txt)
+
   clause <- readChar(file_txt, file.info(file_txt)$size)
   clause_trunc <- gsub("\n", '', noquote(clause), fixed = T) # takes off extra characters
   clause_trunc<-as.character(clause_trunc)

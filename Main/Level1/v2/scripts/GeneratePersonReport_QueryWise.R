@@ -5,6 +5,7 @@ library(tictoc)
 
 generatePersonReport <- function() {
   #setting up big data flag
+  tic()
   big_data_flag<-TRUE
 
   person_tbl <- cdm_tbl(req_env$db_src, "person")
@@ -56,85 +57,59 @@ generatePersonReport <- function() {
 
   #Gender Source Value
   field_name="gender_source_value"
-  print("Check 1")
-  tic()
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
-  toc()
-  print("Check 2")
-  tic()
+
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  toc()
-  print("Check 3")
-  tic()
+
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
-  toc()
+
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Gender Source Concept id
   field_name="gender_source_concept_id"
-  print("Check 4")
-  tic()
+
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
-  toc()
+
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  print("Check 5")
-  tic()
+
   describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
-  toc()
+
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  print("Check 6")
-  tic()
+
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
                                                    con, person_tbl)) 
-  toc()
+  
   #Gender Concept Id
   
-  
   field_name = "gender_concept_id"
-  print("Check 7")
-  tic()
+
   df_table<-retrieve_dataframe_group(person_tbl, field_name)
-  toc()
+
   label_bins<-c("Male (8507)","Female (8532)","Ambiguous (44814664)","Unknown (44814653)","Other (44814649)","No Information (44814650 )","NULL")
   color_bins <-c("8507"="lightcoral","8532"="steelblue1","44814664"="red","44814653"="grey64","44814649"="grey64","44814650 "="grey64")
  
   
   ###########DQA CHECKPOINT############## For gender only 
-  print("Check 8")
-  tic()
   df_gender <-generate_df_concepts(con, table_name,"gender_dplyr.txt", concept_tbl)
-  toc()
   order_bins <-c(df_gender$concept_id,NA)
-  print("Check 9")
-  tic()
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,con,  "gender_dplyr.txt", concept_tbl, person_tbl)) 
-  toc()
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  print("Check 10")
-  tic()
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),
                                                    con, person_tbl)) 
-  toc()
-  print("Check 11")
-  tic()
+
   describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
-  toc()
-  print("Check 12")
-  tic()
+
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
-  toc()
-  print("Check 13")
-  tic()
+
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
                                                    list(
                                                    list(8532, "female"),
                                                    list(8507, "male")
                                                    ), person_tbl
                                                    )) 
-  toc()
   #Race Source Value
   field_name="race_source_value"
   df_table<-retrieve_dataframe_group(person_tbl, field_name)

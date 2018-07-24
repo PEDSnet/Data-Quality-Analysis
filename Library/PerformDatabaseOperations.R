@@ -186,12 +186,10 @@ retrieve_dataframe<-function(con,config,table_name)
 
 
 retrieve_dataframe_count<-function(table_name, column_list){
-  counts  = as.data.frame(table_name %>%
-                  filter(!is.null(column_list)) %>%
-                  mutate(counts = n()) %>%
-                  select(counts))
-  print("COUNT")
-  print(dim(counts))
+  counts  = table_name %>%
+                filter_(paste('!is.null(', column_list, ')', collapse = ',')) %>%
+                summarize(count = n()) %>%
+                as.data.frame()
   test_that("Retrieve_dataframe_count Not Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
@@ -276,12 +274,14 @@ retrieve_dataframe_record_count<-function(table_df)
 
 
 retrieve_dataframe_count_group<-function(table_name, column_list, field_name){
-  counts = as.data.frame(distinct(table_name %>%
+  counts = table_name %>%
       group_by(field_name) %>%
-      filter(paste('!is.null(',column_list,')')) %>%
-      mutate(counts = n()) %>%
-      select(counts)))
-   test_that("Testing Retrieve Dataframe Count Group", expect_equal(length(counts), 1))
+      filter(paste('!any(is.na(',column_list,'))')) %>%
+      distinct() %>%
+      summarize(count = n()) %>%
+      as.data.frame()
+   test_that("Testing Retrieve Dataframe Count Group", 
+             expect_equal(colnames(counts), c(field_name, "count")))
    return(counts)
 }
 
@@ -559,14 +559,9 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
 
 retrieve_dataframe_group <- function(table_df, field_name){
   table_df = table_df %>%
-    filter_(paste('!is.null(', field_name, ')')) %>%
     group_by_(field_name) %>%
-    mutate(freq = n()) %>%
-    select(c(field_name,freq)) %>%
-    distinct() %>%
-    collect()
-  print("_GROUP")
-  print(dim(table_df))
+    dplyr::summarize(freq = n()) %>%
+    as.data.frame()
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)
@@ -574,10 +569,10 @@ retrieve_dataframe_group <- function(table_df, field_name){
 
 retrieve_dataframe_count<-function(table_name, column_list){
   counts  = distinct(table_name %>%
-                  filter_(paste('!is.null(', column_list, ')')) %>%
+                  filter_(paste('!is.na(', column_list, ')')) %>%
                   mutate(counts = n()) %>%
                   select(counts)) %>%
-                  collect()
+                  as.data.frame()
   test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }

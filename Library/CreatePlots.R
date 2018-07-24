@@ -190,18 +190,13 @@ reportNullFlavors<-function(df_table,table_name,field_name,UN_code,OT_code,NI_co
             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
             ,'%')  # add percentage
         )
-
-        # flog.info(dfTab)
-        #print(df_table)
       
         count_ni<-subset(df_table,Var1==NI_code)$label[1]
-        #print(count_ni)
         if(is.na(count_ni)) count_ni<-"0%";
         count_un<-subset(df_table,Var1==UN_code)$label[1]
         if(is.na(count_un)) count_un<-"0%";
         count_ot<-subset(df_table,Var1==OT_code)$label[1]
         if(is.na(count_ot)) count_ot<-"0%";
-        # flog.info(count_ni[1])
         count_missing_values<-subset(df_table,is.na(Var1))$label[1]
         if(is.na(count_missing_values)) count_missing_values<-"0%";
 
@@ -275,20 +270,10 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
 #Output: write the barplot to a file
 describeNominalField<-function(df_table, table_name,field_name, label_bins, order_bins, color_bins, big_data_flag, expected_levels = NULL)
 {
-  
-	# flog.info(paste("Plotting for Field: ", field_name))
-  # flog.info()
-  print("Check 3.1")
-  tic()
+
   column_index <- which(colnames(df_table)==field_name)
-  toc()
-  print(dim(df_table))
-  print(typeof(df_table))
-  print(summary(df_table))
-  
-  print("Check 3.2")
-  tic()
-  if(length(levels(df_table[,column_index])) != length(color_bins)){
+
+  if(length(levels(df_table[,column_index])) < length(color_bins)){
     print(paste("Warning additional levels found for ", field_name))
     df_table[,column_index] <- as.factor(df_table[,column_index])
     keep_levels <- NULL
@@ -296,7 +281,6 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
       keep_levels <- which(levels(df_table[,column_index]) %in% expected_levels) #if provided, keep expected levels
       print(paste("Found additional levels ", levels(df_table[,column_index])[-keep_levels]))
       keep_levels <- levels(df_table[,column_index])[keep_levels]
-      print(keep_levels)
     }
     else{
       keep_levels <- levels(df_table[,column_index])[1:length(color_bins)]
@@ -309,14 +293,9 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
     order_bins <- c(order_bins, "Other")
     label_bins <- c(label_bins, "Other")
   }
-  toc()
     if(big_data_flag==FALSE)
     {
-      print("Check 3.False")
-      tic()
 	# retrieve the column index for the field
-	#column_index<-(grep(field_name, colnames(df_table))
-	# flog.info(c("columns index is ",column_index))
 
 	# saving the frequencies and percentage in a separate dataframe including NA values
 	if(nrow(df_table)>0)
@@ -327,7 +306,6 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
 			round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
 			,'%')	# add percentage
 		)
-    # flog.info(dfTab)
 
 		#creating barplot from dfTab dataframe
 		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
@@ -348,13 +326,10 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
     ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
 
 	 }
-      toc()
     }
 
     else #using dplyr
     {
-      print("Check 3.True")
-      tic()
         if(nrow(df_table)>0)
         {
             #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
@@ -388,28 +363,17 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
             # add the label to each bar (from the dfTab dataframe)
             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
             #save the barplot image (will be referenced by the final report)
-            # flog.info(p)
-            #if(!is.null(p$layers$position_stack))
-             # {
-              ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-            # flog.info(s)
-
-            #}
+            ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
+                              get_image_name(table_name,field_name),sep=""))
         }
     }
-  toc()
-
-
 }
 
 
 #updated nominal field
 describeNominalField_basic<-function(df_table, table_name,field_name,big_data_flag)
 {
-  print("Check 3.11")
-  tic()
      flog.info(paste("Plotting for Field: ", field_name))
-toc()
 
     if(big_data_flag==FALSE)
     {
@@ -456,45 +420,27 @@ toc()
     }
     else
     {
-      print("Check 3.12")
-      tic()
         colnames(df_table)[1] <- "Var1"
         colnames(df_table)[2] <- "Freq"
-        #df_table<-subset(df_table,!is.na(Var1))
-      toc()
-      print(typeof(df_table))
-      print(dim(df_table))
+
         if(nrow(df_table)>0)
         {
             #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
             #adding new columns
-          print("Check 3.13")
-          tic()
             df_table$Var1 <- as.factor(df_table$Var1)
-            toc()
             df_table$label <- as.character(
             paste0(
             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
             ,'%')	# add percentage
             )
 
-           #  flog.info(df_table)
             #creating barplot from dfTab dataframe
-            print("Check 3.14")
-            tic()
             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-            toc()
             # add axis labels
-            print("Check 3.15")
-            tic()
             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-            toc()
             #remove legend and set size and orientation of tick labels
-            print("Check 3.16")
-            tic()
             p<-p+theme(legend.position="none", text = element_text(size=10),
             axis.text.x = element_text(angle=90, vjust=1))
-            toc()
             # add the label to each bar (from the dfTab dataframe)
             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
             #save the barplot image (will be referenced by the final report)
@@ -504,10 +450,7 @@ toc()
               ### dont print the graph
             }
             else {
-              print("Check 3.17")
-              tic()
             ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-              toc()
              }  
             
         }
