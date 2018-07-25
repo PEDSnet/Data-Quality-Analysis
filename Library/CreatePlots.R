@@ -521,8 +521,8 @@ describeOrdinalField<-function(df_table, table_name,field_name,big_data_flag)
 # specialized date function
 describeDateField<-function(df_table, table_name,field_name,big_data_flag)
 {
-   #  flog.info(paste("Plotting for Field: ", field_name))
 
+   #  flog.info(paste("Plotting for Field: ", field_name))
     if(big_data_flag==FALSE)
     {
 
@@ -594,22 +594,18 @@ describeDateField<-function(df_table, table_name,field_name,big_data_flag)
       colnames(df_table)[1] <- "Var1"
       colnames(df_table)[2] <- "Freq"
       # creare a raw vector and then create a table
-
-      new_vector<-rep.int(df_table$Var1,df_table$Freq)
+      new_vector<-rep.int(df_table$Var1, times = as.integer(df_table$Freq))
       # creating a table out of it so that we can use in the barplot function
       dfTab<-table(new_vector)
-
       ordered_data<-df_table[order(-df_table[,2]), ]
-
-      total_values<- length(unique(df_table$Var1))
-
+      total_values <- length(unique(df_table$Var1))
       png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
       # not using ggplot here as it is very expensive for a large number of values
       #vector_table <- as.vector(as.matrix(df_table$Freq))
       # flog.info("here")
       #barplot(df_table$Freq, df_table$Var1, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"), xaxt='n')
-      barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
-
+      barplot(dfTab, main = paste(field_name,": Distribution"), 
+              xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
 
       return_message<-paste("The most frequent values for",field_name,"are:")
 
@@ -630,10 +626,7 @@ describeDateField<-function(df_table, table_name,field_name,big_data_flag)
       dev.off()
        return(return_message)
         }
-
-
     }
-
 }
 
 describeYYMMField<-function(df_table, table_name,field_name,fact_type)
@@ -731,7 +724,7 @@ describeOrdinalField_large<-function(df_table, table_name,field_name,big_data_fl
         {
 
           # creare a raw vector and then create a table
-          new_vector<-rep.int(df_table$Var1,df_table$Freq)
+          new_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
           # creating a table out of it so that we can use in the barplot function
           dfTab<-table(new_vector)
 
@@ -847,7 +840,7 @@ describeTimeField<-function(df_table, table_name,field_name,big_data_flag)
             colnames(df_table)[1] <- "Var1"
             colnames(df_table)[2] <- "Freq"
 
-            new_vector<-rep.int(df_table$Var1,df_table$Freq)
+            new_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
             # creating a table out of it so that we can use in the barplot function
             dfTab<-table(new_vector)
 
@@ -860,7 +853,7 @@ describeTimeField<-function(df_table, table_name,field_name,big_data_flag)
             # not using ggplot here as it is very expensive for a large number of values
             #vector_table <- as.vector(as.matrix(df_table$Freq))
             #vector_table_y <- as.vector(as.matrix(df_table$Freq))
-            # flog.info("here")
+            # flog.info("here")/
             #barplot(df_table$Freq, df_table$Var1, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"), xaxt='n')
             barplot(dfTab, main = paste(field_name,": Time Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
 
@@ -960,7 +953,7 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
 
 
           #caluclating mean and standard deviation, etc.
-          raw_vector<-rep.int(df_table$Var1, df_table$Freq)
+          raw_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
           mean_Var1<-round(mean(raw_vector, na.rm=TRUE),2)
           sd_Var1<-round(sd(raw_vector, na.rm=TRUE),2)
           median_Var1<-median(mean(raw_vector, na.rm=TRUE),2)
@@ -1030,7 +1023,6 @@ describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_dat
 	if(nrow(df_table)>0)
 	{
 		dfTab <- table(df_table[,column_index])
-
         if(nrow(dfTab)>0)
         {
 		#calculate the total number of locations
@@ -1039,11 +1031,12 @@ describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_dat
 
         png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
 		# not using ggplot here as it is very expensive for a large number of values
-		barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"), xaxt='n')
-
+		barplot(dfTab, main = paste(field_name,": Distribution"), 
+		        xlab = paste(field_name,"(Total: ",total_locations,")"),
+		        ylab = paste(table_name,"Count"), xaxt='n')
 
         #also plot in decreasing order of frequency (to compare distribution with source data)
-        df_dfTab<-data.frame(dfTab)
+        df_dfTab<- as.data.frame(dfTab)
         ordered_dfTab<-df_dfTab[order(-df_dfTab[,2]),]
         png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
         barplot(ordered_dfTab$Freq, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"), xaxt='n')
@@ -1080,8 +1073,6 @@ describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_dat
     df_table<-subset(df_table,!is.na(Var1))
     if(nrow(df_table)>0)
     {
-
-
         #df_table$Var1 <- as.factor(df_table$Var1)
 
         ordered_data<-df_table[order(-df_table[,2]), ]
@@ -1090,16 +1081,17 @@ describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_dat
 
         png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
         # not using ggplot here as it is very expensive for a large number of values
-        barplot(df_table$Freq, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"), xaxt='n')
-
+        barplot(height = as.vector(df_table$Freq), main = paste(field_name,": Distribution"), 
+                xlab = paste(field_name,"(Total: ",total_values,")"), 
+                ylab = paste(table_name,"Count"), xaxt='n')
 
         #also plot in decreasing order of frequency (to compare distribution with source data)
         png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
 
         #ordered_vector_table <- as.vector(as.matrix(ordered_data$Freq))
-        barplot(ordered_data$Freq, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"), xaxt='n')
-
-
+        barplot(height = as.vector(ordered_data$Freq), main = paste(field_name,": Distribution"),
+                xlab = paste(field_name,"(Total: ",total_values,")"), 
+                ylab = paste(table_name,"Count"), xaxt='n')
 
         return_message<-paste("The most frequent values for",field_name,"are:")
 

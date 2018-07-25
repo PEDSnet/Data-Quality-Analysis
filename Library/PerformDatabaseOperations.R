@@ -562,6 +562,7 @@ retrieve_dataframe_group <- function(table_df, field_name){
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
     as.data.frame()
+    table_df$freq = as.integer(table_df$freq) 
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)
