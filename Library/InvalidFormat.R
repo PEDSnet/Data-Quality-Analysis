@@ -19,6 +19,7 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, format, 
   field_name<-field_list[1]
   #print(table_name)
   #print(field_name)
+  print(summary(table_df))
   df_table<-retrieve_dataframe_group(table_df,field_name)
   #print(head(df_table))   
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)

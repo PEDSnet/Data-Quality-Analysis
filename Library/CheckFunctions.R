@@ -8,9 +8,7 @@ generate_df_concepts<-function(table_name, filename, table_df)
   clause_trunc <- gsub("\n", '', noquote(clause), fixed = T) # takes off extra characters
   clause_trunc<-as.character(clause_trunc)
   #check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
-
-  concept_id_list <-retrieve_dataframe_clause(table_df,c(
-                                            "concept_id","concept_name"), clause_trunc)
+  concept_id_list <-retrieve_dataframe_clause(table_df,c("concept_id","concept_name"), clause_trunc)
   return(concept_id_list)
 }
 
@@ -118,13 +116,21 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
 	# read check code from catalogue
   # flog.info(check_code)
   # flog.info(get_catalog_entry(check_code))
+  print("test1")
   check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_one_variable(check_code, table_name, field))
+  print("test2")
   # flog.info(check_entry)
 
 
   if(check_entry$check_code=='BA-001')
   {
+    print("test3")
+    print(summary(check_entry))
+    print("THRESH")
+    print(check_entry$Lower_Threshold)
+    print(check_entry$Upper_Threshold)
+    print(value)
 	  if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
 	  {
 	    log_file_entry<-c(as.character(g_data_version),

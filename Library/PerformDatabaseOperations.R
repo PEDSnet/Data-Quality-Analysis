@@ -409,18 +409,14 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
   table_df = table_df %>%
     filter_(clauses) 
   if(column_list[1] == "count(*)"){
-    if(is.na(nrow(table_df))){
-      table_df <- as.data.frame(0);
-      colnames(table_df) <- "count"
-    }
-    else{
-      table_df <- as.data.frame(nrow(table_df))
-      colnames(table_df) <- "count"
-    }
+      table_df <- table_df %>%
+        summarize(count = n()) %>%
+        as.data.frame()
   }
   else{
-    table_df = as.data.frame(table_df %>%
-      select_(.dots = column_list))
+    table_df = table_df %>%
+      select_(.dots = column_list) %>%
+      as.data.frame()
   }
   return(table_df)
 }
@@ -579,37 +575,52 @@ retrieve_dataframe_count<-function(table_name, column_list){
 }
 
 
-retrieve_dataframe_group_clause<-function(con,config,table_name,field_name, clauses)
-{
+# retrieve_dataframe_group_clause<-function(con,config,table_name,field_name, clauses)
+# {
+# 
+#   #special handling for ODBC drivers
+#   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+#   {
+#     table_name<-toupper(table_name)
+#     field_name<-toupper(field_name)
+#     query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
+#     df<-sqlQuery(con, query)
+#   }
+#   else
+#   {
+#     if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+#     {
+#       table_name<-toupper(table_name)
+#       field_name<-toupper(field_name)
+#       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
+#       df<-querySql(con, query)
+#     }
+#     else
+#     {
+#       query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
+#       df<-querySql(con, query)
+#     }
+#   }
+#   #converting all names to lower case for consistency
+#   names(df) <- tolower(names(df))
+#   return(df);
+# 
+# }
 
-  #special handling for ODBC drivers
-  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-  {
-    table_name<-toupper(table_name)
-    field_name<-toupper(field_name)
-    query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
-    df<-sqlQuery(con, query)
-  }
-  else
-  {
-    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-    {
-      table_name<-toupper(table_name)
-      field_name<-toupper(field_name)
-      query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
-      df<-querySql(con, query)
-    }
-    else
-    {
-      query<-paste("select ",field_name,", count(*) as Freq from ",config$db$schema,".",table_name," where ",clauses," group by ",field_name,sep="");
-      df<-querySql(con, query)
-    }
-  }
-  #converting all names to lower case for consistency
-  names(df) <- tolower(names(df))
-  return(df);
-
+retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
+  table_df = table_df %>%
+    filter_(clauses) %>%
+    group_by_(field_name) %>%
+    summarize(count = n()) %>%
+    as.data.frame()
+  print("NEW FUNCTION")
+  print(summary(table_df))
+  return(table_df)
 }
+
+
+
+
 retrieve_dataframe_ratio_group<-function(con,config,table_name,column_list, field_name)
   {
 

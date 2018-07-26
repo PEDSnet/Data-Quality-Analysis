@@ -1,0 +1,1 @@
+domain_id=='Specimen' & vocabulary_id=='SNOMED' & concept_class_id=='Specimen' & standard_concept=='S' & is.na(invalid_reason)

@@ -1,13 +1,16 @@
 generateMeasurementReport <- function() {
   flog.info(Sys.time())
 
-  
   big_data_flag<-TRUE
   
   #establish connection to database
-  con <- establish_database_connection_OHDSI( g_config)
   
   table_name<-"measurement"
+  
+  data_tbl <- cdm_tbl(req_env$db_src, table_name)
+  concept_tbl <- vocab_tbl(req_env$db_src, "concept")
+  
+  fileContent <-get_report_header(table_name, g_config)
   
   ## writing to the issue log file
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
@@ -15,7 +18,7 @@ generateMeasurementReport <- function() {
                           , finding=character(0), prevalence=character(0))
   #PRIMARY FIELD
   field_name<-"measurement_id"
-  df_total_measurement_count<-retrieve_dataframe_count(con, g_config,table_name,field_name)
+  df_total_measurement_count<-retrieve_dataframe_count(data_tbl, field_name)
   current_total_count<-as.numeric(df_total_measurement_count[1][1])
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL, current_total_count)) 
   
@@ -26,78 +29,81 @@ generateMeasurementReport <- function() {
   
   field_name<-"provider_id" #
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   field_name<-"visit_occurrence_id"
   
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   print(field_name)
   
   
   field_name<-"measurement_date" #
-  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
   
   
   print(field_name)
   
   
   field_name<-"measurement_result_date" #
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   ### DQA checkpoint - future date
-  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), 
+                                                   c(field_name),data_tbl)) 
   
   print(field_name)
   
   field_name<-"measurement_order_date" #
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),
+                                                   c(field_name),data_tbl)) 
   ### DQA checkpoint - future date
-  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name),
+                                                   c(field_name),data_tbl)) 
   
   print(field_name)
   
   field_name<-"value_as_concept_id" #
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "value_as_concept_id.txt")) 
+                                                   ,"value_as_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   print(field_name)
   
   #print (fileContent)
   field_name<-"unit_source_value" # 3 minutes
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   print(field_name)
   
   field_name="unit_concept_id"
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "unit_concept_id.txt")) 
+                                                   ,"unit_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "unit_source_value"),con
-  )) 
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
+                                                   c(field_name, "unit_source_value"),data_tbl))
   
   print(field_name)
   
   #Operator Concept Id
   field_name = "operator_concept_id"
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "operator_concept_id.csv")) 
+                                                   ,"operator_concept_id.csv", concept_tbl, data_tbl)) 
   
   field_name<-"priority_source_value" # 3 minutes
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   print(field_name)
   
@@ -106,26 +112,24 @@ generateMeasurementReport <- function() {
   #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "priority_concept_id.txt")) 
+                                                   ,"priority_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   
   print(field_name)
   
   field_name = "measurement_type_concept_id"
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "measurement_type_concept_id.csv")) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+                                                   ,"measurement_type_concept_id.csv", concept_tbl, data_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
                                                    list(
                                                      list(2000000033,  2000000032, "vital signs"),
-                                                     list(44818702, "lab records"))) )
-  
+                                                     list(44818702, "lab records")), data_tbl) )
   
   
   #print (fileContent)
@@ -135,9 +139,9 @@ generateMeasurementReport <- function() {
   
   field_name<-"measurement_source_concept_id"
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   # this is a nominal field - work on it
   
   print(field_name)
@@ -146,20 +150,19 @@ generateMeasurementReport <- function() {
   field_name<-"measurement_concept_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   
-  
-  
   ### Vitals 
-  df_vitals<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (2000000033, 2000000032)")
+  df_vitals<-retrieve_dataframe_group_clause(data_tbl, field_name, 
+                                             "measurement_type_concept_id %in% c(2000000033, 2000000032)")
   acceptable_vitals<-generate_list_concepts(table_name,"vital_list.csv")$concept_id ## read from vitals list
   acceptable_fevs<-generate_list_concepts(table_name,"fev_list.csv")$concept_id ## read from fev list
   acceptable_vitals<-rbind(acceptable_vitals, acceptable_fevs)
   unexpected_message<- reportUnexpected(df_vitals,table_name,field_name,acceptable_vitals,big_data_flag)
   if(length(trim(unexpected_message))>1)
-    logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("VITALS: ",unexpected_message), table_name, 
-                                                             g_data_version));
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name,
+                                                             paste0("VITALS: ",unexpected_message), table_name, g_data_version));
   
   ### patient reported 
-  df_pro<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (44818704)")
+  df_pro<-retrieve_dataframe_group_clause(data_tbl,field_name, "measurement_type_concept_id == 44818704")
   acceptable_pt_reported<-generate_list_concepts(table_name,"patient_reported_list.csv")$concept_id ## read from vitals list
   unexpected_message<- reportUnexpected(df_pro,table_name,field_name,acceptable_pt_reported,big_data_flag)
   if(length(trim(unexpected_message))>1)
@@ -168,17 +171,16 @@ generateMeasurementReport <- function() {
                                                              g_data_version));
   
   
-  
   #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name, big_data_flag))
   # add % of no matching concept (concept id = 0). for the completeness report
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
   ## Specific lab checks
   ### CBC (complete blood count) components: 
   
   ## white blood cell
-  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),con, 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
                                                    list(
                                                      list(3010813, 1125563, 228323, 27245,
                                                           " White Blood cell (WBC) count (leukocyte)"),
@@ -211,10 +213,9 @@ generateMeasurementReport <- function() {
                                                      list(3006923,  "Alanine Aminotransferase (ALT)"), 
                                                      list(3035995,  "Alkaline Phosphatase (ALP)"),
                                                      list(3013721,  "Aspartate Aminotransferase (AST)")
-                                                   ))) 
+                                                   ), data_tbl)) 
   
   #concept_id_list <- unique(df_table[,1])
-  
   
   print(field_name)
   
@@ -223,18 +224,18 @@ generateMeasurementReport <- function() {
   
   
   ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
-  count_lab_no_specimen<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
-                                                   ,"specimen_source_value is null and measurement_type_concept_id = 44818702")
-  count_lab<-retrieve_dataframe_clause(con,g_config,g_config$db$schema,table_name,"count(*)"
-                                       ,"measurement_type_concept_id = 44818702")
+  count_lab_no_specimen<-retrieve_dataframe_clause(data_tbl,"count(*)"
+                                                   ,"is.na(specimen_source_value) & measurement_type_concept_id == 44818702")
+  count_lab<-retrieve_dataframe_clause(data_tbl,"count(*)"
+                                       ,"measurement_type_concept_id == 44818702")
   # compute % (# of records with missing visit info for problem list visits) / (# problem list visits)
   missing_specimen_percent_lab<-round(count_lab_no_specimen*100/count_lab,2)
   ###########DQA CHECKPOINT -- missing information##############
   #missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_specimen_percent_lab, table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_specimen_percent_lab, 
+                                                           table_name, g_data_version));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
-                                                   ,con,  2))  ## number of components in _source_value
-  
+                                                   , 2, table_df = data_tbl))  ## number of components in _source_value
   #message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
   #fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
   print(field_name)
@@ -243,51 +244,51 @@ generateMeasurementReport <- function() {
   field_name<-"specimen_concept_id" #
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "specimen_concept_id.txt")) 
-  
+                                                   ,"specimen_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
+  print("Above?")
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  print("Or here?")
   #generating concept wise graphs for numerical readings
   
   print(field_name)
   
   field_name<-"range_high" #
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   
   field_name<-"range_high_source_value" #
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   field_name<-"range_high_operator_concept_id" #
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT######################
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "operator_concept_id.csv")) 
+                                                   ,"operator_concept_id.csv", concept_tbl, data_tbl)) 
   
   #print (fileContent)
   
   field_name<-"range_low" #
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   field_name<-"range_low_source_value" #
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   field_name<-"range_low_operator_concept_id" #
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   ###########DQA CHECKPOINT################
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "operator_concept_id.csv")) 
+                                                   ,"operator_concept_id.csv", concept_tbl, data_tbl)) 
   
   
   # write to log file
@@ -295,8 +296,6 @@ generateMeasurementReport <- function() {
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
-  #close the connection
-  close_database_connection_OHDSI(con, g_config)
   
   
 }

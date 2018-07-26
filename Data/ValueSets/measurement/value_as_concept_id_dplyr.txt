@@ -1,0 +1,1 @@
+domain_id=='Meas Value' & concept_class_id=='Qualifier Value' & standard_concept=='S'

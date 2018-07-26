@@ -44,9 +44,9 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
         values<-paste(values,",", metadata[value_index])   
         else values<-paste(values, metadata[value_index]) 
       }
-      number_of_records<-retrieve_dataframe_clause(g_config, g_config$db$schema,table_name,
+      number_of_records<-retrieve_dataframe_clause(table_df,
                                                 "count(*)",
-                                                paste(field_name,"in (",values,")")
+                                                paste(field_name,"%in% c(",values,")")
                                                 )[1,1]
     
   }
