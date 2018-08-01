@@ -116,21 +116,14 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
 	# read check code from catalogue
   # flog.info(check_code)
   # flog.info(get_catalog_entry(check_code))
-  print("test1")
   check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_one_variable(check_code, table_name, field))
   print("test2")
   # flog.info(check_entry)
-
+  print(check_entry)
 
   if(check_entry$check_code=='BA-001')
   {
-    print("test3")
-    print(summary(check_entry))
-    print("THRESH")
-    print(check_entry$Lower_Threshold)
-    print(check_entry$Upper_Threshold)
-    print(value)
 	  if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
 	  {
 	    log_file_entry<-c(as.character(g_data_version),
@@ -154,6 +147,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   if(
      check_entry$check_code=='AA-002')
   {
+    print("REACHED THIS ONE")
     if(nchar(trim(value))>0)
     {
       log_file_entry<-c(as.character(g_data_version),

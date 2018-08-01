@@ -243,16 +243,15 @@ generateMeasurementReport <- function() {
   # specimen concept id
   field_name<-"specimen_concept_id" #
   ###########DQA CHECKPOINT##############
+  if(field_name %in% colnames(data_tbl)){
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"specimen_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
-  print("Above?")
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  print("Or here?")
   #generating concept wise graphs for numerical readings
   
   print(field_name)
-  
+  }
   field_name<-"range_high" #
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 

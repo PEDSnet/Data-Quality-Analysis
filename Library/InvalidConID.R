@@ -19,14 +19,17 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, metadata,
   table_name<-table_list[1]
   field_name<-field_list[1]
 
+  print("TESTING 1")
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
-  
-  if(grepl('csv$', metadata)==TRUE)
+  print("TESTING 2")
+  if(grepl('csv$', metadata))
   { 
     concept_id_list<-generate_list_concepts(table_name, metadata)
+    print("TESTING 3-1")
     } else
   {
     concept_id_list <-generate_df_concepts(table_name, metadata, table_df)
+    print("TESTING 3-2")
     
   }
   
@@ -41,7 +44,6 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, metadata,
     # log issue 
     return(logIssue(issue_obj))
   }
-  
   NextMethod("applyCheck",theObject)
   return(c())
 }
