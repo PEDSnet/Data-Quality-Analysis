@@ -41,9 +41,7 @@ generateSingleReport <- function(level, report) {
     test_report = NULL
     if(level == 1) {
         test_report <- g_level1_reports[[report]]
-    } else if (level == 2) {
-     
-      
+    } else if (level == 2) { 
         test_report <- g_level2_reports[[report]]
     }
 
