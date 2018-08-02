@@ -2,11 +2,13 @@ require(tictoc)
 
 generateDeathReport <- function() {
   #establish connection to database
-  con <- establish_database_connection_OHDSI( g_config)
+ 
 
   # read a table into an R dataframe
   table_name<-"death"
-  df_table<- retrieve_dataframe_OHDSI(con, g_config,table_name)
+  data_tbl <- cdm_tbl(req_env$db_src, table_name)
+  concept_tbl <- vocab_tbl(req_env$db_src, "concept")
+  
   big_data_flag<-FALSE
 
   #writing to the final DQA Report
@@ -21,11 +23,10 @@ generateDeathReport <- function() {
 
   #PRIMARY FIELD(s)
   field_name<-"death_cause_id"
-  tic()
-  current_total_count<-as.numeric(describeIdentifier(df_table,field_name))
-  toc()
+  current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
-   ###########DQA CHECKPOINT############## difference from previous cycle
+ 
+  ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
   ## write current total count to total counts 
@@ -34,9 +35,7 @@ generateDeathReport <- function() {
   
   field_name<-"person_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  tic()
-  message<-describeForeignKeyIdentifiers(df_table, "death_cause",field_name,big_data_flag)
-  toc()
+  message<-describeForeignKeyIdentifiers(data_tbl, "death_cause",field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name("death_cause",field_name),paste_image_name_sorted("death_cause",field_name),message);
 
 
@@ -45,11 +44,11 @@ generateDeathReport <- function() {
   field_name="death_date"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   tic()
-  message<-describeDateField(df_table, table_name,field_name,big_data_flag)
+  message<-describeDateField(data_tbl, table_name,field_name,big_data_flag)
   toc()
   
   ### DQA checkpoint - future date
-  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
   
 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
@@ -65,7 +64,7 @@ generateDeathReport <- function() {
 
   field_name<-"death_datetime"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeTimeField(df_table, table_name,field_name,big_data_flag)
+  message<-describeTimeField(data_tbl, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
 
@@ -75,58 +74,58 @@ generateDeathReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "death_type.txt")) 
+                                                   ,"death_type_dplyr.txt", concept_tbl, data_tbl)) 
   df_death_type_concept_id <-generate_df_concepts(con, table_name, "death_type.txt")
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #cause of death source valueapply_check_type_1("BA-002"
   field_name="cause_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  message<-reportMissingCount(data_tbl,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   field_name="cause_source_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  message<-reportMissingCount(data_tbl,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),dat_tbl)) 
+  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
   #cause of death concept id
   field_name="cause_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
-  #no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
+  message<-reportMissingCount(data_tbl,table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
   ###########DQA CHECKPOINT --vocabulary check ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition','SNOMED'))) 
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
+                                                   c('Condition','SNOMED'), data_tbl)) 
   
    ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
-  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),c(field_name, "cause_source_value"),con
-                                                   )) 
+  logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
+                                                   c(field_name, "cause_source_value"),data_tbl)) 
   
   
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
@@ -143,8 +142,8 @@ generateDeathReport <- function() {
   ###########DQA CHECKPOINT##############
 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
+  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #write all contents to the report file and close it.
@@ -156,8 +155,4 @@ generateDeathReport <- function() {
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
-
-
-  #close the connection
-  close_database_connection_OHDSI(con, g_config)
 }

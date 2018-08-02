@@ -12,11 +12,13 @@
 
 #}
 
-describeIdentifier<-function(df_table, field_name)
+describeIdentifier<-function(table_df, field_name)
 {
-	column_index <- which(colnames(df_table)==field_name)
-  df_table <-df_table[,column_index]
-  total_distinct_values <-length(unique(df_table))
+  table_df <- table_df %>% 
+    select_(field_name) %>%
+    unique()
+  
+  total_distinct_values <- length(table_df)
   if(total_distinct_values == 1)
       if(is.na(unique(df_table)))
         return (0);
@@ -1019,6 +1021,7 @@ describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_dat
     if(big_data_flag==FALSE)
     {
 	column_index <- which(colnames(df_table)==field_name)
+	
 
 	if(nrow(df_table)>0)
 	{
@@ -1112,6 +1115,48 @@ describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_dat
     }
     }
 }
+
+describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_data_flag)
+{ 	flog.info(paste("Plotting for Field: ", field_name))
+    table_df <- table_df %>%
+      select_(field_name) %>%
+      collect() %>%
+      na.omit() %>%
+      table()
+
+    if(nrow(table_df)>0){
+
+      total_values<- nrow(table_df)
+      
+      png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
+      # not using ggplot here as it is very expensive for a large number of values
+      barplot(height = table_df, main = paste(field_name,": Distribution"), 
+              xlab = paste(field_name,"(Total: ",total_values,")"), 
+              ylab = paste(table_name,"Count"), xaxt='n')
+      
+      #also plot in decreasing order of frequency (to compare distribution with source data)
+      png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
+      
+      #ordered_vector_table <- as.vector(as.matrix(ordered_data$Freq))
+      barplot(height = as.vector(ordered_data$Freq), main = paste(field_name,": Distribution"),
+              xlab = paste(field_name,"(Total: ",total_values,")"), 
+              ylab = paste(table_name,"Count"), xaxt='n')
+      
+      return_message<-paste("The most frequent values for",field_name,"are:")
+      
+      for (index in 1:5)
+      {
+        return_message<-paste(return_message,table_df[order(-table_df[[1]])[index],1]);
+        if(index<5)
+          return_message<-paste(return_message,",")
+      }
+      
+      dev.off()
+      dev.off()
+      return(return_message)
+    }
+}
+
 
 #update values of concept_id fields to include concept names  - to improve readability for plotting purposes
 EnhanceFieldValues<-function(df_table,field_name,df_ref)
