@@ -104,7 +104,7 @@ establish_database_connection_OHDSI<-function(config)
                                                    server=paste(dbhost,"/",dbname,sep=""),
                                                    user=dbuser,password=dbpass,
                                                    schema=dbschema,port=dbport
-                                                   ,extraSettings="ssl=true&sslmode=verify-full")
+                                                   ,extraSettings="ssl=true&sslmode=require")
       }
     }
         # flog.info(connectionDetails)

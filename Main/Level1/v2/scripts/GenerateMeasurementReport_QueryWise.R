@@ -9,6 +9,9 @@ generateMeasurementReport <- function() {
   
   table_name<-"measurement"
   
+  fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/",table_name,"_Report_Automatic.md",sep=""))
+  fileContent <-get_report_header(table_name, g_config)
+  
   ## writing to the issue log file
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
                           issue_description=character(0), alias=character(0)
