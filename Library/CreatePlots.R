@@ -249,13 +249,8 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
                # flog.info(df_table[i,1])
                if(!is.element(value,permissible_values) && !is.na(value))
                    return_message<-paste(return_message, "invalid value found: ",value,";")
-
            }
-
-
-
     }
-
     return(return_message)
 }
 
@@ -520,116 +515,49 @@ describeOrdinalField<-function(df_table, table_name,field_name,big_data_flag)
     }
 }
 
-# specialized date function
-describeDateField<-function(df_table, table_name,field_name,big_data_flag)
-{
+#Date Function Check
+describeDateField<-function(table_df, table_name, field_name){
+  flog.info(paste("Plotting for Field: ", field_name))
+  table_df <- table_df %>%
+    select_(field_name) %>%
+    as.data.frame() %>%
+    na.omit() 
 
-   #  flog.info(paste("Plotting for Field: ", field_name))
-    if(big_data_flag==FALSE)
+  table_df[,1] <- as.Date(table_df[,1])
+  date_range <- paste("\n Date range: ",
+                      min(table_df[,1],na.rm=T),"-",max(table_df[,1],na.rm=T))
+  date_max <- max(table_df[,1], na.rm = T)
+  table_df <-table(table_df)
+  
+  if(nrow(table_df)>0)
+  {
+    total_locations <- nrow(table_df)
+    png(paste(normalize_directory_path( g_config$reporting$site_directory),
+              get_image_name(table_name,field_name),sep=""))
+
+    # not using ggplot here as it is very expensive for a large number of values
+    barplot(table_df, main = paste(field_name,": Distribution"),
+            xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
+
+    table_df <- as.data.frame(table_df)
+    table_df <- table_df[order(table_df[,2], decreasing = T),]
+
+    return_message<-paste("The most frequent values for",field_name,"are:")
+    for (index in 1:5)
     {
-
-       flog.info(paste("Plotting for Field: ", field_name))
-
-        column_index <- which(colnames(df_table)==field_name)
-        # flog.info(nrow(df_table))
-        if(nrow(df_table)>0)
-        {
-          df_table<-df_table[,column_index]
-          #df_table<-substring(df_table,nchar(df_table)-7) #extracting the date portion of the datetime field
-          df_table<-as.Date(df_table)
-          #df_table<-as.Date(format(df_table)," "), "[[", 1)
-          dfTab <- table(df_table)
-          if(nrow(dfTab)>0)
-          {
-            #calculate the total number of locations
-            # flog.info(colnames(dfTab))
-            ordered_data<-quickdf(dfTab)[order(quickdf(dfTab)[,2], decreasing = TRUE),]
-            # flog.info(ordered_data)
-
-            # counting the total number of unique values
-            total_locations <- nrow(dfTab)
-
-            png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-            # not using ggplot here as it is very expensive for a large number of values
-           # barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"), xaxt='n')
-           barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
-
-
-
-            return_message<-paste("The most frequent values for",field_name,"are:")
-            index<-1;
-            while (index<=5)
-            {
-              return_message<-paste(return_message,ordered_data[index,1]);
-              if(index<5)
-                return_message<-paste(return_message,",")
-              index<-index+1;
-            }
-            return_message<-c(return_message, paste("\n Date range: ",min(df_table,na.rm=TRUE),"-",max(df_table,na.rm=TRUE)))
-            # check if future dates are included
-            if(Sys.Date()<max(df_table,na.rm=TRUE))
-               return_message<-c(return_message,"\nWARNING: includes future dates")
-
-            dev.off()
-            return(return_message)
-          }
-        }
+      return_message<-paste(return_message,(table_df[index,1]))
+      if(index<5){return_message<-paste(return_message,",")}
     }
-    else #using dplyr or query wise
-    {
-      df_table<-subset(df_table,!is.na(df_table[,1]))
-    if(nrow(df_table)>0)
-    {
-      # df table is actually a dataframe of two dataframes
-      colnames(df_table)[1] <- "Var1"
-      colnames(df_table)[2] <- "Freq"
-
-      # remove NA values - we dont want to plot missing values
-      #df_table<-subset(df_table,!is.na(Var1))
-
-      df_table$Var1<-as.Date(df_table[,1])
-      #df_table$Var1 <- as.factor(df_table$Var1)
-      df_table$Var1 <- as.character(df_table$Var1)
-
-      # aggregate df_table again by summing frequency for all equivalent dates
-      df_table<-aggregate(df_table$Freq,FUN=sum, by = list(df_table$Var1))
-      colnames(df_table)[1] <- "Var1"
-      colnames(df_table)[2] <- "Freq"
-      # creare a raw vector and then create a table
-      new_vector<-rep.int(df_table$Var1, times = as.integer(df_table$Freq))
-      # creating a table out of it so that we can use in the barplot function
-      dfTab<-table(new_vector)
-      ordered_data<-df_table[order(-df_table[,2]), ]
-      total_values <- length(unique(df_table$Var1))
-      png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-      # not using ggplot here as it is very expensive for a large number of values
-      #vector_table <- as.vector(as.matrix(df_table$Freq))
-      # flog.info("here")
-      #barplot(df_table$Freq, df_table$Var1, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"), xaxt='n')
-      barplot(dfTab, main = paste(field_name,": Distribution"), 
-              xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
-
-      return_message<-paste("The most frequent values for",field_name,"are:")
-
-      index<-1;
-      while (index<=5 && nrow(ordered_data)>=index)
-      {
-        #if(!is.na(ordered_data[index,1])) # if NA then dont include as the top concept
-        return_message<-paste(return_message,ordered_data[index,1]);
-
-        if(index<5)
-          return_message<-paste(return_message,",")
-        index<-index+1;
-      }
-      return_message<-c(return_message, paste("\n Date range: ",min(df_table$Var1)," - ",max(df_table$Var1)))
-      if(Sys.Date()<max(df_table$Var1))
-        return_message<-c(return_message,"\nWARNING: includes future dates")
-
-      dev.off()
-       return(return_message)
-        }
-    }
+    return_message<-c(return_message, date_range)
+    # check if future dates are included
+    if(Sys.Date() < date_max)
+      return_message<-c(return_message,"\nWARNING: includes future dates")
+    
+    dev.off()
+    return(return_message)  
+  }
 }
+
 
 describeYYMMField<-function(df_table, table_name,field_name,fact_type)
 {
@@ -655,12 +583,8 @@ describeYYMMField<-function(df_table, table_name,field_name,fact_type)
       else
         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
                           get_image_name(table_name,paste0(field_name, "-yyyy-mm-", fact_type[2])),sep=""))
-     
        
-      
-      #dev.off()
     }
-  
 }
 
 
@@ -763,124 +687,42 @@ describeOrdinalField_large<-function(df_table, table_name,field_name,big_data_fl
     }
 }
 
-describeTimeField<-function(df_table, table_name,field_name,big_data_flag)
-{
 
-     flog.info(paste("Plotting for Field: ", field_name))
+describeTimeField<-function(table_df, table_name,field_name){     
+  flog.info(paste("Plotting for Field: ", field_name))
+  table_df <- table_df %>%
+    select_(field_name) %>%
+    as.data.frame() %>%
+    na.omit()
 
-    if(big_data_flag==FALSE)
-    {
-        column_index <- which(colnames(df_table)==field_name)
-        # flog.info(nrow(df_table))
-        if(nrow(df_table)>0)
-        {
-            # all time fields are now datetime fields
-            #handling datetime fields in Oracle
-                df_table<-df_table[,column_index]
-                #df_table<-lapply(strsplit(format(df_table)," "), "[[", 2)
-                # check if contains timesize information
-                # if contains timezone information
-                #if(length(strsplit(df_table[1],"-")[[1]])==4)
-                 # {
-                   # remove timezone information
-                  df_table<-substr(df_table,12,19)
-                #  }
-                #df_table<- paste((as.POSIXlt(df_table,format="%H:%M:%S"))$hour,":",(as.POSIXlt(df_table,format="%H:%M:%S"))$min,":",(as.POSIXlt(df_table,format="%H:%M:%S"))$sec,sep="")
-                dfTab <- table(df_table)
+  table_df <- substr(table_df[,1],12,19)
+  time_max <- max(table_df)
+  time_min <- min(table_df)
+  table_df <- table(table_df)
+  if(nrow(table_df)>0)
+  {
+    
+    total_locations <- nrow(table_df)
+    png(paste(normalize_directory_path( g_config$reporting$site_directory),
+              get_image_name(table_name,field_name),sep=""))
+    # not using ggplot here as it is very expensive for a large number of values
+    barplot(table_df, main = paste(field_name,": Distribution"),
+            xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
+    
+    table_df <- as.data.frame(table_df)
+    table_df <- table_df[order(table_df[,2], decreasing = T),]
 
-
-            if(nrow(dfTab)>0)
-            {
-
-                #calculate the total number of locations
-                # flog.info(colnames(dfTab))
-                ordered_data<-as.data.frame(dfTab)[order(as.data.frame(dfTab)[,2], decreasing = TRUE),]
-                # flog.info(ordered_data)
-
-                # counting the total number of unique values
-                total_values <- nrow(dfTab)
-
-                png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,paste(field_name,"_time",sep="")),sep=""))
-                # not using ggplot here as it is very expensive for a large number of values
-                barplot(dfTab, main = paste(field_name,": Time Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
-                #, xaxt='n')
-
-
-
-                return_message<-paste("The most frequent values for",field_name,"are:")
-                index<-1;
-                while (index<=5 && nrow(ordered_data)>=index)
-                {
-                    return_message<-paste(return_message,ordered_data[index,1]);
-                    if(index<5)
-                      return_message<-paste(return_message,",")
-                    index<-index+1;
-                }
-                return_message<-c(return_message, paste("\n Time range: ",min(df_table)," - ",max(df_table)))
-
-                dev.off()
-                return(return_message)
-            }
-        }
+    return_message<-paste("The most frequent values for",field_name,"are:")
+    for (index in 1:min(5, nrow(table_df))){
+      return_message <- paste(return_message,table_df[index,1]);
+      if(index<5){return_message<-paste(return_message,",")}
     }
-    else # for handling bigdata with dplyr and query wise
-    {
-        colnames(df_table)[1] <- "Var1"
-        colnames(df_table)[2] <- "Freq"
-        df_table<-subset(df_table,!is.na(Var1))
-
-        if(nrow(df_table)>0)
-        {
-            #if(length(strsplit(df_table[,1],"-")[[1]])==4)
-            #{
-            # remove timezone information and extract time
-              df_table$Var1<-substr(df_table$Var1,12,19)
-            #}
-            # remove NA values
-            #df_table$Var1 <- as.factor(df_table$Var1)
-            df_table<-aggregate(df_table$Freq,FUN=sum, by = list(df_table$Var1))
-            colnames(df_table)[1] <- "Var1"
-            colnames(df_table)[2] <- "Freq"
-
-            new_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
-            # creating a table out of it so that we can use in the barplot function
-            dfTab<-table(new_vector)
-
-
-            ordered_data<-df_table[order(-df_table[,2]), ]
-
-            total_values<- length(unique(df_table$Var1))
-
-            png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,paste(field_name,"_time",sep="")),sep=""))
-            # not using ggplot here as it is very expensive for a large number of values
-            #vector_table <- as.vector(as.matrix(df_table$Freq))
-            #vector_table_y <- as.vector(as.matrix(df_table$Freq))
-            # flog.info("here")/
-            #barplot(df_table$Freq, df_table$Var1, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"), xaxt='n')
-            barplot(dfTab, main = paste(field_name,": Time Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
-
-
-            return_message<-paste("The most frequent values for",field_name,"are:")
-
-            index<-1;
-            while (index<=5 && nrow(ordered_data)>=index)
-            {
-                #if(!is.na(ordered_data[index,1])) # if NA then dont include as the top concept
-                  return_message<-paste(return_message,ordered_data[index,1]);
-
-                if(index<5)
-                return_message<-paste(return_message,",")
-                index<-index+1;
-            }
-            return_message<-c(return_message, paste(" \n Time range: ",min(df_table$Var1)," - ",max(df_table$Var1)))
-
-            dev.off()
-            return(return_message)
-
-        }
-    }
+    return_message<-c(return_message, paste("\n Time range: ",min(time_min," - ",time_max)))
+    
+    dev.off()
+    return(return_message)
+  } 
 }
-
 
 
 # Ratio Fields
@@ -930,7 +772,7 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
                                " data points below the lower threshold (", extreme.threshold.lower,")",sep="")
 
 
-        #create histogram
+    #create histogram
 		p<-ggplot(data=dfTab, aes(x=Var1, y=Freq, width=1, fill=Freq)) +
 		geom_bar(stat="identity", position="identity") + ggtitle(paste(field_name,": Distribution\n(Mean=",mean_Var1," Std. Deviation=",sd_Var1,")"))
 		p<-p+ylab(paste(table_name,"Count"))+xlab(paste(field_name,"(in",unit,")"))
@@ -998,12 +840,9 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
          # flog.info(p)
          ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
 
-
          return(paste("\n\nMaximum:",max_Var1 ,"Minimum:", min_Var1, "Mean:",mean_Var1,"Std Deviation:",sd_Var1,"Median:",median_Var1,"\n\n" ))
         }
     }
-
-
 }
 
 # Foreign Key Fields
@@ -1013,108 +852,6 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
 	#1. an R dataframe containing a given database table
 	#2. the name of the foreign key field
 #Output: write the barplot to a file
-describeForeignKeyIdentifiers<-function(df_table, table_name, field_name,big_data_flag)
-{
-    # flog.info(field_name)
-	 flog.info(paste("Plotting for Field: ", field_name))
-
-    if(big_data_flag==FALSE)
-    {
-	column_index <- which(colnames(df_table)==field_name)
-	
-
-	if(nrow(df_table)>0)
-	{
-		dfTab <- table(df_table[,column_index])
-        if(nrow(dfTab)>0)
-        {
-		#calculate the total number of locations
-		total_locations <- nrow(dfTab)
-        # flog.info(total_locations)
-
-        png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-		# not using ggplot here as it is very expensive for a large number of values
-		barplot(dfTab, main = paste(field_name,": Distribution"), 
-		        xlab = paste(field_name,"(Total: ",total_locations,")"),
-		        ylab = paste(table_name,"Count"), xaxt='n')
-
-        #also plot in decreasing order of frequency (to compare distribution with source data)
-        df_dfTab<- as.data.frame(dfTab)
-        ordered_dfTab<-df_dfTab[order(-df_dfTab[,2]),]
-        png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
-        barplot(ordered_dfTab$Freq, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"), xaxt='n')
-
-
-
-        return_message<-paste("The most frequent values for",field_name,"are:")
-        index<-1;
-        while (index<=5)
-        {
-            if(is.na(ordered_dfTab[index,1]))
-                return(return_message);
-            return_message<-paste(return_message,ordered_dfTab[index,1]);
-            if(index<5)
-            return_message<-paste(return_message,",")
-            index<-index+1;
-        }
-
-        # Turn off both png devices
-        dev.off()
-        dev.off()
-        return(return_message);
-        }
-	}
-    }
-
-    #handling big data using dplyr
-    else
-    {
-
-    colnames(df_table)[1] <- "Var1"
-    colnames(df_table)[2] <- "Freq"
-    # remove NA values
-    df_table<-subset(df_table,!is.na(Var1))
-    if(nrow(df_table)>0)
-    {
-        #df_table$Var1 <- as.factor(df_table$Var1)
-
-        ordered_data<-df_table[order(-df_table[,2]), ]
-
-        total_values<- length(unique(df_table$Var1))
-
-        png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-        # not using ggplot here as it is very expensive for a large number of values
-        barplot(height = as.vector(df_table$Freq), main = paste(field_name,": Distribution"), 
-                xlab = paste(field_name,"(Total: ",total_values,")"), 
-                ylab = paste(table_name,"Count"), xaxt='n')
-
-        #also plot in decreasing order of frequency (to compare distribution with source data)
-        png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
-
-        #ordered_vector_table <- as.vector(as.matrix(ordered_data$Freq))
-        barplot(height = as.vector(ordered_data$Freq), main = paste(field_name,": Distribution"),
-                xlab = paste(field_name,"(Total: ",total_values,")"), 
-                ylab = paste(table_name,"Count"), xaxt='n')
-
-        return_message<-paste("The most frequent values for",field_name,"are:")
-
-        index<-1;
-        while (index<=5)
-        {
-            return_message<-paste(return_message,ordered_data[index,1]);
-
-            if(index<5)
-            return_message<-paste(return_message,",")
-            index<-index+1;
-        }
-
-        dev.off()
-        dev.off()
-        return(return_message)
-
-    }
-    }
-}
 
 describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_data_flag)
 { 	flog.info(paste("Plotting for Field: ", field_name))
@@ -1136,21 +873,18 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_dat
       
       #also plot in decreasing order of frequency (to compare distribution with source data)
       png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
-      
-      #ordered_vector_table <- as.vector(as.matrix(ordered_data$Freq))
-      barplot(height = as.vector(ordered_data$Freq), main = paste(field_name,": Distribution"),
+      table_df <- as.data.frame(table_df)
+      table_df[,1] <- table_df[order(-table_df[,1]),1]
+      barplot(height = table(table_df), main = paste(field_name,": Distribution"),
               xlab = paste(field_name,"(Total: ",total_values,")"), 
               ylab = paste(table_name,"Count"), xaxt='n')
-      
       return_message<-paste("The most frequent values for",field_name,"are:")
       
       for (index in 1:5)
       {
-        return_message<-paste(return_message,table_df[order(-table_df[[1]])[index],1]);
-        if(index<5)
-          return_message<-paste(return_message,",")
+        return_message<-paste(return_message,table_df[index,1]);
+        if(index<5) {return_message<-paste(return_message,",")}
       }
-      
       dev.off()
       dev.off()
       return(return_message)
@@ -1167,7 +901,8 @@ EnhanceFieldValues<-function(df_table,field_name,df_ref)
   while(inner_loop_index<=nrow(df_ref))
   {
     #    df_table[,column_index][df_table[,column_index]==df_ref[inner_loop_index,1]] <- "replaced"
-    df_table_enhanced[,column_index][df_table_enhanced[,column_index]==df_ref[inner_loop_index,1]] <- paste(df_ref[inner_loop_index,2]," (",df_ref[inner_loop_index,1],")",sep="");
+    df_table_enhanced[,column_index][df_table_enhanced[,column_index]==df_ref[inner_loop_index,1]] <- paste(
+      df_ref[inner_loop_index,2]," (",df_ref[inner_loop_index,1],")",sep="");
     #df$concept_id[df==""]<-NA
     inner_loop_index<-inner_loop_index+1;
 

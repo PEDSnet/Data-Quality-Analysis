@@ -410,11 +410,3 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
 }
 
 
-retrieve_dataframe_OHDSI<-function(con,config,table_name)
-{
-    df<-querySql(con,paste("SELECT * FROM ",config$db$schema,".",table_name,sep=""))
-    #converting all names to lower case for consistency
-    names(df) <- tolower(names(df))
-    return(df);
-}
-

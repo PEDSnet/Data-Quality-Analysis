@@ -39,44 +39,33 @@ generateDeathReport <- function() {
   fileContent<-c(fileContent,paste_image_name("death_cause",field_name),paste_image_name_sorted("death_cause",field_name),message);
 
 
-  # ORDINAL Fields
+  # ORDINAL Fields`11`1
 
   field_name="death_date"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  tic()
-  message<-describeDateField(data_tbl, table_name,field_name,big_data_flag)
-  toc()
+  message<-describeDateField(data_tbl, table_name,field_name)
   
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
-  
 
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
-
-  #if(extract_start_range(message)<2009)
-  #{
-  # logFileData<-custom_rbind(logFileData,apply_check_type_1("G2-010", field_name, "deaths cannot occur before 2009", table_name, g_data_version));
-  #  fileContent<-c(fileContent,"deaths cannot occur before 2009");
-  #}
-
-  #fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
-
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name),message)
 
   field_name<-"death_datetime"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeTimeField(data_tbl, table_name,field_name,big_data_flag)
+  message<-describeTimeField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
 
   #death type concept id
 
   field_name="death_type_concept_id"
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"death_type_dplyr.txt", concept_tbl, data_tbl)) 
-  df_death_type_concept_id <-generate_df_concepts(con, table_name, "death_type.txt")
-  
+
+  df_death_type_concept_id <-generate_df_concepts(death, "death_type.txt", data_tbl)
+
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
