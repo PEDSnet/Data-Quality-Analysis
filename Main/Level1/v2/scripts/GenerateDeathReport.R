@@ -63,19 +63,20 @@ generateDeathReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"death_type_dplyr.txt", concept_tbl, data_tbl)) 
-
-  df_death_type_concept_id <-generate_df_concepts(death, "death_type.txt", data_tbl)
-
+  
+  df_death_type_concept_id <-generate_df_concepts(table_name, "death_type_dplyr.txt", concept_tbl)
+  
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
+  describeOrdinalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
+  print("Check 3")
   #cause of death source valueapply_check_type_1("BA-002"
   field_name="cause_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl,table_name,field_name,big_data_flag)
+  message<-reportMissingCount(data_tbl,table_name,field_name)
+  print("Check 4")
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
@@ -124,8 +125,8 @@ generateDeathReport <- function() {
   field_name="death_impute_concept_id"
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,con,  "death_impute.txt")) 
-  df_death_impute_concept_id <-generate_df_concepts(con, table_name, "death_impute.txt")
+                                                   ,"death_impute.txt", concept_tbl, data_tbl)) 
+  df_death_impute_concept_id <-generate_df_concepts(con, table_name, "death_impute_dplyr.txt")
   
   # flog.info( null_message)
   ###########DQA CHECKPOINT##############

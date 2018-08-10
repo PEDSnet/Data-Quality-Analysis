@@ -462,57 +462,81 @@ describeNominalField_basic<-function(df_table, table_name,field_name,big_data_fl
 	#1. an R dataframe containing a given database table
 	#2. the name of the ordinal field
 #Output: write the barplot to a file
-describeOrdinalField<-function(df_table, table_name,field_name,big_data_flag)
+# describeOrdinalField<-function(df_table, table_name,field_name,big_data_flag)
+# {
+# 
+# 
+# 	 flog.info(paste("Plotting for Field: ", field_name))
+#     if(big_data_flag==FALSE)
+#     {
+# 	column_index <- which(colnames(df_table)==field_name)
+# 
+# 	if(nrow(df_table)>0)
+# 	{
+# 
+# 	# saving the frequencies in a separate dataframe
+# 	dfTab <-as.data.frame(table(df_table[,column_index]))
+#        if(nrow(dfTab)>0)
+#        {
+# 		#create a bar plot
+# 		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+# 		# add axis labels
+# 		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+# 		#remove legend and set size and orientation of tick labels
+# 		p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
+#         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
+#        }
+# 	}
+#     }
+#     else #if TRUE using dplyr
+#     {
+#         colnames(df_table)[1] <- "Var1"
+#         colnames(df_table)[2] <- "Freq"
+#         df_table<-subset(df_table,!is.na(Var1))
+# 
+#         if(nrow(df_table)>0)
+#         {
+#              df_table$Var1 <- as.factor(df_table$Var1)
+#             #adding new columns
+#              #creating barplot from dfTab dataframe
+#             #p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+#             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+#             # add axis labels
+#             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+#             #remove legend and set size and orientation of tick labels
+#             p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
+# 
+#             ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
+#             # flog.info(p)
+# 
+#         }
+# 
+#     }
+# }
+
+describeOrdinalField<-function(table_df, table_name,field_name)
 {
+  flog.info(paste("Plotting for Field: ", field_name))
+  table_df = table_df %>% select_(field_name) %>% 
+    na.omit() %>%
+    collect() %>% 
+    table() %>%
+    as.data.frame()
+  colnames(table_df) <- c("Var1", "Freq")
 
-
-	 flog.info(paste("Plotting for Field: ", field_name))
-    if(big_data_flag==FALSE)
-    {
-	column_index <- which(colnames(df_table)==field_name)
-
-	if(nrow(df_table)>0)
-	{
-
-	# saving the frequencies in a separate dataframe
-	dfTab <-as.data.frame(table(df_table[,column_index]))
-       if(nrow(dfTab)>0)
-       {
-		#create a bar plot
-		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-		# add axis labels
-		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-		#remove legend and set size and orientation of tick labels
-		p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
-        ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-
-       }
-	}
-    }
-    else #if TRUE using dplyr
-    {
-        colnames(df_table)[1] <- "Var1"
-        colnames(df_table)[2] <- "Freq"
-        df_table<-subset(df_table,!is.na(Var1))
-
-        if(nrow(df_table)>0)
-        {
-             df_table$Var1 <- as.factor(df_table$Var1)
-            #adding new columns
-             #creating barplot from dfTab dataframe
-            #p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-            p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-            # add axis labels
-            p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-            #remove legend and set size and orientation of tick labels
-            p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
-
-            ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-            # flog.info(p)
-
-        }
-
-    }
+  if(nrow(table_df) > 0){
+    #create a bar plot
+    p<-ggplot(table_df, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+     # add axis labels
+    p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+    #remove legend and set size and orientation of tick labels
+    p<-p+theme(legend.position="none", text = element_text(size=6),
+               axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,
+               panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,
+               panel.border = element_blank())
+     ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
+                       get_image_name(table_name,field_name),sep=""))
+   }
 }
 
 #Date Function Check

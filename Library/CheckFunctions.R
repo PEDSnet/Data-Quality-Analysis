@@ -118,7 +118,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   # flog.info(get_catalog_entry(check_code))
   check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_one_variable(check_code, table_name, field))
-  print("test2")
+  
   # flog.info(check_entry)
   print(check_entry)
 
