@@ -13,16 +13,15 @@ InvalidVocab <- function()
 }
 
 
-applyCheck.InvalidVocab <- function(table_list, field_list, domain_vocabulary, table_df)
+applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vocabulary, table_df, table_df2)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
   domain<-domain_vocabulary[1]
   
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
-  
    
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name,domain)
+  used_vocabulary<-get_vocabulary_name_by_concept_ids(table_name, field_name,domain, table_df, table_df2)
   
   
   acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)

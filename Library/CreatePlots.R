@@ -471,20 +471,20 @@ describeDateField<-function(table_df, table_name, field_name){
                       min(table_df[,1],na.rm=T),"-",max(table_df[,1],na.rm=T))
   date_max <- max(table_df[,1], na.rm = T)
   table_df <-table(table_df)
-  print("test 1")
+  
   if(nrow(table_df)>0)
   {
     total_locations <- nrow(table_df)
     png(paste(normalize_directory_path( g_config$reporting$site_directory),
               get_image_name(table_name,field_name),sep=""))
-    print("test 2")
+
     # not using ggplot here as it is very expensive for a large number of values
     barplot(table_df, main = paste(field_name,": Distribution"),
             xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
 
     table_df <- as.data.frame(table_df)
     table_df <- table_df[order(table_df[,2], decreasing = T),]
-    print("test 3")
+
     return_message<-paste("The most frequent values for",field_name,"are:")
     for (index in 1:5)
     {
@@ -800,8 +800,8 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_dat
 { 	flog.info(paste("Plotting for Field: ", field_name))
     table_df <- table_df %>%
       select_(field_name) %>%
-      collect() %>%
       na.omit() %>%
+      collect() %>%
       table()
 
     if(nrow(table_df)>0){
@@ -817,7 +817,7 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_dat
       #also plot in decreasing order of frequency (to compare distribution with source data)
       png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
       table_df <- as.data.frame(table_df)
-      table_df[,1] <- table_df[order(-table_df[,1]),1]
+      table_df[,1] <- table_df[order(table_df[,1], decreasing = T),1]
       barplot(height = table(table_df), main = paste(field_name,": Distribution"),
               xlab = paste(field_name,"(Total: ",total_values,")"), 
               ylab = paste(table_name,"Count"), xaxt='n')

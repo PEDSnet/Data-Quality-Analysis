@@ -328,6 +328,13 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
   return(df);
 }
 
+
+retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
+{
+  
+
+}
+
 retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
 {
 
@@ -337,7 +344,6 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
     table_name1<-toupper(table_name1)
     table_name2<-toupper(table_name2)
     column_list<-toupper(column_list)
-    #clauses<-toupper(clauses)
     query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
                  ,",",schema2,".",table_name2
                  ," where ",clauses
@@ -352,7 +358,6 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
       table_name1<-toupper(table_name1)
       table_name2<-toupper(table_name2)
       column_list<-toupper(column_list)
-      #clauses<-toupper(clauses)
       query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
                    ,",",schema2,".",table_name2
                    ," where ",clauses
@@ -407,6 +412,18 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
     summarize(count = n()) %>%
     as.data.frame()
   return(table_df)
+}
+
+get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, table_df, table_df2)
+{
+  vocab_name = table_df %>%
+    filter(domain_id %in% domain) %>%
+    inner_join(table_df2 , by = c("concept_id" = field_name)) %>%
+    select(vocabulary_id) %>%
+    distinct() %>%
+    collect()
+    
+  return(vocab_name)
 }
 
 
