@@ -13,7 +13,7 @@ InvalidVocab <- function()
 }
 
 
-applyCheck.InvalidVocab <- function(theObject, table_list, field_list, con, domain_vocabulary)
+applyCheck.InvalidVocab <- function(table_list, field_list, domain_vocabulary, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]

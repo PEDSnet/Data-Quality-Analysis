@@ -1,5 +1,3 @@
-#source("/Users/callahanc5/Documents/code/dqa/Data-Quality-Analysis/Library/new_utils.R") 
-
 #primary key field
 #functionName: reportTotalCount
 #Description: generate the total number of unique values for the primary key field of a given table
@@ -30,59 +28,30 @@ describeIdentifier<-function(table_df, field_name)
 #Description: count the number of records with no value for a given field
 #Inputs:an R dataframe containing a given database table, the name of the field
 #Output: number of rows with NA (missing) values for the input field
-reportMissingCount<-function(df_table,table_name,field_name, big_data_flag)
+# reportMissingCount<-function(df_table,table_name,field_name)
+reportMissingCount<-function(table_df, table_name, field_name)
 {
-  if(big_data_flag==FALSE)
-  {
-    #retrieve the index of the field in the dataframe
-    column_index <- which(colnames(df_table)==field_name)
-
-    if(nrow(df_table)>0)
-    {
-      # saving the frequencies in a separate dataframe (including NA values)
-      dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-      #add a new column to this new dataframe containing the percentage frequency information rounded to 2 digits
-      if(nrow(dfTab)>0)
-      {
-        dfTab$label <- as.character(
-          paste(
-            round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-            ,'%')	# add percentage
-        )
-        # the last row contains the frequency for the NA value
-        return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is ",dfTab[nrow(dfTab),3]));
-      }
-      else
-        return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is 100%"));
-    }
-    else
-      return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is 100%"));
-  } else # big data with dplyr or query wise that captures frequency
-    {
-
-      colnames(df_table)[2] <- "Freq"
-      # identify row with null value
-      new_df_table<-subset(df_table, is.na(df_table[1]))
-      if(nrow(new_df_table)>0) # if there is a null value
-      {
-        #add a new column to this new dataframe containing the percentage frequency information rounded to 2 digits
-
-        df_table$label <- as.character(
-            paste(
-              round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-              ,'%')	# add percentage
-          )
-	# find the row that contains the frequency for the NA value
-	na_df_table<-subset(df_table, is.na(df_table[1]))
-
-        return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is ",na_df_table[1,3]));
-
-   }
-        else
-          return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is 0%"));
-
-    }
+  total <- table_df %>%
+    select_(field_name) %>%
+    tally() %>%
+    collect()
+  
+  missn <- table_df %>%
+    select_(field_name) %>%
+    filter(is.na(field_name)) %>%
+    tally() %>%
+    collect() 
+  
+  if(missn > 0){
+    label <- as.character(paste(round(100*missn/total,digits=2)))
+  
+    return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is ",label));
+  }
+  else
+    return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is 0%"));
 }
+
+
 
 #functionName: reportNoMatchingCount
 #Description: count the number of records with mo matching concepts (concept_id=0)
@@ -462,58 +431,6 @@ describeNominalField_basic<-function(df_table, table_name,field_name,big_data_fl
 	#1. an R dataframe containing a given database table
 	#2. the name of the ordinal field
 #Output: write the barplot to a file
-# describeOrdinalField<-function(df_table, table_name,field_name,big_data_flag)
-# {
-# 
-# 
-# 	 flog.info(paste("Plotting for Field: ", field_name))
-#     if(big_data_flag==FALSE)
-#     {
-# 	column_index <- which(colnames(df_table)==field_name)
-# 
-# 	if(nrow(df_table)>0)
-# 	{
-# 
-# 	# saving the frequencies in a separate dataframe
-# 	dfTab <-as.data.frame(table(df_table[,column_index]))
-#        if(nrow(dfTab)>0)
-#        {
-# 		#create a bar plot
-# 		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-# 		# add axis labels
-# 		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-# 		#remove legend and set size and orientation of tick labels
-# 		p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
-#         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-#        }
-# 	}
-#     }
-#     else #if TRUE using dplyr
-#     {
-#         colnames(df_table)[1] <- "Var1"
-#         colnames(df_table)[2] <- "Freq"
-#         df_table<-subset(df_table,!is.na(Var1))
-# 
-#         if(nrow(df_table)>0)
-#         {
-#              df_table$Var1 <- as.factor(df_table$Var1)
-#             #adding new columns
-#              #creating barplot from dfTab dataframe
-#             #p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-#             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-#             # add axis labels
-#             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-#             #remove legend and set size and orientation of tick labels
-#             p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
-# 
-#             ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-#             # flog.info(p)
-# 
-#         }
-# 
-#     }
-# }
-
 describeOrdinalField<-function(table_df, table_name,field_name)
 {
   flog.info(paste("Plotting for Field: ", field_name))
@@ -544,28 +461,30 @@ describeDateField<-function(table_df, table_name, field_name){
   flog.info(paste("Plotting for Field: ", field_name))
   table_df <- table_df %>%
     select_(field_name) %>%
-    as.data.frame() %>%
-    na.omit() 
-
+    na.omit() %>%
+    collect() %>%
+    table() %>%
+    as.data.frame() 
+  
   table_df[,1] <- as.Date(table_df[,1])
   date_range <- paste("\n Date range: ",
                       min(table_df[,1],na.rm=T),"-",max(table_df[,1],na.rm=T))
   date_max <- max(table_df[,1], na.rm = T)
   table_df <-table(table_df)
-  
+  print("test 1")
   if(nrow(table_df)>0)
   {
     total_locations <- nrow(table_df)
     png(paste(normalize_directory_path( g_config$reporting$site_directory),
               get_image_name(table_name,field_name),sep=""))
-
+    print("test 2")
     # not using ggplot here as it is very expensive for a large number of values
     barplot(table_df, main = paste(field_name,": Distribution"),
             xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
 
     table_df <- as.data.frame(table_df)
     table_df <- table_df[order(table_df[,2], decreasing = T),]
-
+    print("test 3")
     return_message<-paste("The most frequent values for",field_name,"are:")
     for (index in 1:5)
     {

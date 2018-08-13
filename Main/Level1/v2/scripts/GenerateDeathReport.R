@@ -20,7 +20,6 @@ generateDeathReport <- function() {
                           issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
 
-
   #PRIMARY FIELD(s)
   field_name<-"death_cause_id"
   current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
@@ -32,12 +31,10 @@ generateDeathReport <- function() {
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
   
-  
   field_name<-"person_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-describeForeignKeyIdentifiers(data_tbl, "death_cause",field_name,big_data_flag)
+  message<-describeForeignKeyIdentifiers(data_tbl, "death_cause",field_name)
   fileContent<-c(fileContent,paste_image_name("death_cause",field_name),paste_image_name_sorted("death_cause",field_name),message);
-
 
   # ORDINAL Fields`11`1
 
@@ -49,7 +46,6 @@ generateDeathReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message)
-
   field_name<-"death_datetime"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeTimeField(data_tbl, table_name,field_name)
@@ -65,60 +61,55 @@ generateDeathReport <- function() {
                                                    ,"death_type_dplyr.txt", concept_tbl, data_tbl)) 
   
   df_death_type_concept_id <-generate_df_concepts(table_name, "death_type_dplyr.txt", concept_tbl)
-  
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   describeOrdinalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  print("Check 3")
   #cause of death source valueapply_check_type_1("BA-002"
   field_name="cause_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl,table_name,field_name)
-  print("Check 4")
+  message<-reportMissingCount(data_tbl, table_name, field_name)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
+  describeOrdinalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
   field_name="cause_source_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl,table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,message)
-  ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),dat_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
-
-  #cause of death concept id
-  field_name="cause_concept_id"
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl,table_name,field_name,big_data_flag)
+  message<-reportMissingCount(data_tbl,table_name,field_name)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  
+  describeOrdinalField(data_tbl, table_name,field_name)
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+
+  #cause of death concept id
+  field_name="cause_concept_id"
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  message<-reportMissingCount(data_tbl,table_name,field_name)
+  fileContent<-c(fileContent,message)
+  ###########DQA CHECKPOINT -- missing information##############
+  missing_percent<-extract_numeric_value(message)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  print("HERE 2")
   ###########DQA CHECKPOINT --vocabulary check ##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
                                                    c('Condition','SNOMED'), data_tbl)) 
-  
+  print("HERE 2.5")
    ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
                                                    c(field_name, "cause_source_value"),data_tbl)) 
   
   
-  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
+  describeOrdinalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-
+  print("HERE 3")
   #death impute concept id
 
 
@@ -130,10 +121,10 @@ generateDeathReport <- function() {
   
   # flog.info( null_message)
   ###########DQA CHECKPOINT##############
-
+  print("HERE 4")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name,big_data_flag)
+  describeOrdinalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #write all contents to the report file and close it.

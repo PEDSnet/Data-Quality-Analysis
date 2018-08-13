@@ -59,6 +59,7 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
      mutate(time_field_as_date = lubridate::date(time_field)) %>%
       #mutate_(time_field_as_date = paste0("sql('cast(",time_field," as date)')")) %>%
      filter_(paste0(date_field,'!=time_field_as_date')) 
+      print(mismatch_date_tbl)
      #%>%
     #  collect()
   }
