@@ -4,11 +4,7 @@ library(dplyr)
 library(tictoc)
 
 generatePersonReport <- function() {
-  #setting up big data flag
-  tic()
-  big_data_flag<-TRUE
-
-  # read a database table into an R dataframe
+  # read a database
   table_name<-"person"
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
@@ -46,6 +42,7 @@ generatePersonReport <- function() {
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
+  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
@@ -337,5 +334,4 @@ generatePersonReport <- function() {
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
-toc()
 }

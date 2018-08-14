@@ -18,7 +18,7 @@ describeIdentifier<-function(table_df, field_name)
   
   total_distinct_values <- length(table_df)
   if(total_distinct_values == 1)
-      if(is.na(unique(df_table)))
+      if(is.na(unique(table_df)))
         return (0);
 	return (total_distinct_values);
 }
@@ -337,92 +337,127 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
 
 
 #updated nominal field
-describeNominalField_basic<-function(df_table, table_name,field_name,big_data_flag)
+# describeNominalField_basic<-function(df_table, table_name,field_name,big_data_flag)
+# {
+#      flog.info(paste("Plotting for Field: ", field_name))
+# 
+#     if(big_data_flag==FALSE)
+#     {
+#     # retrieve the column index for the field
+#     #column_index<-(grep(field_name, colnames(df_table))
+#     column_index <- which(colnames(df_table)==field_name)
+#     # flog.info(column_index)
+# 
+#     # saving the frequencies and percentage in a separate dataframe including NA values
+#     #df_table<-subset(df_table,!is.na(Var1))
+#     if(nrow(df_table)>0)
+#     {
+#         dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
+#         # commenting the next line as we do want to include the NA values in this field
+#         #dfTab<-subset(dfTab,!is.na(Var1))
+# 
+#         if(nrow(dfTab)>0)
+#         {
+# 
+#         dfTab$label <- as.character(
+#         paste(
+#         round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
+#         ,'%')	# add percentage
+#         )
+# 
+#         if(nrow(dfTab)==1 && is.na(dfTab[1]))
+#           return("");
+# 
+#         #creating barplot from dfTab dataframe
+#         p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+#         # add axis labels
+#         p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+#         #remove legend and set size and orientation of tick labels
+#         p<-p+theme(legend.position="none", text = element_text(size=10),
+#         axis.text.x = element_text(angle=90, vjust=1))
+#         # add the label to each bar (from the dfTab dataframe)
+#         p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
+#         # flog.info(p)
+#         #save the barplot image (will be referenced by the final report)
+#         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
+# 
+#         }
+#     }
+#     }
+#     else
+#     {
+#         colnames(df_table)[1] <- "Var1"
+#         colnames(df_table)[2] <- "Freq"
+# 
+#         if(nrow(df_table)>0)
+#         {
+#             #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
+#             #adding new columns
+#             df_table$Var1 <- as.factor(df_table$Var1)
+#             df_table$label <- as.character(
+#             paste0(
+#             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
+#             ,'%')	# add percentage
+#             )
+# 
+#             #creating barplot from dfTab dataframe
+#             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+#             # add axis labels
+#             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+#             #remove legend and set size and orientation of tick labels
+#             p<-p+theme(legend.position="none", text = element_text(size=10),
+#             axis.text.x = element_text(angle=90, vjust=1))
+#             # add the label to each bar (from the dfTab dataframe)
+#             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
+#             #save the barplot image (will be referenced by the final report)
+#             if(nrow(df_table)==1 & is.na(df_table[1,1]))
+#             {
+#               ### dont print the graph
+#             }
+#             else {
+#             ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
+#              }  
+#             
+#         }
+#     }
+# 
+# }
+
+
+describeNominalField_basic<-function(table_df, table_name,field_name)
 {
-     flog.info(paste("Plotting for Field: ", field_name))
+  flog.info(paste("Plotting for Field: ", field_name))
 
-    if(big_data_flag==FALSE)
-    {
-    # retrieve the column index for the field
-    #column_index<-(grep(field_name, colnames(df_table))
-    column_index <- which(colnames(df_table)==field_name)
-    # flog.info(column_index)
+  table_df <- table_df %>%
+    select_(field_name) %>%
+    na.omit() %>%
+    collect() %>%
+    table() %>%
+    as.data.frame()
+  colnames(table_df) <- c("Var1", "Freq")
 
-    # saving the frequencies and percentage in a separate dataframe including NA values
-    #df_table<-subset(df_table,!is.na(Var1))
-    if(nrow(df_table)>0)
-    {
-        dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-        # commenting the next line as we do want to include the NA values in this field
-        #dfTab<-subset(dfTab,!is.na(Var1))
+  if(nrow(table_df) > 0){
+    table_df$label <- as.character(paste0(round(100 * table_df$Freq / sum(table_df$Freq),digits=2)))
+    #creating barplot from dfTab dataframe
+    p<-ggplot(table_df, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+    # add axis labels
+    p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+    #remove legend and set size and orientation of tick labels
+    p<-p+theme(legend.position="none", text = element_text(size=10),
+               axis.text.x = element_text(angle=90, vjust=1))
+    # add the label to each bar (from the dfTab dataframe)
+    p<-p+geom_text(data= table_df, aes(x=Var1,y=Freq,label=label), size=3)
 
-        if(nrow(dfTab)>0)
-        {
-
-        dfTab$label <- as.character(
-        paste(
-        round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-        ,'%')	# add percentage
-        )
-
-        if(nrow(dfTab)==1 && is.na(dfTab[1]))
-          return("");
-
-        #creating barplot from dfTab dataframe
-        p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-        # add axis labels
-        p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-        #remove legend and set size and orientation of tick labels
-        p<-p+theme(legend.position="none", text = element_text(size=10),
-        axis.text.x = element_text(angle=90, vjust=1))
-        # add the label to each bar (from the dfTab dataframe)
-        p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
-        # flog.info(p)
-        #save the barplot image (will be referenced by the final report)
-        ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-
-        }
+    #save the barplot image (will be referenced by the final report)
+    if(nrow(table_df)==1 & is.na(table_df[1,1])){ ### dont print the graph
+      }
+    else {
+     ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
+                       get_image_name(table_name,field_name),sep=""))
     }
-    }
-    else
-    {
-        colnames(df_table)[1] <- "Var1"
-        colnames(df_table)[2] <- "Freq"
-
-        if(nrow(df_table)>0)
-        {
-            #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-            #adding new columns
-            df_table$Var1 <- as.factor(df_table$Var1)
-            df_table$label <- as.character(
-            paste0(
-            round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-            ,'%')	# add percentage
-            )
-
-            #creating barplot from dfTab dataframe
-            p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-            # add axis labels
-            p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-            #remove legend and set size and orientation of tick labels
-            p<-p+theme(legend.position="none", text = element_text(size=10),
-            axis.text.x = element_text(angle=90, vjust=1))
-            # add the label to each bar (from the dfTab dataframe)
-            p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
-            #save the barplot image (will be referenced by the final report)
-            # flog.info(p)
-            if(nrow(df_table)==1 & is.na(df_table[1,1]))
-            {
-              ### dont print the graph
-            }
-            else {
-            ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-             }  
-            
-        }
-    }
-
+  }
 }
+
 
 # Ordinal Fields
 #functionName: describeOrdinalField
@@ -563,8 +598,9 @@ describeOrdinalField_large<-function(df_table, table_name,field_name,big_data_fl
 
         png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
 		# not using ggplot here as it is very expensive for a large number of values
-		barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count")) #, xaxt='n')
-
+		barplot(dfTab, main = paste(field_name,": Distribution"), 
+		        xlab = paste(field_name,"(Total: ",total_locations,")"), 
+		        ylab = paste(table_name,"Count"))
 
 
         return_message<-paste("The most frequent values for",field_name,"are:")
@@ -607,8 +643,6 @@ describeOrdinalField_large<-function(df_table, table_name,field_name,big_data_fl
             # not using ggplot here as it is very expensive for a large number of values
           barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
           #barplot(df_table$Freq, df_table$Var1, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count")) #, xaxt='y')
-
-
 
             return_message<-paste("The most frequent values for",field_name,"are:","\n")
             index<-1;
@@ -796,7 +830,7 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
 	#2. the name of the foreign key field
 #Output: write the barplot to a file
 
-describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_data_flag)
+describeForeignKeyIdentifiers<-function(table_df, table_name, field_name)
 { 	flog.info(paste("Plotting for Field: ", field_name))
     table_df <- table_df %>%
       select_(field_name) %>%
@@ -836,23 +870,16 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name,big_dat
 
 
 #update values of concept_id fields to include concept names  - to improve readability for plotting purposes
-EnhanceFieldValues<-function(df_table,field_name,df_ref)
+EnhanceFieldValues<-function(table_df,field_name,df_ref)
 {
-  df_table_enhanced<-df_table
-  column_index <- which(colnames(df_table_enhanced)==field_name)
-  outer_loop_index =1;inner_loop_index =1;
-  while(inner_loop_index<=nrow(df_ref))
-  {
-    #    df_table[,column_index][df_table[,column_index]==df_ref[inner_loop_index,1]] <- "replaced"
-    df_table_enhanced[,column_index][df_table_enhanced[,column_index]==df_ref[inner_loop_index,1]] <- paste(
-      df_ref[inner_loop_index,2]," (",df_ref[inner_loop_index,1],")",sep="");
-    #df$concept_id[df==""]<-NA
-    inner_loop_index<-inner_loop_index+1;
-
+  table_df <- table_df %>% as.data.frame()
+  column_index <- which(colnames(table_df)==field_name)
+  
+  for(i in 1:nrow(df_ref)){
+    table_df[,column_index][table_df[,column_index]== df_ref[i,1]] <- paste(
+    df_ref[i,2]," (",df_ref[i,1],")",sep="");
   }
-
-      #  df_table[outer_loop_index,column_index]<-paste(df_ref[inner_loop_index,2]," (",df_ref[inner_loop_index,1],")",sep="");
-     #  break;
-
-  return(df_table_enhanced);
+  return(table_df);
 }
+
+

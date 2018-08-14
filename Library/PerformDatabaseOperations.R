@@ -106,7 +106,7 @@ establish_database_connection_OHDSI<-function(config)
                                                    server=paste(dbhost,"/",dbname,sep=""),
                                                    user=dbuser,password=dbpass,
                                                    schema=dbschema,port=dbport
-                                                   ,extraSettings="ssl=true&sslmode=verify-full")
+                                                   ,extraSettings="ssl=true&sslmode=require")
       }
     }
         # flog.info(connectionDetails)
@@ -151,11 +151,12 @@ retrieve_dataframe<-function(con,config,table_name)
 }
 
 
-retrieve_dataframe_count<-function(table_name, column_list){
-  counts  = table_name %>%
-                filter_(paste('!is.null(', column_list, ')', collapse = ',')) %>%
+retrieve_dataframe_count<-function(table_df, column_list){
+  counts  = table_df %>%
+                filter_(paste('!is.na(', column_list, ')', collapse = ',')) %>%
                 summarize(count = n()) %>%
-                as.data.frame()
+                select(count) %>%
+                collect()
   test_that("Retrieve_dataframe_count Not Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
