@@ -12,15 +12,16 @@
 
 describeIdentifier<-function(table_df, field_name)
 {
-  table_df <- table_df %>% 
+  total_unique <- table_df %>% 
     select_(field_name) %>%
-    unique()
+    distinct() %>%
+    tally() %>%
+    select(n) %>%
+    collect() 
   
-  total_distinct_values <- length(table_df)
-  if(total_distinct_values == 1)
-      if(is.na(unique(table_df)))
-        return (0);
-	return (total_distinct_values);
+  if(total_unique == 1){
+      if(is.na(total_unique)){ return(0);}}
+	return (total_unique);
 }
 
 
@@ -109,85 +110,124 @@ reportNoMatchingCount<-function(df_table,table_name,field_name, big_data_flag)
   }
 }
 
-reportNullFlavors<-function(df_table,table_name,field_name,UN_code,OT_code,NI_code,big_data_flag)
+# reportNullFlavors<-function(df_table,table_name,field_name,UN_code,OT_code,NI_code,big_data_flag)
+# {
+#   if(big_data_flag==FALSE)
+#   {
+#     #retrieve the index of the field in the dataframe
+#     column_index <- which(colnames(df_table)==field_name)
+# 
+#   if(nrow(df_table)>0)
+#   {
+#     # saving the frequencies in a separate dataframe (including NA values)
+#     dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
+#     #add a new column to this new dataframe containing the percentage frequency information rounded to 2 digits
+#     dfTab$label <- as.character(
+#       paste(
+#         round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
+#         ,'%')  # add percentage
+#     )
+# 
+#     # flog.info(dfTab)
+#     count_ni<-subset(dfTab,Var1==NI_code)$label[1]
+#     if(is.na(count_ni)) count_ni<-"0%";
+#     count_un<-subset(dfTab,Var1==UN_code)$label[1]
+#     if(is.na(count_un)) count_un<-"0%";
+#     count_ot<-subset(dfTab,Var1==OT_code)$label[1]
+#     if(is.na(count_ot)) count_ot<-"0%";
+#     # flog.info(count_ni[1])
+#     # the last row contains the frequency for the NA value
+#     count_missing_values<-dfTab[nrow(dfTab),3];
+#     return(paste(
+#       "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
+#       "\nPercentage of",table_name,"with other value for ",field_name," is ",count_ot,"\n",
+#       "\nPercentage of",table_name,"with no information for ",field_name," is ",count_ni,"\n",
+#       "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"
+#     ));
+#   }
+# 
+# }    else # using dplyr or query wise - when big data flag is true
+#     {
+#       #retrieve the index of the field in the dataframe
+#       colnames(df_table)[1] <- "Var1"
+#       colnames(df_table)[2] <- "Freq"
+#       df_table<-subset(df_table,!is.na(Var1))
+# 
+#       if(nrow(df_table)>0)
+#       {
+#         df_table$Var1 <- as.factor(df_table$Var1)
+# 
+#         df_table$label <- as.character(
+#           paste(
+#             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
+#             ,'%')  # add percentage
+#         )
+#       
+#         count_ni<-subset(df_table,Var1==NI_code)$label[1]
+#         if(is.na(count_ni)) count_ni<-"0%";
+#         count_un<-subset(df_table,Var1==UN_code)$label[1]
+#         if(is.na(count_un)) count_un<-"0%";
+#         count_ot<-subset(df_table,Var1==OT_code)$label[1]
+#         if(is.na(count_ot)) count_ot<-"0%";
+#         count_missing_values<-subset(df_table,is.na(Var1))$label[1]
+#         if(is.na(count_missing_values)) count_missing_values<-"0%";
+# 
+#         return(paste(
+#           "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
+#           "\nPercentage of",table_name,"with other value for ",field_name," is ",count_ot,"\n",
+#           "\nPercentage of",table_name,"with no information for ",field_name," is ",count_ni,"\n",
+#           "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"
+#         ));
+#       } # end of if
+#       else
+#       {
+#         return(paste(
+#           "\nPercentage of",table_name,"with unknown value for ",field_name," is 0%\n",
+#           "\nPercentage of",table_name,"with other value for ",field_name," 0%\n",
+#           "\nPercentage of",table_name,"with no information for ",field_name," is 0%\n",
+#           "\nPercentage of",table_name,"with missing values for ",field_name," is 100%\n"
+#         ));
+#       }
+#     }  # end else
+# }
+
+reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_code)
 {
-  if(big_data_flag==FALSE)
-  {
-    #retrieve the index of the field in the dataframe
-    column_index <- which(colnames(df_table)==field_name)
+  table_df <- table_df %>%
+    select_(field_name) %>%
+    na.omit() %>%
+    collect() %>%
+    table() %>%
+    as.data.frame()
+  colnames(table_df) <- c("Var1", "Freq")
 
-  if(nrow(df_table)>0)
+  if(nrow(table_df)>0)
   {
-    # saving the frequencies in a separate dataframe (including NA values)
-    dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-    #add a new column to this new dataframe containing the percentage frequency information rounded to 2 digits
-    dfTab$label <- as.character(
-      paste(
-        round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-        ,'%')  # add percentage
-    )
-
-    # flog.info(dfTab)
-    count_ni<-subset(dfTab,Var1==NI_code)$label[1]
+    table_df$Var1 <- as.factor(table_df$Var1)
+    #Make percentage
+    table_df$label <- as.character(paste(round(100 * table_df$Freq/sum(table_df$Freq),digits=2),'%'))  
+    count_ni<-subset(table_df,Var1==NI_code)$label[1]
     if(is.na(count_ni)) count_ni<-"0%";
-    count_un<-subset(dfTab,Var1==UN_code)$label[1]
+    count_un<-subset(table_df,Var1==UN_code)$label[1]
     if(is.na(count_un)) count_un<-"0%";
-    count_ot<-subset(dfTab,Var1==OT_code)$label[1]
+    count_ot<-subset(table_df,Var1==OT_code)$label[1]
     if(is.na(count_ot)) count_ot<-"0%";
-    # flog.info(count_ni[1])
-    # the last row contains the frequency for the NA value
-    count_missing_values<-dfTab[nrow(dfTab),3];
+    count_missing_values<-subset(table_df,is.na(Var1))$label[1]
+    if(is.na(count_missing_values)) count_missing_values<-"0%";
+
     return(paste(
       "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
       "\nPercentage of",table_name,"with other value for ",field_name," is ",count_ot,"\n",
       "\nPercentage of",table_name,"with no information for ",field_name," is ",count_ni,"\n",
-      "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"
-    ));
+      "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"));
+  } 
+  else{
+    return(paste(
+      "\nPercentage of",table_name,"with unknown value for ",field_name," is 0%\n",
+      "\nPercentage of",table_name,"with other value for ",field_name," 0%\n",
+      "\nPercentage of",table_name,"with no information for ",field_name," is 0%\n",
+      "\nPercentage of",table_name,"with missing values for ",field_name," is 100%\n"));
   }
-
-}    else # using dplyr or query wise - when big data flag is true
-    {
-      #retrieve the index of the field in the dataframe
-      colnames(df_table)[1] <- "Var1"
-      colnames(df_table)[2] <- "Freq"
-      df_table<-subset(df_table,!is.na(Var1))
-
-      if(nrow(df_table)>0)
-      {
-        df_table$Var1 <- as.factor(df_table$Var1)
-
-        df_table$label <- as.character(
-          paste(
-            round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-            ,'%')  # add percentage
-        )
-      
-        count_ni<-subset(df_table,Var1==NI_code)$label[1]
-        if(is.na(count_ni)) count_ni<-"0%";
-        count_un<-subset(df_table,Var1==UN_code)$label[1]
-        if(is.na(count_un)) count_un<-"0%";
-        count_ot<-subset(df_table,Var1==OT_code)$label[1]
-        if(is.na(count_ot)) count_ot<-"0%";
-        count_missing_values<-subset(df_table,is.na(Var1))$label[1]
-        if(is.na(count_missing_values)) count_missing_values<-"0%";
-
-        return(paste(
-          "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
-          "\nPercentage of",table_name,"with other value for ",field_name," is ",count_ot,"\n",
-          "\nPercentage of",table_name,"with no information for ",field_name," is ",count_ni,"\n",
-          "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"
-        ));
-      } # end of if
-      else
-      {
-        return(paste(
-          "\nPercentage of",table_name,"with unknown value for ",field_name," is 0%\n",
-          "\nPercentage of",table_name,"with other value for ",field_name," 0%\n",
-          "\nPercentage of",table_name,"with no information for ",field_name," is 0%\n",
-          "\nPercentage of",table_name,"with missing values for ",field_name," is 100%\n"
-        ));
-      }
-    }  # end else
 }
 
 reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big_data_flag)
@@ -337,93 +377,6 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
 
 
 #updated nominal field
-# describeNominalField_basic<-function(df_table, table_name,field_name,big_data_flag)
-# {
-#      flog.info(paste("Plotting for Field: ", field_name))
-# 
-#     if(big_data_flag==FALSE)
-#     {
-#     # retrieve the column index for the field
-#     #column_index<-(grep(field_name, colnames(df_table))
-#     column_index <- which(colnames(df_table)==field_name)
-#     # flog.info(column_index)
-# 
-#     # saving the frequencies and percentage in a separate dataframe including NA values
-#     #df_table<-subset(df_table,!is.na(Var1))
-#     if(nrow(df_table)>0)
-#     {
-#         dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-#         # commenting the next line as we do want to include the NA values in this field
-#         #dfTab<-subset(dfTab,!is.na(Var1))
-# 
-#         if(nrow(dfTab)>0)
-#         {
-# 
-#         dfTab$label <- as.character(
-#         paste(
-#         round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-#         ,'%')	# add percentage
-#         )
-# 
-#         if(nrow(dfTab)==1 && is.na(dfTab[1]))
-#           return("");
-# 
-#         #creating barplot from dfTab dataframe
-#         p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-#         # add axis labels
-#         p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-#         #remove legend and set size and orientation of tick labels
-#         p<-p+theme(legend.position="none", text = element_text(size=10),
-#         axis.text.x = element_text(angle=90, vjust=1))
-#         # add the label to each bar (from the dfTab dataframe)
-#         p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
-#         # flog.info(p)
-#         #save the barplot image (will be referenced by the final report)
-#         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-# 
-#         }
-#     }
-#     }
-#     else
-#     {
-#         colnames(df_table)[1] <- "Var1"
-#         colnames(df_table)[2] <- "Freq"
-# 
-#         if(nrow(df_table)>0)
-#         {
-#             #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-#             #adding new columns
-#             df_table$Var1 <- as.factor(df_table$Var1)
-#             df_table$label <- as.character(
-#             paste0(
-#             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-#             ,'%')	# add percentage
-#             )
-# 
-#             #creating barplot from dfTab dataframe
-#             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-#             # add axis labels
-#             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-#             #remove legend and set size and orientation of tick labels
-#             p<-p+theme(legend.position="none", text = element_text(size=10),
-#             axis.text.x = element_text(angle=90, vjust=1))
-#             # add the label to each bar (from the dfTab dataframe)
-#             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
-#             #save the barplot image (will be referenced by the final report)
-#             if(nrow(df_table)==1 & is.na(df_table[1,1]))
-#             {
-#               ### dont print the graph
-#             }
-#             else {
-#             ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-#              }  
-#             
-#         }
-#     }
-# 
-# }
-
-
 describeNominalField_basic<-function(table_df, table_name,field_name)
 {
   flog.info(paste("Plotting for Field: ", field_name))
