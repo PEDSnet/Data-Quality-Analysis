@@ -29,28 +29,28 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   field_name<-"person_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeForeignKeyIdentifiers(data_tbl, table_name, field_name)
+  message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
  
    field_name<-"visit_occurrence_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeForeignKeyIdentifiers(data_tbl, table_name, field_name)
+  message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
  
    # ORDINAL Fields
     field_name<-"adt_datetime"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-    message<-describeDateField(data_tbl, table_name, field_name)
+    message<-describeDateField(df_table, table_name, field_name)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
-    message<-describeTimeField(data_tbl, table_name, field_name)
+    message<-describeTimeField(df_table, table_name, field_name)
     fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_datetime",sep="")),message);
 
     field_name<-"adt_date"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-    message<-describeDateField(data_tbl, table_name, field_name)
+    message<-describeDateField(df_table, table_name, field_name)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
     ### DQA checkpoint - future date
@@ -64,7 +64,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
 
      ###########DQA CHECKPOINT -- missing information##############
     logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-    message<-describeForeignKeyIdentifiers(data_tbl, table_name, field_name)
+    message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
 
@@ -79,14 +79,14 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
 logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   df_service_concept_id <-generate_df_concepts(table_name,"service_concept_id_dplyr.txt", concept_tbl)
-  df_service_concept_id_enhanced<-EnhanceFieldValues(data_tbl,field_name,df_service_concept_id)
+  df_service_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_service_concept_id)
   describeNominalField_basic(df_service_concept_id_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name))
 
   # adt type concept id
   field_name="adt_type_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
-  message<-reportMissingCount(data_tbl, table_name,field_name)
+  message<-reportMissingCount(df_table, table_name,field_name)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -114,24 +114,24 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   field_name<-"prior_adt_occurrence_id" # 8 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl, table_name,field_name)
+  message<-reportMissingCount(df_table, table_name,field_name)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeForeignKeyIdentifiers(data_tbl, table_name, field_name)
+  message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
    flog.info(Sys.time())
   field_name<-"next_adt_occurrence_id" # 8 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl, table_name,field_name)
+  message<-reportMissingCount(df_table, table_name,field_name)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeForeignKeyIdentifiers(data_tbl, table_name, field_name)
+  message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
 
@@ -140,12 +140,12 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   field_name<-"service_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl, table_name,field_name)
+  message<-reportMissingCount(df_table, table_name,field_name)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
-  describeNominalField_basic(data_tbl, table_name, field_name)
+  describeNominalField_basic(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
    flog.info(Sys.time())
@@ -154,7 +154,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
-  describeNominalField_basic(data_tbl, table_name, field_name)
+  describeNominalField_basic(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   flog.info(Sys.time())
