@@ -7,38 +7,31 @@ generate_df_concepts<-function(table_name, filename, table_df)
   clause <- readChar(file_txt, file.info(file_txt)$size)
   clause_trunc <- gsub("\n", '', noquote(clause), fixed = T) # takes off extra characters
   clause_trunc<-as.character(clause_trunc)
-  #check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
   concept_id_list <-retrieve_dataframe_clause(table_df,c("concept_id","concept_name"), clause_trunc)
   return(concept_id_list)
 }
 
 generate_list_concepts<-function(table_name, filename)
 {
-  #print(getwd());
   df_csv<-read.csv(paste(getwd(),"Data/ValueSets", table_name,filename, sep= "/"))
-  #print(df_csv$concept_id)
   return(df_csv)##
-
 }
 
 # read the master catalog
 get_catalog_entry<-function(check_code_value)
 {
-
   return(
             subset(g_df_check_catalogue,g_df_check_catalogue$check_code==check_code_value)
     )
 }
 
 ## read specific check list
-## read specific check list
 get_check_entry_table_level<-function(check_code, table_name)
 {
   ## read specific checklist file for the given check code.
   file_list<-list.files(g_catalog_folder_path)
   check_filename<-file_list[grep(check_code,file_list)]
-  # flog.info()
-  # flog.info(check_filename)
+
   df_check_list<-read.csv(paste(g_catalog_folder_path,check_filename,sep=""), header = TRUE, sep = ",", quote = "\"",
                           dec = ".", fill = TRUE, comment.char = "")
 
@@ -51,8 +44,7 @@ get_check_entry_one_variable<-function(check_code, table_name,field)
   ## read specific checklist file for the given check code.
   file_list<-list.files(g_catalog_folder_path)
   check_filename<-file_list[grep(check_code,file_list)]
-  # flog.info()
-  # flog.info(check_filename)
+
   df_check_list<-read.csv(paste(g_catalog_folder_path,check_filename,sep=""), header = TRUE, sep = ",", quote = "\"",
                           dec = ".", fill = TRUE, comment.char = "")
 
@@ -67,17 +59,9 @@ get_check_entry_two_variables<-function(check_code, table_name, field1,field2)
   file_list<-list.files(g_catalog_folder_path)
   check_filename<-file_list[grep(check_code,file_list)]
   
-  # flog.info()
-  # flog.info(check_filename)
   df_check_list<-read.csv(paste(g_catalog_folder_path,check_filename,sep=""), header = TRUE, sep = ",", quote = "\"",
                           dec = ".", fill = TRUE, comment.char = "")
 
-  #print(df_check_list)
-  #print(table_name)
-  #print(field1)
-  #print(field2)
-  #print(subset(df_check_list,
-  #             tolower(df_check_list$PEDSnet_Table)==tolower(table_name)))
     return(
     subset(df_check_list,
            tolower(df_check_list$PEDSnet_Table)==tolower(table_name)
@@ -92,12 +76,9 @@ get_check_entry_two_variables_diff_tables<-function(check_code, table1, field1,t
   ## read specific checklist file for the given check code.
   file_list<-list.files(g_catalog_folder_path)
   check_filename<-file_list[grep(check_code,file_list)]
-  # flog.info()
-  # flog.info(check_filename)
   df_check_list<-read.csv(paste(g_catalog_folder_path,check_filename,sep=""), header = TRUE, sep = ",", quote = "\"",
                           dec = ".", fill = TRUE, comment.char = "")
 
-  #print(df_check_list)
   return(
     subset(df_check_list,
            tolower(df_check_list$PEDSnet_Table_1)==tolower(table1)
@@ -114,14 +95,9 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
 {
 
 	# read check code from catalogue
-  # flog.info(check_code)
-  # flog.info(get_catalog_entry(check_code))
   check_entry <- cbind(get_catalog_entry(check_code),
                        get_check_entry_one_variable(check_code, table_name, field))
   
-  # flog.info(check_entry)
-  print(check_entry)
-
   if(check_entry$check_code=='BA-001')
   {
 	  if(value<check_entry$Lower_Threshold || value>check_entry$Upper_Threshold)
@@ -147,7 +123,6 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
   if(
      check_entry$check_code=='AA-002')
   {
-    print("REACHED THIS ONE")
     if(nchar(trim(value))>0)
     {
       log_file_entry<-c(as.character(g_data_version),
@@ -158,9 +133,7 @@ apply_check_type_1<-function(check_code, field, value, table_name, g_data_versio
                         ' ', 
                         as.character(value)
                             ,as.character('unknown'))
-      # flog.info(log_file_entry)
       return (log_file_entry);
-      #}
     }
     else
     {

@@ -3,7 +3,6 @@ require(DBI)
 require(dplyr)
 library(yaml)
 library(tictoc)
-source("new_utils.R")
 
 .qual_tbl <- function(db, name, schema_tag) {
   if (! is.na(config(schema_tag))) {
@@ -13,7 +12,6 @@ source("new_utils.R")
   }
   tbl(db, name) #%>% show_query()
 }
-
 
 
 #' Connect to a CDM data table
@@ -68,86 +66,6 @@ create_database_copy<-function(db_tbl, table_name)
   
   return(db_tbl)
   
-}
-
-
-establish_database_connection_OHDSI<-function(config)
-{
-    library(DatabaseConnector);
-    library(RJDBC);
-    #jdbcDrivers<<-new.env();
-
-    #initialize database connection parameters
-    driver <- config$db$driver;
-
-    dbname <- config$db$dbname;
-    dbuser <- config$db$dbuser;
-    dbpass <- config$db$dbpass;
-    dbhost <- config$db$dbhost;
-    dbport <- config$db$dbport;
-    dbschema <- config$db$schema;
-
-    if (driver == "sql server") #special handling for sql server
-    {
-      connectionDetails <- createConnectionDetails(dbms=tolower(driver), server=dbhost,user=dbuser,password=dbpass,schema=dbname,port=dbport)
-
-    }
-    else
-    {
-      if(tolower(driver)=="oracle")
-      {
-        connectionDetails <- createConnectionDetails(dbms=tolower(driver), 
-                                                     server=paste(dbhost,"/",dbname,sep=""),
-                                                     user=dbuser,password=dbpass,
-                                                     schema=dbschema,port=dbport)
-      }
-      else {
-      connectionDetails <- createConnectionDetails(dbms=tolower(driver), 
-                                                   server=paste(dbhost,"/",dbname,sep=""),
-                                                   user=dbuser,password=dbpass,
-                                                   schema=dbschema,port=dbport
-                                                   ,extraSettings="ssl=true&sslmode=require")
-      }
-    }
-        # flog.info(connectionDetails)
-    con <- connect(connectionDetails)
-        # flog.info(con)
-
-    return(con)
-}
-
-
-close_database_connection_OHDSI <- function(con,config)
-{
-    #special handling for ODBC drivers
-    disconnect(con)
-
-}
-
-retrieve_dataframe<-function(con,config,table_name)
-{
-    #special handling for ODBC drivers
-    if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-    {
-        table_name<-toupper(table_name)
-        df<-sqlFetch(con, paste(config$db$schema, table_name, sep="."))
-    }
-    else
-    {
-      if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-      {
-          table_name<-toupper(table_name)
-          df<-querySql(con, table_name, schema = config$db$schema)
-        }
-        else
-        {
-          df<-querySql(con, c(config$db$schema,table_name))
-        }
-    }
-    #converting all names to lower case for consistency
-    names(df) <- tolower(names(df))
-    return(df);
-
 }
 
 
@@ -330,7 +248,7 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
 }
 
 
-retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
+retrieve_dataframe_join_clause<-function(table_df, table_df2,column_list,clauses)
 {
   
 
@@ -374,7 +292,6 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
                    ," group by ",column_list
                    ," order by 2 desc"
                    ,sep="");
-      # flog.info(query)
       df<-querySql(con, query)
     }
   }
@@ -383,6 +300,16 @@ retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, s
   return(df);
 }
 
+retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
+                                        group_by_field,join_field)
+{
+  table_df <- table_df %>%
+    inner_join(table_df2, by = join_field) %>%
+    group_by_(group_by_field) %>%
+    select_(keep_fields) %>%
+    as.data.frame()
+  return(table_df)
+}
 
 retrieve_dataframe_group <- function(table_df, field_name){
   table_df = table_df %>%
@@ -395,8 +322,8 @@ retrieve_dataframe_group <- function(table_df, field_name){
   return(table_df)
 }
 
-retrieve_dataframe_count<-function(table_name, column_list){
-  counts  = distinct(table_name %>%
+retrieve_dataframe_count<-function(table_df, column_list){
+  counts  = distinct(table_df %>%
                   filter_(paste('!is.na(', column_list, ')')) %>%
                   mutate(counts = n()) %>%
                   select(counts)) %>%

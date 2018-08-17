@@ -110,87 +110,6 @@ reportNoMatchingCount<-function(df_table,table_name,field_name, big_data_flag)
   }
 }
 
-# reportNullFlavors<-function(df_table,table_name,field_name,UN_code,OT_code,NI_code,big_data_flag)
-# {
-#   if(big_data_flag==FALSE)
-#   {
-#     #retrieve the index of the field in the dataframe
-#     column_index <- which(colnames(df_table)==field_name)
-# 
-#   if(nrow(df_table)>0)
-#   {
-#     # saving the frequencies in a separate dataframe (including NA values)
-#     dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-#     #add a new column to this new dataframe containing the percentage frequency information rounded to 2 digits
-#     dfTab$label <- as.character(
-#       paste(
-#         round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-#         ,'%')  # add percentage
-#     )
-# 
-#     # flog.info(dfTab)
-#     count_ni<-subset(dfTab,Var1==NI_code)$label[1]
-#     if(is.na(count_ni)) count_ni<-"0%";
-#     count_un<-subset(dfTab,Var1==UN_code)$label[1]
-#     if(is.na(count_un)) count_un<-"0%";
-#     count_ot<-subset(dfTab,Var1==OT_code)$label[1]
-#     if(is.na(count_ot)) count_ot<-"0%";
-#     # flog.info(count_ni[1])
-#     # the last row contains the frequency for the NA value
-#     count_missing_values<-dfTab[nrow(dfTab),3];
-#     return(paste(
-#       "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
-#       "\nPercentage of",table_name,"with other value for ",field_name," is ",count_ot,"\n",
-#       "\nPercentage of",table_name,"with no information for ",field_name," is ",count_ni,"\n",
-#       "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"
-#     ));
-#   }
-# 
-# }    else # using dplyr or query wise - when big data flag is true
-#     {
-#       #retrieve the index of the field in the dataframe
-#       colnames(df_table)[1] <- "Var1"
-#       colnames(df_table)[2] <- "Freq"
-#       df_table<-subset(df_table,!is.na(Var1))
-# 
-#       if(nrow(df_table)>0)
-#       {
-#         df_table$Var1 <- as.factor(df_table$Var1)
-# 
-#         df_table$label <- as.character(
-#           paste(
-#             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-#             ,'%')  # add percentage
-#         )
-#       
-#         count_ni<-subset(df_table,Var1==NI_code)$label[1]
-#         if(is.na(count_ni)) count_ni<-"0%";
-#         count_un<-subset(df_table,Var1==UN_code)$label[1]
-#         if(is.na(count_un)) count_un<-"0%";
-#         count_ot<-subset(df_table,Var1==OT_code)$label[1]
-#         if(is.na(count_ot)) count_ot<-"0%";
-#         count_missing_values<-subset(df_table,is.na(Var1))$label[1]
-#         if(is.na(count_missing_values)) count_missing_values<-"0%";
-# 
-#         return(paste(
-#           "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
-#           "\nPercentage of",table_name,"with other value for ",field_name," is ",count_ot,"\n",
-#           "\nPercentage of",table_name,"with no information for ",field_name," is ",count_ni,"\n",
-#           "\nPercentage of",table_name,"with missing values for ",field_name," is ",count_missing_values,"\n"
-#         ));
-#       } # end of if
-#       else
-#       {
-#         return(paste(
-#           "\nPercentage of",table_name,"with unknown value for ",field_name," is 0%\n",
-#           "\nPercentage of",table_name,"with other value for ",field_name," 0%\n",
-#           "\nPercentage of",table_name,"with no information for ",field_name," is 0%\n",
-#           "\nPercentage of",table_name,"with missing values for ",field_name," is 100%\n"
-#         ));
-#       }
-#     }  # end else
-# }
-
 reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_code)
 {
   table_df <- table_df %>%
@@ -724,8 +643,6 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
 
         if(nrow(df_table)>0)
         {
-
-
           #caluclating mean and standard deviation, etc.
           raw_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
           mean_Var1<-round(mean(raw_vector, na.rm=TRUE),2)
