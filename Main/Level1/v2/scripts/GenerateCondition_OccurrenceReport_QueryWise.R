@@ -50,42 +50,39 @@ generateConditionOccurrenceReport <- function() {
     group_by(visit_concept_id) %>%
     summarise(condition_concept_id_un = n_distinct(condition_concept_id),
               person_id_un = n_distinct(person_id.x)) %>%
-    mutate(ratio = condition_concept_id_un/person_id_un) %>%
-    select(visit_concept_id, ratio) %>%
+    mutate(patient_visit_ratio = condition_concept_id_un/person_id_un) %>%
+    select(visit_concept_id, patient_visit_ratio) %>%
     as.data.frame()
-  
+
   label<-df_visit[df_visit$concept_id==df_condition_patient_ratio[,1],2]
   df_condition_patient_ratio[,1]<-paste(df_condition_patient_ratio[,1],"(",label,")",sep="")
-  print((df_condition_patient_ratio))
-          
-  print("test 5.5")
-  describeOrdinalField(df_condition_patient_ratio,table_name,"Condition:Patient ratio by visit type");
+
+  describeOrdinalField(df_condition_patient_ratio,table_name,"patient_visit_ratio");
+
   fileContent<-c(fileContent,paste_image_name(table_name,"Condition:Patient ratio by visit type"));
-  print('test 6')
   #NOMINAL Fields
   df_condition_type_concept_id<-retrieve_dataframe_clause(concept_tbl,
-                                                          c("concept","concept_id,concept_name"),
-                                                          "concept_class_id =='Condition Type'
-                                                          & vocabulary_id=='PEDSnet'")
+                                                          c("concept_id" ,"concept_name"),
+                                          "concept_class_id =='Condition Type' & vocabulary_id=='PEDSnet'")
 
-  print('test 7')
   # this is a nominal field - work on it
   field_name<-"condition_type_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   order_bins <-c(df_condition_type_concept_id$concept_id,NA)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT##############
-  print('test 8')
+
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"condition_type_concept_id_dplyr.txt",
                                                    concept_tbl, data_tbl)) 
-  df_condition_type_concept_id <-generate_df_concepts(concept_tbl, table_name,
-                                                      "condition_type_concept_id_dplyr.txt")
-  print('test 9')
+  
+  df_condition_type_concept_id <-generate_df_concepts(table_name,"condition_type_concept_id_dplyr.txt",
+                                                      concept_tbl)
+
   df_table_condition_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_condition_type_concept_id);
   describeNominalField_basic(df_table_condition_type_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  print('test 10')
+
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),
                                                    list(
                                                    list(2000000092,2000000093,2000000094,  "inpatient header primary"),
@@ -95,71 +92,75 @@ generateConditionOccurrenceReport <- function() {
                                                    list(2000000089,2000000090,2000000091,  "EHR problem list entry")
                                                    ), data_tbl)) 
   
-  
-  # ORDINAL Fields
 
+  # ORDINAL Fields
   field_name<-"condition_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   # some fields can have multiple vocabularies
-  message<-describeOrdinalField_large(df_table, table_name,field_name)
+  
+  message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
+
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    ,3, data_tbl))  ## number of components in condition_source_value
   
-  print('test 11')
   field_name<-"condition_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
+  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  
   # some fields can have multiple vocabularies
   ###########DQA CHECKPOINT##############
-  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition',c('ICD9','ICD9CM', 'ICD10', 'ICD10CM')))) 
-  
-  message<-describeOrdinalField_large(df_table, table_name,field_name)
-  # create meaningful message
-  new_message<-create_meaningful_message_concept_id(message,field_name,con,g_config)
-  fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
+                                                   c('Condition',c('ICD9','ICD9CM', 'ICD10', 'ICD10CM')),
+                                                   concept_tbl, data_tbl)) 
 
-   flog.info(Sys.time())
+  message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
+  # create meaningful message
+  new_message<-create_meaningful_message_concept_id(concept_tbl,message,field_name)
+  fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
+  flog.info(Sys.time())
   field_name<-"condition_concept_id" #
-  df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
+  
   # add % of no matching concept (concept id = 0). for the completeness report
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),con)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   # some fields can have multiple vocabularies
 
   ###########DQA CHECKPOINT -- invalid vocab ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, c('Condition','SNOMED'))) 
-  
-  message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
+                                                   c('Condition','SNOMED'), concept_tbl, data_tbl)) 
+
+  message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
   # create meaningful message
-  new_message<-create_meaningful_message_concept_id(message,field_name,con,g_config)
+  new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
 
-
   field_name<-"condition_concept_id" #
-  df_table_new<-retrieve_dataframe_count_group(con,g_config,table_name,"person_id", field_name)
+  df_table_new<-retrieve_dataframe_count_group(data_tbl,"person_id", field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"by person_id","\n"))
-  message<-describeOrdinalField_large(df_table_new, "person_id",field_name,big_data_flag)
+  message<-describeOrdinalField(df_table_new, "person_id",field_name, ggplotting = F)
+
   # create meaningful message
-  new_message<-create_meaningful_message_concept_id(message,field_name,con,g_config)
+  new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name("person_id",field_name));
-  
 
   field_name<-"condition_start_date"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-describeDateField(df_table, table_name,field_name)
+  
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name),
                                                    c(field_name),data_tbl)) 
-  
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
@@ -170,31 +171,29 @@ generateConditionOccurrenceReport <- function() {
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  message<-describeDateField(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  message<-describeDateField(df_table, table_name,field_name)
+
   if(missing_percent<100)
   {
     ### DQA checkpoint - future date
-    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),con)) 
-    
-    
+    logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name),
+                                                     c(field_name), data_tbl)) 
   }
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(),c(table_name),
+                                                   c('condition_start_date','condition_end_date'),data_tbl)) 
 
-  logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(), c(table_name), c('condition_start_date','condition_end_date'),con)) 
-
-  #print (fileContent)
   field_name<-"stop_reason"
-  df_table<-retrieve_dataframe_group(con,g_config,table_name,field_name)
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),con)) 
-  message<-describeOrdinalField_large(df_table, table_name,field_name,big_data_flag)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  message<-describeOrdinalField(df_table, table_name,field_name,ggplotting = F)
   fileContent<-c(fileContent, paste_image_name(table_name,field_name),message);
-
   #FOREIGN KEY fields
 
   field_name<-"person_id" #
@@ -203,7 +202,6 @@ generateConditionOccurrenceReport <- function() {
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
-
 
   field_name<-"visit_occurrence_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
@@ -214,7 +212,7 @@ generateConditionOccurrenceReport <- function() {
                                                             ,"is.na(visit_occurrence_id) & condition_type_concept_id != 38000245")
     count_nonproblemlist<-retrieve_dataframe_clause(data_tbl,"count(*)"
                                                     ,"condition_type_concept_id != 38000245")
-    
+
     # compute % (# of records with missing visit info for problem list visits) / (# problem list visits)
     missing_visit_percent_nonproblemlist<-round(count_nonproblemlist_novisit*100/count_nonproblemlist,2)
     message_visit_percent_nonproblemlist<-paste("The percentage of conditions (besides problem list) with missing information:",
@@ -251,8 +249,8 @@ generateConditionOccurrenceReport <- function() {
     missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
-    ###########DQA CHECKPOINT##############
     
+    ###########DQA CHECKPOINT#############
     # this is a nominal field - work on it
     field_name<-"condition_status_concept_id" #
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -263,33 +261,34 @@ generateConditionOccurrenceReport <- function() {
     missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
-    ###########DQA CHECKPOINT##############
   
+    ###########DQA CHECKPOINT##############
     logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                      ,"condition_status_concept_id.csv", concept_tbl,
                                                      data_tbl)) 
-    
+
     # this is a nominal field - work on it
-    field_name<-"poa_concept_id" #
+    field_name <- "poa_concept_id" 
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
+
     order_bins <-c("4188539","4188540","44814653", "44814649","44814650","0",NA)
     label_bins<-c("Yes (4188539)","No (4188540)","0 (No matching)","Unknown (44814653)",
                   "Other (44814649)","No Information (44814650 )","NULL")
     color_bins <-c("4188539"="lightcoral","4188540"="steelblue1","0"="red","44814653"="grey64",
                    "44814649"="grey64","44814650 "="grey64")
-    
+
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
     missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
     ###########DQA CHECKPOINT##############
-    
+
     logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                      ,"poa_concept_id.csv", concept_tbl, data_tbl)) 
-
+  print("final test 2")
     describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-    
+    print("there it is")
     
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)

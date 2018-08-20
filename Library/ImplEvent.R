@@ -13,7 +13,7 @@ ImplEvent <- function()
 }
 
 
-applyCheck.ImplEvent<- function(theObject, table_list, field_list, con)
+applyCheck.ImplEvent<- function(theObject, table_list, field_list, table_df)
 {
   table_name<-table_list[1]
   start_field<-field_list[1]
@@ -23,8 +23,8 @@ applyCheck.ImplEvent<- function(theObject, table_list, field_list, con)
   
   #print(date_field)
 
-  df_implausible_date_count<-retrieve_dataframe_clause(con, g_config, g_config$db$schema,table_name,
-                                                       "count(*) as count",
+  df_implausible_date_count<-retrieve_dataframe_clause(table_df,
+                                                       "count(*)",
                                                        paste(start_field,">",end_field))
   
   if(df_implausible_date_count[1][1]>0)

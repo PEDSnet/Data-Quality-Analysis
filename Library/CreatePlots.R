@@ -102,7 +102,8 @@ reportNoMatchingCount<-function(df_table,table_name,field_name, big_data_flag)
     if(nrow(new_df_table)>0) # if there is a 0 value
     {
       # the last row contains the frequency for the NA value
-      return(paste("\n\nPercentage of",table_name,"with no matching concepts in ",field_name," is ",new_df_table[1,3]));
+      return(paste("\n\nPercentage of",table_name,
+                   "with no matching concepts in ",field_name," is ",new_df_table[1,3]));
     }
     if(nrow(new_df_table)==0)
       return(paste("\n\nPercentage of",table_name,"with no matching concepts in ",field_name," is 0%"));
@@ -234,7 +235,7 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
 
 		#creating barplot from dfTab dataframe
 		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-		# flog.info(p)
+
     # add axis labels
  		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
 		# specify the order of catgories and also the labels for x-axis
@@ -246,7 +247,6 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
         	axis.text.x = element_text(angle=90, vjust=1))
 		# add the label to each bar (from the dfTab dataframe)
 		p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
-		# flog.info(p)
 		#save the barplot image (will be referenced by the final report)
     ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
 
@@ -338,28 +338,54 @@ describeNominalField_basic<-function(table_df, table_name,field_name)
 	#1. an R dataframe containing a given database table
 	#2. the name of the ordinal field
 #Output: write the barplot to a file
-describeOrdinalField<-function(table_df, table_name,field_name)
+##ggplotting, set to false for large datasets to avoid ggplot
+describeOrdinalField<-function(table_df, table_name,field_name, ggplotting = T)
 {
   flog.info(paste("Plotting for Field: ", field_name))
-  table_df = table_df %>% select_(field_name) %>% 
+  table_df = table_df %>% 
+    select_(field_name) %>% 
     na.omit() %>%
     collect() %>% 
-    table() %>%
-    as.data.frame()
-  colnames(table_df) <- c("Var1", "Freq")
+    table() 
 
   if(nrow(table_df) > 0){
-    #create a bar plot
-    p<-ggplot(table_df, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-     # add axis labels
-    p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-    #remove legend and set size and orientation of tick labels
-    p<-p+theme(legend.position="none", text = element_text(size=6),
-               axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,
-               panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,
-               panel.border = element_blank())
-     ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
-                       get_image_name(table_name,field_name),sep=""))
+      if(ggplotting){
+      table_df =  as.data.frame(table_df)
+      colnames(table_df) <- c("Var1", "Freq")
+      #create a bar plot
+      p<-ggplot(table_df, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+      # add axis labels
+      p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+      #remove legend and set size and orientation of tick labels
+      p<-p+theme(legend.position="none", text = element_text(size=6),
+                 axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,
+                 panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,
+                 panel.border = element_blank())
+       ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
+                         get_image_name(table_name,field_name),sep=""))
+      }
+      else{
+      # counting the total number of unique values
+      total_locations <- nrow(table_df)
+      
+      png(paste(normalize_directory_path( g_config$reporting$site_directory),
+                get_image_name(table_name,field_name),sep=""))
+      # not using ggplot here as it is very expensive for a large number of values
+      barplot(table_df, main = paste(field_name,": Distribution"), 
+              xlab = paste(field_name,"(Total: ",total_locations,")"), 
+              ylab = paste(table_name,"Count"))
+      
+      table_df = as.data.frame(table_df)
+      }
+    
+    table_df<-table_df[order(table_df[,2], decreasing = TRUE),] ###Put data in order
+    return_message<-paste("The most frequent values for",field_name,"are:")
+    for(index in 1:5){
+        return_message<-paste(return_message,table_df[index,1]);
+        if(index<5) return_message<-paste(return_message,",")
+    }
+    dev.off()
+    return(return_message)
    }
 }
 
@@ -387,7 +413,8 @@ describeDateField<-function(table_df, table_name, field_name){
 
     # not using ggplot here as it is very expensive for a large number of values
     barplot(table_df, main = paste(field_name,": Distribution"),
-            xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
+            xlab = paste(field_name,"(Total: ",total_locations,")"), 
+            ylab = paste(table_name,"Count"))
 
     table_df <- as.data.frame(table_df)
     table_df <- table_df[order(table_df[,2], decreasing = T),]
@@ -411,8 +438,6 @@ describeDateField<-function(table_df, table_name, field_name){
 
 describeYYMMField<-function(df_table, table_name,field_name,fact_type)
 {
-  #  flog.info(paste("Plotting for Field: ", field_name))
-  
     df_table<-subset(df_table,!is.na(df_table[,1]))
     if(nrow(df_table)>0)
     {
@@ -434,105 +459,6 @@ describeYYMMField<-function(df_table, table_name,field_name,fact_type)
         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
                           get_image_name(table_name,paste0(field_name, "-yyyy-mm-", fact_type[2])),sep=""))
        
-    }
-}
-
-
-# Ordinal Fields (with large number of values)
-#functionName: describeOrdinalField_large
-#Description: generate a barplot for an ordinal field
-#Inputs:
-	#1. an R dataframe containing a given database table
-	#2. the name of the ordinal field
-#Output: write the barplot to a file
-describeOrdinalField_large<-function(df_table, table_name,field_name,big_data_flag)
-{
-
-	 flog.info(paste("Plotting for Field: ", field_name))
-
-    if(big_data_flag==FALSE)
-    {
-	column_index <- which(colnames(df_table)==field_name)
-    # flog.info(nrow(df_table))
-	if(nrow(df_table)>0)
-	{
-
-		dfTab <- table(df_table[,column_index])
-		if(nrow(dfTab)>0)
-		{
-		#calculate the total number of locations
-        # flog.info(colnames(dfTab))
-        ordered_data<-as.data.frame(dfTab)[order(as.data.frame(dfTab)[,2], decreasing = TRUE),]
-        # flog.info(ordered_data)
-
-        # counting the total number of unique values
-        total_locations <- nrow(dfTab)
-
-        png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-		# not using ggplot here as it is very expensive for a large number of values
-		barplot(dfTab, main = paste(field_name,": Distribution"), 
-		        xlab = paste(field_name,"(Total: ",total_locations,")"), 
-		        ylab = paste(table_name,"Count"))
-
-
-        return_message<-paste("The most frequent values for",field_name,"are:")
-        index<-1;
-        while (index<=5)
-        {
-            return_message<-paste(return_message,ordered_data[index,1]);
-            if(index<5)
-                return_message<-paste(return_message,",")
-            index<-index+1;
-        }
-        #return_message<-c(return_message, paste("Range: ",min(df_table)," - ",max(df_table)))
-
-        dev.off()
-        return(return_message)
-		}
-    }
-    }
-    else # for handling bigdata with dplyr
-    {
-        colnames(df_table)[1] <- "Var1"
-        colnames(df_table)[2] <- "Freq"
-        df_table<-subset(df_table,!is.na(Var1))
-
-        if(nrow(df_table)>0)
-        {
-
-          # creare a raw vector and then create a table
-          new_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
-          # creating a table out of it so that we can use in the barplot function
-          dfTab<-table(new_vector)
-
-            ordered_data<-df_table[order(df_table[,2], decreasing = TRUE),]
-            # flog.info(ordered_data)
-
-            # counting the total number of unique values
-            total_values <- nrow(df_table)
-
-            png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-            # not using ggplot here as it is very expensive for a large number of values
-          barplot(dfTab, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count"))
-          #barplot(df_table$Freq, df_table$Var1, main = paste(field_name,": Distribution"), xlab = paste(field_name,"(Total: ",total_values,")"), ylab = paste(table_name,"Count")) #, xaxt='y')
-
-            return_message<-paste("The most frequent values for",field_name,"are:","\n")
-            index<-1;
-            while (index<=5)
-            {
-              #return_message<-paste(return_message,ordered_data[index,1]);
-              # adding information on total counts also
-              return_message<-paste(return_message,ordered_data[index,1],"|count=",ordered_data[index,2]);
-              if(index<5)
-                return_message<-paste(return_message,",\n")
-              index<-index+1;
-            }
-            #return_message<-c(return_message, paste("Range: ",min(df_table)," - ",max(df_table)))
-
-            dev.off()
-            return(return_message)
-          }
-
     }
 }
 
@@ -600,9 +526,7 @@ describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
     if(nrow(dfTab)>0) # if all values are NULL
         {
 		#caluclating mean and standard deviation
-        #mean_Var1<-round(mean(df_table[,column_index]), digits=2)
         mean_Var1<-round(mean(df_table[,column_index],trim=0,na.rm=TRUE), digits=2)
-        #sd_Var1<-round(sd(df_table[,column_index]), digits=2)
         sd_Var1<-round(sd(df_table[,column_index],na.rm=TRUE), digits=2)
         max_Var1<-df_table[which.max(df_table[,column_index]),column_index]
         min_Var1<-df_table[which.min(df_table[,column_index]),column_index]

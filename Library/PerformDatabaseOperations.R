@@ -91,12 +91,12 @@ retrieve_dataframe_record_count<-function(table_df)
 }
 
 
-retrieve_dataframe_count_group<-function(table_name, column_list, field_name){
-  counts = table_name %>%
-      group_by(field_name) %>%
-      filter(paste('!any(is.na(',column_list,'))')) %>%
+retrieve_dataframe_count_group<-function(table_df, column_list, field_name){
+  counts = table_df %>%
+      group_by_(field_name) %>%
+      filter_(paste("!is.na(",column_list,")")) %>%
       distinct() %>%
-      summarize(count = n()) %>%
+      summarise(count = n()) %>%
       as.data.frame()
    test_that("Testing Retrieve Dataframe Count Group", 
              expect_equal(colnames(counts), c(field_name, "count")))
@@ -352,6 +352,13 @@ get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, 
     collect()
     
   return(vocab_name)
+}
+
+get_concept_name <- function(table_df, df_concept_id){
+  table_df <- table_df %>%
+    filter(concept_id == df_concept_id) %>%
+    select(concept_name)
+  return(table_df)
 }
 
 
