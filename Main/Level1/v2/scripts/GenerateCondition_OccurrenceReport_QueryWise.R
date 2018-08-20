@@ -269,6 +269,8 @@ generateConditionOccurrenceReport <- function() {
 
     # this is a nominal field - work on it
     field_name <- "poa_concept_id" 
+    ###This is a new field not currently in oracle test db
+    if(field_name %in% colnames(data_tbl)){
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
 
     order_bins <-c("4188539","4188540","44814653", "44814649","44814650","0",NA)
@@ -285,10 +287,10 @@ generateConditionOccurrenceReport <- function() {
 
     logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                      ,"poa_concept_id.csv", concept_tbl, data_tbl)) 
-  print("final test 2")
+ 
     describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-    print("there it is")
+    }
     
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
