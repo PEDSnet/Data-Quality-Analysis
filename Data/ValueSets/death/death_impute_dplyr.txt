@@ -1,0 +1,1 @@
+(concept_class_id =='Death Imput Type') | (vocabulary_id == 'PCORNet' & (concept_class_id == 'Undefined' | concept_class_id == 'UnDefined')) & is.na(invalid_reason)

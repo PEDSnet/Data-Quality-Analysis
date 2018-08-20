@@ -248,7 +248,8 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
 		# add the label to each bar (from the dfTab dataframe)
 		p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
 		#save the barplot image (will be referenced by the final report)
-    ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
+    ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
+                      get_image_name(table_name,field_name),sep=""))
 
 	 }
     }
@@ -257,7 +258,6 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
     {
         if(nrow(df_table)>0)
         {
-            #dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
             #adding new columns
 
             colnames(df_table)[1] <- "Var1"
@@ -270,7 +270,6 @@ describeNominalField<-function(df_table, table_name,field_name, label_bins, orde
             ,'%')	# add percentage
             )
 
-            # flog.info(df_table)
             #creating barplot from dfTab dataframe
             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
             # add axis labels

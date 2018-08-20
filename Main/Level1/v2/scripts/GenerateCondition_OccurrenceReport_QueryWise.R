@@ -7,9 +7,10 @@ generateConditionOccurrenceReport <- function() {
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
 
   #writing to the final DQA Report
-  fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/",table_name,"_Report_Automatic.md",sep=""))
+  fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),
+                       "./reports/",table_name,"_Report_Automatic.md",sep=""))
   fileContent <-get_report_header(table_name,g_config)
-
+  print("CHECK 1")
   ## writing to the issue log file
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), 
                           issue_code=character(0), issue_description=character(0), check_alias=character(0)
@@ -24,15 +25,14 @@ generateConditionOccurrenceReport <- function() {
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
   
-
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
   
-  df_total_patient_count<-retrieve_dataframe_count(data_tbl, "person_id") %>% distinct(person_id)
+  df_total_patient_count<-retrieve_dataframe_count(data_tbl, "person_id", distinction = T)
   fileContent<-c(fileContent,paste("The condition to patient ratio is ",
                                    round(df_total_condition_count[1][1]/df_total_patient_count[1][1],2),"\n"))
 
-  df_total_visit_count<-retrieve_dataframe_count(data_tbl,"visit_occurrence_id") %>% distinct(visit_occurrence_id)
+  df_total_visit_count<-retrieve_dataframe_count(data_tbl,"visit_occurrence_id", distinction = T)
   fileContent<-c(fileContent,paste("The condition to visit ratio is ",
                                    round(df_total_condition_count[1][1]/df_total_visit_count[1][1],2),"\n"))
 

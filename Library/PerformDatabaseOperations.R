@@ -322,7 +322,8 @@ retrieve_dataframe_group <- function(table_df, field_name){
   return(table_df)
 }
 
-retrieve_dataframe_count<-function(table_df, column_list){
+retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
+  if(distinction) table_df <- table_df %>% distinct_(column_list)
   counts  = distinct(table_df %>%
                   filter_(paste('!is.na(', column_list, ')')) %>%
                   mutate(counts = n()) %>%
