@@ -398,15 +398,14 @@ describeDateField<-function(table_df, table_name, field_name){
     collect() %>%
     table() %>%
     as.data.frame() 
-  
-  table_df[,1] <- as.Date(table_df[,1])
-  date_range <- paste("\n Date range: ",
-                      min(table_df[,1],na.rm=T),"-",max(table_df[,1],na.rm=T))
-  date_max <- max(table_df[,1], na.rm = T)
-  table_df <-table(table_df)
-  
+
   if(nrow(table_df)>0)
   {
+    table_df[,1] <- as.Date(table_df[,1], origin = '1970-01-01')
+    date_range <- paste("\n Date range: ",
+                      min(table_df[,1],na.rm=T),"-",max(table_df[,1],na.rm=T))
+    date_max <- max(table_df[,1], na.rm = T)
+    table_df <-table(table_df)
     total_locations <- nrow(table_df)
     png(paste(normalize_directory_path( g_config$reporting$site_directory),
               get_image_name(table_name,field_name),sep=""))
@@ -470,8 +469,8 @@ describeTimeField<-function(table_df, table_name,field_name){
     na.omit()
 
   table_df <- substr(table_df[,1],12,19)
-  time_max <- max(table_df)
-  time_min <- min(table_df)
+  time_max <- max(table_df, na.rm = T)
+  time_min <- min(table_df, na.rm = T)
   table_df <- table(table_df)
   if(nrow(table_df)>0)
   {
