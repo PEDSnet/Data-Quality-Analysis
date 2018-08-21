@@ -46,22 +46,18 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   #condition / person id by visit types
   fileContent <-c(fileContent,paste("## Barplot for Device:Patient ratio by visit type\n"))
-
-  df_device_patient_ratio <- data_tbl %>%
-    inner_join(cdm_tbl(req_env$db_src,"visit_occurrence"), by = "visit_occurrence_id") %>%
-    group_by(visit_concept_id) %>% 
-    summarise(device_exposure_id_un = n_distinct(device_exposure_id),
-              person_id_un = n_distinct(person_id.x)) %>%
-    mutate(patient_device_ratio = round(device_exposure_id_un/person_id_un,2)) %>%
-    select(visit_concept_id, patient_visit_ratio) %>%
-    as.data.frame()
-    
+  
+  df_condition_patient_ratio <- retrieve_dataframe_ratio_group_join(data_tbl,
+                                                                    cdm_tbl(req_env$db_src,"visit_occurrence"),
+                                                                    "device_exposure_id", "person_id",
+                                                                    "visit_concept_id", "visit_occurrence_id")
+  
   for(i in 1:nrow(df_device_patient_ratio))
   {
     label<-df_visit[df_visit$concept_id==df_device_patient_ratio[i,1],2]
     df_device_patient_ratio[i,1]<-paste(df_device_patient_ratio[i,1],"(",label,")",sep="")
   }
-  describeOrdinalField(df_device_patient_ratio,table_name,"patient_device_ratio");
+  describeOrdinalField(df_device_patient_ratio,table_name,"ratio");
   fileContent<-c(fileContent,paste_image_name(table_name,"Device:Patient ratio by visit type"));
   
   #NOMINAL Fields

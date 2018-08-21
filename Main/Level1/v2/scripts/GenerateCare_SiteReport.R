@@ -48,7 +48,7 @@ generateCareSiteReport <- function() {
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent_source_value<-extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_source_value)
-  describeNominalField_basic(data_tbl, table_name,field_name)
+  describeNominalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -76,7 +76,7 @@ generateCareSiteReport <- function() {
   #df_place_of_service <- as.data.frame(acceptable_PLOS)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table_place_of_service_enhanced<-EnhanceFieldValues(data_tbl,field_name,df_place_of_service);
-  describeNominalField_basic(df_table_place_of_service_enhanced,table_name,field_name);
+  describeNominalField(df_table_place_of_service_enhanced,table_name,field_name);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,
@@ -91,7 +91,7 @@ generateCareSiteReport <- function() {
   fileContent<-c(fileContent,missing_percent_source_value)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeNominalField_basic(data_tbl, table_name,field_name)
+  describeNominalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #specialty concept id
@@ -104,7 +104,7 @@ generateCareSiteReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
-  describeNominalField_basic(data_tbl, table_name,field_name)
+  describeNominalField(data_tbl, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),

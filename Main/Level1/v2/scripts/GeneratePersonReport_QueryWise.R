@@ -56,7 +56,7 @@ generatePersonReport <- function() {
 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
 
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -67,7 +67,7 @@ generatePersonReport <- function() {
 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
 
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
@@ -106,13 +106,13 @@ generatePersonReport <- function() {
   field_name="race_source_value"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   #race source Concept id
   field_name="race_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
   
@@ -131,7 +131,7 @@ generatePersonReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
   #update values of the field before plotting
   df_table_race_enhanced<-EnhanceFieldValues(df_table,field_name,df_race);
-  describeNominalField_basic(df_table_race_enhanced,table_name,field_name,big_data_flag);
+  describeNominalField(df_table_race_enhanced,table_name,field_name);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
@@ -144,7 +144,7 @@ generatePersonReport <- function() {
   field_name="ethnicity_source_value"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Ethnicity source Concept id
@@ -183,7 +183,7 @@ generatePersonReport <- function() {
   field_name="language_source_value"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
 
@@ -191,7 +191,7 @@ generatePersonReport <- function() {
   field_name="language_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  describeNominalField_basic(df_table,table_name,field_name,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
@@ -209,7 +209,7 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
   df_table_language_enhanced<-EnhanceFieldValues(df_table,field_name,df_lang);
-  describeNominalField_basic(df_table_language_enhanced,table_name,field_name,big_data_flag);
+  describeNominalField(df_table_language_enhanced,table_name,field_name);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   

@@ -10,7 +10,6 @@ generateConditionOccurrenceReport <- function() {
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),
                        "./reports/",table_name,"_Report_Automatic.md",sep=""))
   fileContent <-get_report_header(table_name,g_config)
-  print("CHECK 1")
   ## writing to the issue log file
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), 
                           issue_code=character(0), issue_description=character(0), check_alias=character(0)
@@ -43,21 +42,16 @@ generateConditionOccurrenceReport <- function() {
 
   #condition / person id by visit types
   fileContent <-c(fileContent,paste("## Barplot for Condition:Patient ratio by visit type\n"))
-
-  ###Finding it difficult to turn this into a generalizable function
-  df_condition_patient_ratio <- data_tbl %>%
-    inner_join(cdm_tbl(req_env$db_src,"visit_occurrence"), by = "visit_occurrence_id") %>%
-    group_by(visit_concept_id) %>%
-    summarise(condition_concept_id_un = n_distinct(condition_concept_id),
-              person_id_un = n_distinct(person_id.x)) %>%
-    mutate(patient_visit_ratio = condition_concept_id_un/person_id_un) %>%
-    select(visit_concept_id, patient_visit_ratio) %>%
-    as.data.frame()
+  
+  df_condition_patient_ratio <- retrieve_dataframe_ratio_group_join(data_tbl,
+                                                                    cdm_tbl(req_env$db_src,"visit_occurrence"),
+                                                                    "condition_concept_id", "person_id",
+                                                                    "visit_concept_id", "visit_occurrence_id")
 
   label<-df_visit[df_visit$concept_id==df_condition_patient_ratio[,1],2]
   df_condition_patient_ratio[,1]<-paste(df_condition_patient_ratio[,1],"(",label,")",sep="")
 
-  describeOrdinalField(df_condition_patient_ratio,table_name,"patient_visit_ratio");
+  describeOrdinalField(df_condition_patient_ratio,table_name,"ratio");
 
   fileContent<-c(fileContent,paste_image_name(table_name,"Condition:Patient ratio by visit type"));
   #NOMINAL Fields
@@ -80,7 +74,7 @@ generateConditionOccurrenceReport <- function() {
                                                       concept_tbl)
 
   df_table_condition_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_condition_type_concept_id);
-  describeNominalField_basic(df_table_condition_type_enhanced,table_name,field_name)
+  describeNominalField(df_table_condition_type_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),

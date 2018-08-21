@@ -194,108 +194,109 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
 	#4. order_bins: a fixed order for various bins on the plot
 	#5: color_bins: colors assigned to each bin
 #Output: write the barplot to a file
-describeNominalField<-function(df_table, table_name,field_name, label_bins, order_bins, color_bins, big_data_flag, expected_levels = NULL)
-{
 
-  column_index <- which(colnames(df_table)==field_name)
-   
-  if(length(levels(df_table[,column_index])) < length(color_bins)){
-    print(paste("Warning additional levels found for ", field_name))
-    df_table[,column_index] <- as.factor(df_table[,column_index])
-    keep_levels <- NULL
-    if(!is.null(expected_levels)){
-      keep_levels <- which(levels(df_table[,column_index]) %in% expected_levels) #if provided, keep expected levels
-      print(paste("Found additional levels ", levels(df_table[,column_index])[-keep_levels]))
-      keep_levels <- levels(df_table[,column_index])[keep_levels]
-    }
-    else{
-      keep_levels <- levels(df_table[,column_index])[1:length(color_bins)]
-    }
-    keep_indices <- which(df_table[,column_index] %in% keep_levels)
-    df_table[,column_index] <- as.character(df_table[,column_index])
-    df_table[-keep_indices, column_index] <- "Other"
-    df_table[,column_index] <- as.factor(df_table[,column_index])
-    color_bins <- c(color_bins, "Other" = "black")
-    order_bins <- c(order_bins, "Other")
-    label_bins <- c(label_bins, "Other")
-  }
-    if(big_data_flag==FALSE)
-    {
-	# retrieve the column index for the field
-
-	# saving the frequencies and percentage in a separate dataframe including NA values
-	if(nrow(df_table)>0)
-	{
-		dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-		dfTab$label <- as.character(
-		paste(
-			round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-			,'%')	# add percentage
-		)
-
-		#creating barplot from dfTab dataframe
-		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-
-    # add axis labels
- 		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-		# specify the order of catgories and also the labels for x-axis
-		p<-p+scale_x_discrete(labels=label_bins, limits= order_bins)
-		# specify the color for each category
-		p<-p+ scale_fill_manual(values=color_bins,na.value="grey64")
-		#remove legend and set size and orientation of tick labels
-		p<-p+theme(legend.position="none", text = element_text(size=10),
-        	axis.text.x = element_text(angle=90, vjust=1))
-		# add the label to each bar (from the dfTab dataframe)
-		p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
-		#save the barplot image (will be referenced by the final report)
-    ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
-                      get_image_name(table_name,field_name),sep=""))
-
-	 }
-    }
-
-    else #using dplyr
-    {
-        if(nrow(df_table)>0)
-        {
-            #adding new columns
-
-            colnames(df_table)[1] <- "Var1"
-            colnames(df_table)[2] <- "Freq"
-            df_table$Var1 <- as.factor(df_table$Var1)
-
-            df_table$label <- as.character(
-            paste(
-            round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-            ,'%')	# add percentage
-            )
-
-            #creating barplot from dfTab dataframe
-            p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-            # add axis labels
-
-            p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-
-            # specify the order of catgories and also the labels for x-axis
-            p<-p+scale_x_discrete(labels=label_bins, limits= order_bins)
-
-            # specify the color for each category
-            p<-p+ scale_fill_manual(values=color_bins,na.value="grey64")
-            #remove legend and set size and orientation of tick labels
-            p<-p+theme(legend.position="none", text = element_text(size=10),
-            axis.text.x = element_text(angle=90, vjust=1))
-            # add the label to each bar (from the dfTab dataframe)
-            p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
-            #save the barplot image (will be referenced by the final report)
-            ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
-                              get_image_name(table_name,field_name),sep=""))
-        }
-    }
-}
+# describeNominalField<-function(df_table, table_name,field_name, label_bins, order_bins, color_bins, big_data_flag, expected_levels = NULL)
+# {
+# 
+#   column_index <- which(colnames(df_table)==field_name)
+#    
+#   if(length(levels(df_table[,column_index])) < length(color_bins)){
+#     print(paste("Warning additional levels found for ", field_name))
+#     df_table[,column_index] <- as.factor(df_table[,column_index])
+#     keep_levels <- NULL
+#     if(!is.null(expected_levels)){
+#       keep_levels <- which(levels(df_table[,column_index]) %in% expected_levels) #if provided, keep expected levels
+#       print(paste("Found additional levels ", levels(df_table[,column_index])[-keep_levels]))
+#       keep_levels <- levels(df_table[,column_index])[keep_levels]
+#     }
+#     else{
+#       keep_levels <- levels(df_table[,column_index])[1:length(color_bins)]
+#     }
+#     keep_indices <- which(df_table[,column_index] %in% keep_levels)
+#     df_table[,column_index] <- as.character(df_table[,column_index])
+#     df_table[-keep_indices, column_index] <- "Other"
+#     df_table[,column_index] <- as.factor(df_table[,column_index])
+#     color_bins <- c(color_bins, "Other" = "black")
+#     order_bins <- c(order_bins, "Other")
+#     label_bins <- c(label_bins, "Other")
+#   }
+#     if(big_data_flag==FALSE)
+#     {
+# 	# retrieve the column index for the field
+# 
+# 	# saving the frequencies and percentage in a separate dataframe including NA values
+# 	if(nrow(df_table)>0)
+# 	{
+# 		dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
+# 		dfTab$label <- as.character(
+# 		paste(
+# 			round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
+# 			,'%')	# add percentage
+# 		)
+# 
+# 		#creating barplot from dfTab dataframe
+# 		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+# 
+#     # add axis labels
+#  		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+# 		# specify the order of catgories and also the labels for x-axis
+# 		p<-p+scale_x_discrete(labels=label_bins, limits= order_bins)
+# 		# specify the color for each category
+# 		p<-p+ scale_fill_manual(values=color_bins,na.value="grey64")
+# 		#remove legend and set size and orientation of tick labels
+# 		p<-p+theme(legend.position="none", text = element_text(size=10),
+#         	axis.text.x = element_text(angle=90, vjust=1))
+# 		# add the label to each bar (from the dfTab dataframe)
+# 		p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
+# 		#save the barplot image (will be referenced by the final report)
+#     ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
+#                       get_image_name(table_name,field_name),sep=""))
+# 
+# 	 }
+#     }
+# 
+#     else #using dplyr
+#     {
+#         if(nrow(df_table)>0)
+#         {
+#             #adding new columns
+# 
+#             colnames(df_table)[1] <- "Var1"
+#             colnames(df_table)[2] <- "Freq"
+#             df_table$Var1 <- as.factor(df_table$Var1)
+# 
+#             df_table$label <- as.character(
+#             paste(
+#             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
+#             ,'%')	# add percentage
+#             )
+# 
+#             #creating barplot from dfTab dataframe
+#             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
+#             # add axis labels
+# 
+#             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
+# 
+#             # specify the order of catgories and also the labels for x-axis
+#             p<-p+scale_x_discrete(labels=label_bins, limits= order_bins)
+# 
+#             # specify the color for each category
+#             p<-p+ scale_fill_manual(values=color_bins,na.value="grey64")
+#             #remove legend and set size and orientation of tick labels
+#             p<-p+theme(legend.position="none", text = element_text(size=10),
+#             axis.text.x = element_text(angle=90, vjust=1))
+#             # add the label to each bar (from the dfTab dataframe)
+#             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
+#             #save the barplot image (will be referenced by the final report)
+#             ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
+#                               get_image_name(table_name,field_name),sep=""))
+#         }
+#     }
+# }
 
 
 #updated nominal field
-describeNominalField_basic<-function(table_df, table_name,field_name)
+describeNominalField<-function(table_df, table_name,field_name)
 {
   flog.info(paste("Plotting for Field: ", field_name))
 
@@ -442,7 +443,6 @@ describeYYMMField<-function(df_table, table_name,field_name,fact_type)
     {
       # df table is actually a dataframe of two dataframes
       colnames(df_table)[1] <- "Var1"
-         # creare a raw vector and then create a table
       colnames(df_table)[2] <- "Freq"
       df_table$Freq<- as.integer(df_table$Freq)
       total_values<- nrow(df_table)
@@ -507,112 +507,65 @@ describeTimeField<-function(table_df, table_name,field_name){
 	#2. the name of the ratio field
 	#3. the unit associated with the field
 #Output: write the histogram to a file
-describeRatioField<-function(df_table,table_name,field_name, unit,big_data_flag)
-{
-	 flog.info(paste("Plotting for Field: ", field_name))
-
-    if(big_data_flag==FALSE)
+describeRatioField<-function(table_df,table_name,field_name, unit){
+  table_df <- table_df %>%
+    select_(field_name) %>%
+    na.omit() %>%
+    collect() %>%
+    table() %>%
+    as.data.frame()
+  colnames(table_df) <- c("Var1", "Freq")
+  table_df$Var1 = as.numeric(table_df$Var1)
+  table_df$Freq = as.integer(table_df$Freq)
+  
+  if(nrow(table_df) > 0){
+    mean_Var1<-round(mean(table_df[,1], na.rm=TRUE),2)
+    sd_Var1<-round(sd(table_df[,1], na.rm=TRUE),2)
+    median_Var1<-median(mean(table_df[,1], na.rm=TRUE),2)
+    
+    max_Var1<-table_df[which.max(table_df[,1]),1]
+    min_Var1<-table_df[which.min(table_df[,1]),1]
+    
+    #  #compute extreme outliers.
+    lowerq <- quantile(table_df[,1],na.rm=TRUE)[2]
+    upperq <- quantile(table_df[,1],na.rm=TRUE)[3]
+    iqr <- upperq - lowerq # interquartile range
+    extreme.threshold.upper <-(iqr * 3) + upperq
+    extreme.threshold.lower <- lowerq - (iqr * 3)
+    #cases outside the upper and lower threshold.
+    total_data_points_upper_threshold<-length(table_df[table_df[,1]>extreme.threshold.upper[[1]],1])
+    outlier_message<-""
+    if(total_data_points_upper_threshold>0)
     {
-	column_index <- which(colnames(df_table)==field_name)
-
-	if(nrow(df_table)>0)
-	{
-
-
-		# saving the frequencies in a separate dataframe
-		dfTab <-as.data.frame(table(df_table[,column_index]))
-
-    if(nrow(dfTab)>0) # if all values are NULL
-        {
-		#caluclating mean and standard deviation
-        mean_Var1<-round(mean(df_table[,column_index],trim=0,na.rm=TRUE), digits=2)
-        sd_Var1<-round(sd(df_table[,column_index],na.rm=TRUE), digits=2)
-        max_Var1<-df_table[which.max(df_table[,column_index]),column_index]
-        min_Var1<-df_table[which.min(df_table[,column_index]),column_index]
-        median_Var1<-round(median(df_table[,column_index],na.rm=TRUE), digits=2)
-
-        #compute extreme outliers.
-        lowerq <- quantile(df_table[,column_index],na.rm=TRUE)[2]
-        upperq <- quantile(df_table[,column_index],na.rm=TRUE)[3]
-        iqr <- upperq - lowerq # interquartile range
-        extreme.threshold.upper <-(iqr * 3) + upperq
-        extreme.threshold.lower <- lowerq - (iqr * 3)
-        #cases outside the upper and lower threshold.
-        total_data_points_upper_threshold<-nrow(subset(df_table,df_table[,column_index]>extreme.threshold.upper[[1]]) )
-        total_data_points_below_lower_threshold<-nrow(subset(df_table,df_table[,column_index]<extreme.threshold.lower[[1]]) )
-        outlier_message<-paste("Investigate ",total_data_points_upper_threshold," data points above the upper threshold (",extreme.threshold.upper, ") and ",total_data_points_below_lower_threshold,
-                               " data points below the lower threshold (", extreme.threshold.lower,")",sep="")
-
-
+      outlier_message<-paste("Investigate ",total_data_points_upper_threshold,
+                             " data points above the upper threshold (",extreme.threshold.upper[[1]], ")"
+                             ,sep="")
+    }
+    if(extreme.threshold.lower[[1]]<0)
+    {
+      extreme.threshold.lower[[1]]<-0
+    }
+    total_data_points_below_lower_threshold<-length(table_df[table_df[,1]<extreme.threshold.lower[[1]],1])
+    
+    if(total_data_points_below_lower_threshold>0){
+      outlier_message<-paste(outlier_message," Investigate ",total_data_points_below_lower_threshold,
+                             " data points below the lower threshold (", extreme.threshold.lower,")",sep="")
+    }
+    
     #create histogram
-		p<-ggplot(data=dfTab, aes(x=Var1, y=Freq, width=1, fill=Freq)) +
-		geom_bar(stat="identity", position="identity") + ggtitle(paste(field_name,": Distribution\n(Mean=",mean_Var1," Std. Deviation=",sd_Var1,")"))
-		p<-p+ylab(paste(table_name,"Count"))+xlab(paste(field_name,"(in",unit,")"))
-		#remove legend and set size and orientation of tick labels
-		p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
-		# flog.info(p)
-        ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-
-
-        return(paste("\n\nMaximum:",max_Var1 ,"Minimum:", min_Var1, "Mean:",mean_Var1,"Std Deviation:",sd_Var1,"Median:",median_Var1,"\n\n" ))
-        }
-	}
-    }
-    else #using dplyr
-    {
-     colnames(df_table)[1] <- "Var1"
-     colnames(df_table)[2] <- "Freq"
-     df_table<-subset(df_table,!is.na(Var1))
-
-        if(nrow(df_table)>0)
-        {
-          #caluclating mean and standard deviation, etc.
-          raw_vector<-rep.int(df_table$Var1, as.integer(df_table$Freq))
-          mean_Var1<-round(mean(raw_vector, na.rm=TRUE),2)
-          sd_Var1<-round(sd(raw_vector, na.rm=TRUE),2)
-          median_Var1<-median(mean(raw_vector, na.rm=TRUE),2)
-
-          max_Var1<-df_table[which.max(df_table[,1]),1]
-          min_Var1<-df_table[which.min(df_table[,1]),1]
-
-          #  #compute extreme outliers.
-          lowerq <- quantile(raw_vector,na.rm=TRUE)[2]
-          upperq <- quantile(raw_vector,na.rm=TRUE)[3]
-          iqr <- upperq - lowerq # interquartile range
-          extreme.threshold.upper <-(iqr * 3) + upperq
-          extreme.threshold.lower <- lowerq - (iqr * 3)
-          #cases outside the upper and lower threshold.
-          total_data_points_upper_threshold<-length(raw_vector[raw_vector>extreme.threshold.upper[[1]]])
-          outlier_message<-""
-          if(total_data_points_upper_threshold>0)
-          {
-            outlier_message<-paste("Investigate ",total_data_points_upper_threshold," data points above the upper threshold (",extreme.threshold.upper[[1]], ")"
-                                   ,sep="")
-          }
-          if(extreme.threshold.lower[[1]]<0)
-          {
-            extreme.threshold.lower[[1]]<-0
-          }
-          total_data_points_below_lower_threshold<-length(raw_vector[raw_vector<extreme.threshold.lower[[1]]])
-
-          if(total_data_points_below_lower_threshold>0)
-          {
-            outlier_message<-paste(outlier_message," Investigate ",total_data_points_below_lower_threshold,
-                                   " data points below the lower threshold (", extreme.threshold.lower,")",sep="")
-          }
-
-         #create histogram
-         p<-ggplot(data=df_table, aes(x=Var1, y=Freq, width=1, fill=Freq)) +
-           geom_bar(stat="identity", position="identity") + ggtitle(paste(field_name,": Distribution\n(Mean=",mean_Var1," Std. Deviation=",sd_Var1,")"))
-         p<-p+ylab(paste(table_name,"Count"))+xlab(paste(field_name,"(in",unit,")"))
-         #remove legend and set size and orientation of tick labels
-         p<-p+theme(legend.position="none", text = element_text(size=6),axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,panel.border = element_blank())
-         # flog.info(p)
-         ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name(table_name,field_name),sep=""))
-
-         return(paste("\n\nMaximum:",max_Var1 ,"Minimum:", min_Var1, "Mean:",mean_Var1,"Std Deviation:",sd_Var1,"Median:",median_Var1,"\n\n" ))
-        }
-    }
+    p<-ggplot(data=table_df, aes(x=Var1, y=Freq, width=1, fill=Freq)) +
+      geom_bar(stat="identity", position="identity") + ggtitle(paste(field_name,": Distribution\n(Mean=",mean_Var1," Std. Deviation=",sd_Var1,")"))
+    p<-p+ylab(paste(table_name,"Count"))+xlab(paste(field_name,"(in",unit,")"))
+    #remove legend and set size and orientation of tick labels
+    p<-p+theme(legend.position="none", text = element_text(size=6),
+               axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,
+               panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,
+               panel.border = element_blank())
+    ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
+                      get_image_name(table_name,field_name),sep=""))
+    return(paste("\n\nMaximum:",max_Var1 ,"Minimum:", min_Var1, "Mean:",mean_Var1,"Std Deviation:",
+                 sd_Var1,"Median:",median_Var1,"\n\n" ))
+  }
 }
 
 # Foreign Key Fields

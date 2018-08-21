@@ -145,6 +145,18 @@ retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
 
 }
 
+retrieve_dataframe_top_5<-function(table_df, field_name){
+  table_df <- table_df %>%
+    filter_(paste("!is.na(", field_name, ")")) %>%
+    group_by_(field_name) %>%
+    summarise(count = n()) %>%
+    arrange_(desc(field_name)) %>%
+    as.data.frame()
+
+  l = min(nrow(table_df), 5)
+  return(table_df[1:l,])
+}
+
 retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,clause)
 {
 
@@ -205,6 +217,21 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
 }
 
 
+retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, group_by_field,join_field){
+  table_df <- table_df %>%
+    mutate(var1 = num, var2 = den) %>% ###Need to avoid .x and .y columns
+    inner_join(table_df2, by = join_field) %>%
+    group_by_(group_by_field) %>%
+    summarise(numer = n_distinct(var1),
+              denom = n_distinct(var2)) %>%
+    mutate(ratio = numer/denom) %>%
+    select(visit_concept_id,ratio) %>%
+    as.data.frame() %>%
+    mutate(ratio = round(ratio, 2))
+  return(table_df)
+}
+
+
 retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
 {
 
@@ -248,57 +275,66 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
 }
 
 
-retrieve_dataframe_join_clause<-function(table_df, table_df2,column_list,clauses)
-{
-  
+# 
+# retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
+# {
+# 
+#   #special handling for ODBC drivers
+#   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
+#   {
+#     table_name1<-toupper(table_name1)
+#     table_name2<-toupper(table_name2)
+#     column_list<-toupper(column_list)
+#     query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
+#                  ,",",schema2,".",table_name2
+#                  ," where ",clauses
+#                  ," group by ",column_list
+#                  ,sep="");
+#     df<-sqlQuery(con, query)
+#   }
+#   else
+#   {
+#     if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
+#     {
+#       table_name1<-toupper(table_name1)
+#       table_name2<-toupper(table_name2)
+#       column_list<-toupper(column_list)
+#       query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
+#                    ,",",schema2,".",table_name2
+#                    ," where ",clauses
+#                    ," group by ",column_list
+#                    ,sep="");
+#       df<-querySql(con, query)
+#     }
+#     else
+#     {
+#       query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
+#                    ,",",schema2,".",table_name2
+#                    ," where ",clauses
+#                    ," group by ",column_list
+#                    ," order by 2 desc"
+#                    ,sep="");
+#       df<-querySql(con, query)
+#     }
+#   }
+#   #converting all names to lower case for consistency
+#   names(df) <- tolower(names(df))
+#   return(df);
+# }
 
+retrieve_dataframe_join_clause_group<-function(table_df, table_df2,join_field, 
+                                               group_by_field, clauses){
+  table_df <- table_df %>%
+    inner_join(table_df2, by = setNames("concept_id", join_field)) %>%
+    filter_(clauses) %>%
+    group_by_(group_by_field) %>%
+    summarise(counts = n()) %>%
+    arrange(desc(counts)) %>%
+    as.data.frame()
+   
+  return(table_df)
 }
 
-retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
-{
-
-  #special handling for ODBC drivers
-  if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-  {
-    table_name1<-toupper(table_name1)
-    table_name2<-toupper(table_name2)
-    column_list<-toupper(column_list)
-    query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
-                 ,",",schema2,".",table_name2
-                 ," where ",clauses
-                 ," group by ",column_list
-                 ,sep="");
-    df<-sqlQuery(con, query)
-  }
-  else
-  {
-    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-    {
-      table_name1<-toupper(table_name1)
-      table_name2<-toupper(table_name2)
-      column_list<-toupper(column_list)
-      query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
-                   ,",",schema2,".",table_name2
-                   ," where ",clauses
-                   ," group by ",column_list
-                   ,sep="");
-      df<-querySql(con, query)
-    }
-    else
-    {
-      query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
-                   ,",",schema2,".",table_name2
-                   ," where ",clauses
-                   ," group by ",column_list
-                   ," order by 2 desc"
-                   ,sep="");
-      df<-querySql(con, query)
-    }
-  }
-  #converting all names to lower case for consistency
-  names(df) <- tolower(names(df))
-  return(df);
-}
 
 retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
                                         group_by_field,join_field)
@@ -362,4 +398,10 @@ get_concept_name <- function(table_df, df_concept_id){
   return(table_df)
 }
 
+get_vocabulary_name <- function(table_df, df_concept_id){
+  table_df <- table_df %>%
+    filter(concept_id == df_concept_id) %>%
+    select(vocabulary_id)
+  return(table_df)
+}
 

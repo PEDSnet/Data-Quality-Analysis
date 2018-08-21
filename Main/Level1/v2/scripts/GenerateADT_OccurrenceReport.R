@@ -80,7 +80,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   df_service_concept_id <-generate_df_concepts(table_name,"service_concept_id_dplyr.txt", concept_tbl)
   df_service_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_service_concept_id)
-  describeNominalField_basic(df_service_concept_id_enhanced,table_name,field_name)
+  describeNominalField(df_service_concept_id_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name))
 
   # adt type concept id
@@ -106,7 +106,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
     
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
     df_adt_type_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_adt_type_concept_id);
-    describeNominalField_basic(df_adt_type_concept_id_enhanced,table_name,field_name);
+    describeNominalField(df_adt_type_concept_id_enhanced,table_name,field_name);
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   }
   
@@ -145,7 +145,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
-  describeNominalField_basic(df_table, table_name, field_name)
+  describeNominalField(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
    flog.info(Sys.time())
@@ -154,7 +154,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
-  describeNominalField_basic(df_table, table_name, field_name)
+  describeNominalField(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   flog.info(Sys.time())
