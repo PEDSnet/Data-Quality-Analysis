@@ -10,10 +10,7 @@ library(tictoc)
     name <- dbplyr::in_schema(config(schema_tag),
                               DBI::dbQuoteIdentifier(con, name))
   }
-  print(schema_tag)
-  print(name)
-  print(db)
-  tbl(db, name) %>% show_query()
+  tbl(db, name) #%>% show_query()
 }
 
 
