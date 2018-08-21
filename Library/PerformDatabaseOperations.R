@@ -71,7 +71,7 @@ create_database_copy<-function(db_tbl, table_name)
 
 retrieve_dataframe_count<-function(table_df, column_list){
   counts  = table_df %>%
-                filter_(paste('!is.na(', column_list, ')', collapse = ',')) %>%
+                filter_(paste0('!is.na(', column_list, ')', collapse = ',')) %>%
                 summarize(count = n()) %>%
                 select(count) %>%
                 collect()
