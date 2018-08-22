@@ -293,7 +293,7 @@ generateObservationReport <- function() {
   message<-describeRatioField(df_table, table_name,field_name,"")
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
-   flog.info(Sys.time())
+  flog.info(Sys.time())
 
   colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))

@@ -1,8 +1,4 @@
-require(testthat)
-require(DBI)
-require(dplyr)
-library(yaml)
-library(tictoc)
+###Perform operations on Databases###
 
 .qual_tbl <- function(db, name, schema_tag) {
   if (! is.na(config(schema_tag))) {

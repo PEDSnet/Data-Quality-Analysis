@@ -1,0 +1,1 @@
+((domain_id=='Gender' & concept_class_id=='Gender') | (domain_id=='Observation' & vocabulary_id=='PCORNet' & concept_class_id %in% c('Gender','Undefined'))) & !(concept_code %in% ('Sex-F','Sex-M')) & is.na(invalid_reason) 

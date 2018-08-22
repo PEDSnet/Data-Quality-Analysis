@@ -39,9 +39,11 @@ reportMissingCount<-function(table_df, table_name, field_name)
   
   missn <- table_df %>%
     select_(field_name) %>%
-    filter(is.na(field_name)) %>%
+    na.omit() %>%
     tally() %>%
     collect() 
+  ##Switch from rate present to missing rate
+  missn = total - missn 
   
   if(missn > 0){
     label <- as.character(paste(round(100*missn/total,digits=2)))
@@ -111,8 +113,7 @@ reportNoMatchingCount<-function(df_table,table_name,field_name, big_data_flag)
   }
 }
 
-reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_code)
-{
+reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_code){
   table_df <- table_df %>%
     select_(field_name) %>%
     na.omit() %>%
@@ -150,39 +151,19 @@ reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_co
   }
 }
 
-reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big_data_flag)
-{
-     return_message<-""
-
-    if(big_data_flag==FALSE)
-    {
-
-    #retrieve the index of the field in the dataframe
-    column_index <- which(colnames(df_table)==field_name)
-    # flog.info(column_index)
-    current_values<-unique(df_table[,column_index])
-         for( value in current_values)
-        {
-        if(!is.element(value,permissible_values))
-          return_message<-paste(return_message, "invalid value found: ",value,";")
-        }
-    }
-
-    else # with dplyr package or query wise scripts
-    {
-           current_values<-c(df_table[,1])
-
-           for(i in 1:nrow(df_table))
-            {
-               value <-df_table[i,1]
-               # flog.info(df_table[i,1])
-               if(!is.element(value,permissible_values) && !is.na(value))
-                   return_message<-paste(return_message, "invalid value found: ",value,";")
-           }
-    }
-    return(return_message)
+reportUnexpected<-function(table_df,field_name,permissible_values){
+  table_df <- table_df %>%
+    select_(field_name) %>%
+    na.omit() %>%
+    distinct() %>% 
+    as.data.frame()
+  
+  test_that("Testing Report Unexpected selects one column", expect_equal(ncol(table_df), 1))
+  table_df <- table_df[!is.element(table_df[,1], permissible_values),1]
+  return_message<-""
+  return_message <- paste(return_message, table_df, sep = "invalid_valid_found:", collapse = ";")
+  return(return_message)
 }
-
 
 # Nominal Fields
 #functionName: describeNominalField
@@ -194,110 +175,7 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
 	#4. order_bins: a fixed order for various bins on the plot
 	#5: color_bins: colors assigned to each bin
 #Output: write the barplot to a file
-
-# describeNominalField<-function(df_table, table_name,field_name, label_bins, order_bins, color_bins, big_data_flag, expected_levels = NULL)
-# {
-# 
-#   column_index <- which(colnames(df_table)==field_name)
-#    
-#   if(length(levels(df_table[,column_index])) < length(color_bins)){
-#     print(paste("Warning additional levels found for ", field_name))
-#     df_table[,column_index] <- as.factor(df_table[,column_index])
-#     keep_levels <- NULL
-#     if(!is.null(expected_levels)){
-#       keep_levels <- which(levels(df_table[,column_index]) %in% expected_levels) #if provided, keep expected levels
-#       print(paste("Found additional levels ", levels(df_table[,column_index])[-keep_levels]))
-#       keep_levels <- levels(df_table[,column_index])[keep_levels]
-#     }
-#     else{
-#       keep_levels <- levels(df_table[,column_index])[1:length(color_bins)]
-#     }
-#     keep_indices <- which(df_table[,column_index] %in% keep_levels)
-#     df_table[,column_index] <- as.character(df_table[,column_index])
-#     df_table[-keep_indices, column_index] <- "Other"
-#     df_table[,column_index] <- as.factor(df_table[,column_index])
-#     color_bins <- c(color_bins, "Other" = "black")
-#     order_bins <- c(order_bins, "Other")
-#     label_bins <- c(label_bins, "Other")
-#   }
-#     if(big_data_flag==FALSE)
-#     {
-# 	# retrieve the column index for the field
-# 
-# 	# saving the frequencies and percentage in a separate dataframe including NA values
-# 	if(nrow(df_table)>0)
-# 	{
-# 		dfTab <-as.data.frame(table(df_table[,column_index], exclude=NULL))
-# 		dfTab$label <- as.character(
-# 		paste(
-# 			round(100 * dfTab$Freq / sum(dfTab$Freq),digits=2)
-# 			,'%')	# add percentage
-# 		)
-# 
-# 		#creating barplot from dfTab dataframe
-# 		p<-ggplot(dfTab, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-# 
-#     # add axis labels
-#  		p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-# 		# specify the order of catgories and also the labels for x-axis
-# 		p<-p+scale_x_discrete(labels=label_bins, limits= order_bins)
-# 		# specify the color for each category
-# 		p<-p+ scale_fill_manual(values=color_bins,na.value="grey64")
-# 		#remove legend and set size and orientation of tick labels
-# 		p<-p+theme(legend.position="none", text = element_text(size=10),
-#         	axis.text.x = element_text(angle=90, vjust=1))
-# 		# add the label to each bar (from the dfTab dataframe)
-# 		p<-p+geom_text(data=dfTab, aes(x=Var1,y=Freq,label=label), size=3)
-# 		#save the barplot image (will be referenced by the final report)
-#     ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
-#                       get_image_name(table_name,field_name),sep=""))
-# 
-# 	 }
-#     }
-# 
-#     else #using dplyr
-#     {
-#         if(nrow(df_table)>0)
-#         {
-#             #adding new columns
-# 
-#             colnames(df_table)[1] <- "Var1"
-#             colnames(df_table)[2] <- "Freq"
-#             df_table$Var1 <- as.factor(df_table$Var1)
-# 
-#             df_table$label <- as.character(
-#             paste(
-#             round(100 * df_table$Freq / sum(df_table$Freq),digits=2)
-#             ,'%')	# add percentage
-#             )
-# 
-#             #creating barplot from dfTab dataframe
-#             p<-ggplot(df_table, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
-#             # add axis labels
-# 
-#             p<-p+ylab(paste(table_name,"Count"))+xlab(field_name)
-# 
-#             # specify the order of catgories and also the labels for x-axis
-#             p<-p+scale_x_discrete(labels=label_bins, limits= order_bins)
-# 
-#             # specify the color for each category
-#             p<-p+ scale_fill_manual(values=color_bins,na.value="grey64")
-#             #remove legend and set size and orientation of tick labels
-#             p<-p+theme(legend.position="none", text = element_text(size=10),
-#             axis.text.x = element_text(angle=90, vjust=1))
-#             # add the label to each bar (from the dfTab dataframe)
-#             p<-p+geom_text(data=df_table, aes(x=Var1,y=Freq,label=label), size=3)
-#             #save the barplot image (will be referenced by the final report)
-#             ggsave(file=paste(normalize_directory_path(g_config$reporting$site_directory),
-#                               get_image_name(table_name,field_name),sep=""))
-#         }
-#     }
-# }
-
-
-#updated nominal field
-describeNominalField<-function(table_df, table_name,field_name)
-{
+describeNominalField<-function(table_df, table_name,field_name){
   flog.info(paste("Plotting for Field: ", field_name))
 
   table_df <- table_df %>%
@@ -306,9 +184,9 @@ describeNominalField<-function(table_df, table_name,field_name)
     collect() %>%
     table() %>%
     as.data.frame()
-  colnames(table_df) <- c("Var1", "Freq")
 
   if(nrow(table_df) > 0){
+    colnames(table_df) <- c("Var1", "Freq")
     table_df$label <- as.character(paste0(round(100 * table_df$Freq / sum(table_df$Freq),digits=2)))
     #creating barplot from dfTab dataframe
     p<-ggplot(table_df, aes(x = Var1, y = Freq, fill = Var1)) + geom_bar(stat = "identity") + ggtitle(paste(field_name,": Distribution"))
