@@ -83,9 +83,7 @@ generateProviderReport <- function() {
                                                    data_tbl)) 
   
   ###########DQA CHECKPOINT##############
-  
-  # flog.info(unexpected_message)
-  #fileContent<-c(fileContent,unexpected_message)
+
   describeNominalField(data_tbl,table_name,field_name)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 

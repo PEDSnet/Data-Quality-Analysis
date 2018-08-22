@@ -221,12 +221,24 @@ retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, gro
     summarise(numer = n_distinct(var1),
               denom = n_distinct(var2)) %>%
     mutate(ratio = numer/denom) %>%
-    select(visit_concept_id,ratio) %>%
+    select(-numer, -denom) %>%
     as.data.frame() %>%
-    mutate(ratio = round(ratio, 2))
+    mutate(ratio = round(ratio, 2)) 
   return(table_df)
 }
 
+retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
+  table_df <- table_df %>%
+    mutate(var1 = num, var2 = den) %>%
+    group_by_(group_by_field) %>%
+    summarise(numer = n_distinct(var1),
+              denom = n_distinct(var2)) %>%
+    mutate(ratio = numer/denom) %>%
+    select(-numer, -denom) %>%
+    as.data.frame() %>%
+    mutate(ratio = round(ratio, 2)) 
+  return(table_df)
+}
 
 retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
 {
