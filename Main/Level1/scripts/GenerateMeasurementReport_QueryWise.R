@@ -1,12 +1,8 @@
 generateMeasurementReport <- function() {
   flog.info(Sys.time())
 
-  big_data_flag<-TRUE
-  
-  #establish connection to database
-  
+  #Read table
   table_name<-"measurement"
-  
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
   
@@ -90,14 +86,12 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
                                                    c(field_name, "unit_source_value"),data_tbl))
-  
   print(field_name)
   
   #Operator Concept Id
   field_name = "operator_concept_id"
-  
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"operator_concept_id.csv", concept_tbl, data_tbl)) 
@@ -106,10 +100,10 @@ generateMeasurementReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   print(field_name)
-  
+
   #priority concept id
   field_name="priority_concept_id"
-  #unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
+  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"priority_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
@@ -156,7 +150,7 @@ generateMeasurementReport <- function() {
   acceptable_vitals<-generate_list_concepts(table_name,"vital_list.csv")$concept_id ## read from vitals list
   acceptable_fevs<-generate_list_concepts(table_name,"fev_list.csv")$concept_id ## read from fev list
   acceptable_vitals<-rbind(acceptable_vitals, acceptable_fevs)
-  unexpected_message<- reportUnexpected(df_vitals,table_name,field_name,acceptable_vitals,big_data_flag)
+  unexpected_message<- reportUnexpected(df_vitals,field_name,acceptable_vitals)
   if(length(trim(unexpected_message))>1)
     logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name,
                                                              paste0("VITALS: ",unexpected_message), table_name, g_data_version));
@@ -164,21 +158,18 @@ generateMeasurementReport <- function() {
   ### patient reported 
   df_pro<-retrieve_dataframe_group_clause(data_tbl,field_name, "measurement_type_concept_id == 44818704")
   acceptable_pt_reported<-generate_list_concepts(table_name,"patient_reported_list.csv")$concept_id ## read from vitals list
-  unexpected_message<- reportUnexpected(df_pro,table_name,field_name,acceptable_pt_reported,big_data_flag)
+  unexpected_message<- reportUnexpected(df_pro,field_name,acceptable_pt_reported)
   if(length(trim(unexpected_message))>1)
     logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("Patient reported: "
                                                                                           ,unexpected_message), table_name, 
                                                              g_data_version));
   
-  
-  #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name, big_data_flag))
   # add % of no matching concept (concept id = 0). for the completeness report
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
-  ## Specific lab checks
+  #### Specific lab checks
   ### CBC (complete blood count) components: 
-  
   ## white blood cell
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
                                                    list(
@@ -236,8 +227,6 @@ generateMeasurementReport <- function() {
                                                            table_name, g_data_version));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    , 2, table_df = data_tbl))  ## number of components in _source_value
-  #message<-describeForeignKeyIdentifiers(df_table, table_name,field_name,big_data_flag)
-  #fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
   print(field_name)
   
   # specimen concept id

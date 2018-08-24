@@ -39,14 +39,14 @@ generatePersonReport <- function() {
                                                    c("person_id",field_name),data_tbl)) 
     
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
-    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650,big_data_flag)
+    null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
 
   #NOMINAL Fields
 
@@ -92,7 +92,7 @@ generatePersonReport <- function() {
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
-  describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
 
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
@@ -169,7 +169,7 @@ generatePersonReport <- function() {
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins,big_data_flag)
+  describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
@@ -218,22 +218,22 @@ generatePersonReport <- function() {
   field_name="year_of_birth"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
+
   ###########DQA CHECKPOINT##############
-  describeOrdinalField(df_table, table_name, field_name,big_data_flag)
+  describeOrdinalField(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Month of Birth
   field_name="month_of_birth"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
-  describeOrdinalField(df_table, table_name,field_name,big_data_flag)
+  describeOrdinalField(df_table, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   
   #######DQA CHECKPOINT################
@@ -244,13 +244,13 @@ generatePersonReport <- function() {
   field_name="day_of_birth"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(df_table,table_name, field_name,big_data_flag)
+  describeOrdinalField(df_table,table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA checkpoint#####################
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
@@ -260,33 +260,32 @@ generatePersonReport <- function() {
   field_name<-"birth_datetime"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeDateField(df_table, table_name,field_name,big_data_flag)
+  message<-describeDateField(df_table, table_name,field_name)
+  
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), 
                                                    c(field_name), data_tbl)) 
   
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
-  #RATIO Fields
-
   #pn_gestational_field
   field_name<-"pn_gestational_age"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   unit<-"weeks"
   fileContent <-c(fileContent,paste("## Histogram for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeRatioField(df_table, table_name, field_name, unit,big_data_flag)
+  message<-describeRatioField(df_table, table_name, field_name, unit)
   if (missing_percent<100)
   {
   ###########DQA CHECKPOINT############## gestational age cannot be above 45
@@ -300,24 +299,24 @@ generatePersonReport <- function() {
   field_name<-"location_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeForeignKeyIdentifiers(df_table,table_name,field_name,big_data_flag)
+  message<-describeForeignKeyIdentifiers(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
   #provider_id
   field_name="provider_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name,big_data_flag)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeForeignKeyIdentifiers(df_table,table_name,field_name,big_data_flag)
+  message<-describeForeignKeyIdentifiers(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
 
   #Care site id
