@@ -65,13 +65,17 @@ create_database_copy<-function(db_tbl, table_name)
 }
 
 
-retrieve_dataframe_count<-function(table_df, column_list){
+retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
+  if(distinction) table_df <- table_df %>% distinct_(column_list)
   counts  = table_df %>%
-                filter_(paste0('!is.na(', column_list, ')', collapse = ',')) %>%
-                summarize(count = n()) %>%
-                select(count) %>%
-                collect()
-  test_that("Retrieve_dataframe_count Not Correct Length", expect_equal(length(counts), 1))
+    filter_(paste('!is.na(', column_list, ')')) %>%
+    mutate(num = n()) %>%
+    select(num) %>%
+    distinct() %>%
+    mutate(total = as.integer(num)) %>%
+    select(total) %>%
+    collect() 
+  test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
 
@@ -364,17 +368,6 @@ retrieve_dataframe_group <- function(table_df, field_name){
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)
-}
-
-retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
-  if(distinction) table_df <- table_df %>% distinct_(column_list)
-  counts  = distinct(table_df %>%
-                  filter_(paste('!is.na(', column_list, ')')) %>%
-                  mutate(counts = n()) %>%
-                  select(counts)) %>%
-                  as.data.frame()
-  test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
-  return(counts)
 }
 
 
