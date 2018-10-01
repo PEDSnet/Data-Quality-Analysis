@@ -44,8 +44,7 @@ generateLevel2Patient <- function() {
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('birth_datetime', 
                                                                                                  'day_of_birth'))) 
-  write.csv(log_entry_content, file = log_file_name
-            ,row.names=FALSE)
+  write.csv(log_entry_content, file = log_file_name, row.names=FALSE)
   
   #table_name<-"person"
   ## total patients
@@ -54,8 +53,7 @@ generateLevel2Patient <- function() {
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconCohort(), c(table_name), NULL)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
-  #print('here')
+
   
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)

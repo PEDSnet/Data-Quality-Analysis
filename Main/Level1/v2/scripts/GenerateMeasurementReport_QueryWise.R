@@ -22,6 +22,10 @@ generateMeasurementReport <- function() {
   current_total_count<-as.numeric(df_total_measurement_count[1][1])
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL, current_total_count)) 
   
+  ## write current total count to total counts 
+  print(current_total_count)
+  write_total_counts(table_name, current_total_count)
+  
   print(field_name)
   
   

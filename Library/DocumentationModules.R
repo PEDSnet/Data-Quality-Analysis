@@ -178,10 +178,11 @@ get_previous_cycle_total_count<-function(site_name, table_name)
                           dec = ".", fill = TRUE, comment.char = "")
   # flog.info(df_total_counts)
   column_index<-which(colnames(df_total_counts)==table_name)
+  if(df_total_counts[1,1] != site_name) print("WARNING: Inconsistent site name. May have mispelt")
   for(row_index in 1:nrow(df_total_counts))
   {
-    if(df_total_counts[row_index,1]==site_name)
-      return(df_total_counts[row_index, column_index])
+    if(as.character(df_total_counts[row_index,1])==site_name){
+      return(df_total_counts[row_index, column_index])}
   }
  return(0);
 }
