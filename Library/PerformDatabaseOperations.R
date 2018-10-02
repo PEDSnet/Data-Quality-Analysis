@@ -287,53 +287,6 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
 }
 
 
-# 
-# retrieve_dataframe_join_clause_group<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
-# {
-# 
-#   #special handling for ODBC drivers
-#   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
-#   {
-#     table_name1<-toupper(table_name1)
-#     table_name2<-toupper(table_name2)
-#     column_list<-toupper(column_list)
-#     query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
-#                  ,",",schema2,".",table_name2
-#                  ," where ",clauses
-#                  ," group by ",column_list
-#                  ,sep="");
-#     df<-sqlQuery(con, query)
-#   }
-#   else
-#   {
-#     if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-#     {
-#       table_name1<-toupper(table_name1)
-#       table_name2<-toupper(table_name2)
-#       column_list<-toupper(column_list)
-#       query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
-#                    ,",",schema2,".",table_name2
-#                    ," where ",clauses
-#                    ," group by ",column_list
-#                    ,sep="");
-#       df<-querySql(con, query)
-#     }
-#     else
-#     {
-#       query<-paste("select ",column_list,", count(*) as count from ",schema1,".",table_name1
-#                    ,",",schema2,".",table_name2
-#                    ," where ",clauses
-#                    ," group by ",column_list
-#                    ," order by 2 desc"
-#                    ,sep="");
-#       df<-querySql(con, query)
-#     }
-#   }
-#   #converting all names to lower case for consistency
-#   names(df) <- tolower(names(df))
-#   return(df);
-# }
-
 retrieve_dataframe_join_clause_group<-function(table_df, table_df2,join_field, 
                                                group_by_field, clauses){
   table_df <- table_df %>%
@@ -372,11 +325,13 @@ retrieve_dataframe_group <- function(table_df, field_name){
 
 
 retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
-  table_df = table_df %>%
+  counts_group = table_df %>%
     filter_(clauses) %>%
     group_by_(field_name) %>%
     summarize(count = n()) %>%
     as.data.frame()
+  print("CHECK THIS")
+  print(counts_group)
   return(table_df)
 }
 
@@ -388,21 +343,27 @@ get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, 
     select(vocabulary_id) %>%
     distinct() %>%
     collect()
-    
+  print("CHECK THIS")
+  print(vocab_name)  
   return(vocab_name)
 }
 
 get_concept_name <- function(table_df, df_concept_id){
-  table_df <- table_df %>%
+  concept_name <- table_df %>%
     filter(concept_id == df_concept_id) %>%
-    select(concept_name)
+    select(concept_name) %>% 
+    collect()
+  print("CHECK THIS")
+  print(concept_name)
   return(table_df)
 }
 
 get_vocabulary_name <- function(table_df, df_concept_id){
-  table_df <- table_df %>%
+  vocab_name <- table_df %>%
     filter(concept_id == df_concept_id) %>%
     select(vocabulary_id)
+  print("CHECK THIS")
+  print(vocab_name)
   return(table_df)
 }
 
