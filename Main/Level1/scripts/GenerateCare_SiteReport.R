@@ -15,12 +15,11 @@ generateCareSiteReport <- function() {
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), 
                           issue_code=character(0), issue_description=character(0), check_alias=character(0)
                           , finding=character(0), prevalence=character(0))
-  
 
 
   #PRIMARY FIELD(s)
   field_name<-"care_site_id"
-  current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
+  current_total_count<-as.numeric(retrieve_dataframe_count(data_tbl,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
    ### DQA CHECKPOINT ####################
    logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
@@ -48,7 +47,7 @@ generateCareSiteReport <- function() {
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent_source_value<-extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_source_value)
-  describeNominalField(data_tbl, table_name,field_name)
+  describeNominalField(data_tbl, table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -64,7 +63,6 @@ generateCareSiteReport <- function() {
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   df_place_of_service <-generate_list_concepts(table_name, "place_of_service.csv")
   null_message<-reportNullFlavors(data_tbl,table_name,field_name,44814653,44814649,44814650)
-  # flog.info( null_message)
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
@@ -76,7 +74,7 @@ generateCareSiteReport <- function() {
   #df_place_of_service <- as.data.frame(acceptable_PLOS)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table_place_of_service_enhanced<-EnhanceFieldValues(data_tbl,field_name,df_place_of_service);
-  describeNominalField(df_table_place_of_service_enhanced,table_name,field_name);
+  describeNominalField(df_table_place_of_service_enhanced,table_name,field_name, group_ret = 0);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,
@@ -89,9 +87,10 @@ generateCareSiteReport <- function() {
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent_source_value<-extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_source_value)
+  
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeNominalField(data_tbl, table_name,field_name)
+  describeNominalField(data_tbl, table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #specialty concept id
@@ -100,11 +99,12 @@ generateCareSiteReport <- function() {
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
+  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
-  describeNominalField(data_tbl, table_name,field_name)
+  describeNominalField(data_tbl, table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
@@ -135,7 +135,7 @@ generateCareSiteReport <- function() {
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
-  message<-describeForeignKeyIdentifiers(data_tbl,table_name, field_name)
+  message<-describeForeignKeyIdentifiers(data_tbl,table_name, field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
 

@@ -219,15 +219,18 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
 
 retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, group_by_field,join_field){
   table_df <- table_df %>%
-    mutate(var1 = num, var2 = den) %>% ###Need to avoid .x and .y columns
+    mutate_(var1 = num, var2 = den) %>% ###Need to avoid .x and .y columns
     inner_join(table_df2, by = join_field) %>%
     group_by_(group_by_field) %>%
-    summarise(numer = n_distinct(var1),
+    summarize(numer = n_distinct(var1),
               denom = n_distinct(var2)) %>%
+    mutate(numer = as.double(numer)) %>%
+    mutate(denom = as.double(denom)) %>%
     mutate(ratio = numer/denom) %>%
-    select(-numer, -denom) %>%
+    select_(group_by_field, 'ratio') %>%
     as.data.frame() %>%
     mutate(ratio = round(ratio, 2)) 
+  colnames(table_df)[2] = sprintf('%s_%s_ratio', num, den)
   return(table_df)
 }
 
@@ -330,7 +333,7 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
     group_by_(field_name) %>%
     summarize(count = n()) %>%
     as.data.frame()
-  print("CHECK THIS")
+  print(paste("CHECK THIS group Clause for ", field_name))
   print(counts_group)
   return(table_df)
 }
@@ -343,8 +346,6 @@ get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, 
     select(vocabulary_id) %>%
     distinct() %>%
     collect()
-  print("CHECK THIS")
-  print(vocab_name)  
   return(vocab_name)
 }
 
@@ -353,17 +354,14 @@ get_concept_name <- function(table_df, df_concept_id){
     filter(concept_id == df_concept_id) %>%
     select(concept_name) %>% 
     collect()
-  print("CHECK THIS")
-  print(concept_name)
-  return(table_df)
+  return(concept_name)
 }
 
 get_vocabulary_name <- function(table_df, df_concept_id){
   vocab_name <- table_df %>%
     filter(concept_id == df_concept_id) %>%
-    select(vocabulary_id)
-  print("CHECK THIS")
-  print(vocab_name)
-  return(table_df)
+    select(vocabulary_id) %>%
+    collect()
+  return(vocab_name)
 }
 

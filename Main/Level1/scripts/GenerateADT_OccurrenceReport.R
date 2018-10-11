@@ -44,7 +44,7 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
     field_name<-"adt_datetime"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-    message<-describeDateField(df_table, table_name, field_name)
+    message<-describeDateField(df_table, table_name, field_name, datetime = 1)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
     message<-describeTimeField(df_table, table_name, field_name)
     fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_datetime",sep="")),message);

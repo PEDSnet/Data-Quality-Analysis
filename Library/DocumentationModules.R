@@ -27,10 +27,9 @@ create_meaningful_message_concept_id<-function(table_df, message,field_name){
   new_message <- paste("The most frequent values for",field_name,"are:")
   for(i in 1:5){
     if(unlist(strsplit(concept_id_list[i],"\\|count="))[1]=="\n NA ") break;
-  
     new_message <- paste(new_message,unlist(strsplit(concept_id_list[i],"\\|count="))[1],
                          "(",get_concept_name(table_df, unlist(strsplit(concept_id_list[i],"\\|count="))[1]),")"
-                         ,unlist(strsplit(concept_id_list[i],"\\|"))[2]
+                           ,unlist(strsplit(concept_id_list[i],"\\|"))[2]
                          ,sep="")
     if(i<5)
       new_message<- paste(new_message,",\n")
@@ -56,8 +55,7 @@ create_meaningful_message_concept_code<-function(message,field_name,con,config)
 
     new_message <- paste(new_message,unlist(strsplit(concept_code_list[i],"\\|count="))[1],
                          "(",get_concept_name_by_concept_code(unlist(strsplit(concept_code_list[i],"\\|count="))[1],con, config),")"
-                         ,unlist(strsplit(concept_code_list[i],"\\|"))[2]
-                         )
+                         ,unlist(strsplit(concept_code_list[i],"\\|"))[2])
     # flog.info(new_message)
     if(i<5)
       new_message<- paste(new_message,",\n")
