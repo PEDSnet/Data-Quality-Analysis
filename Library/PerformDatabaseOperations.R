@@ -150,7 +150,7 @@ retrieve_dataframe_top_5<-function(table_df, field_name){
     filter_(paste("!is.na(", field_name, ")")) %>%
     group_by_(field_name) %>%
     summarise(count = n()) %>%
-    arrange_(desc(field_name)) %>%
+    arrange(desc(count)) %>%
     as.data.frame()
 
   l = min(nrow(table_df), 5)

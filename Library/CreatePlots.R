@@ -44,6 +44,7 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
       filter(is.na(miss_field)) %>%
       select(freq) %>%
       collect()
+    if(nrow(missn) == 0) missn = 0
   }
   else{
     total <- table_df %>%
@@ -59,7 +60,7 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
     ##Switch from rate present to missing rate
     missn = total - missn 
   }
-  
+
   if(missn > 0){
     label <- as.character(paste0(round(100*missn/total,digits=2), "%"))
   
@@ -299,8 +300,6 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
 
 describeYYMMField<-function(df_table, table_name,field_name,fact_type)
 {
-    print("THIS IS ACTUALLY USED!")
-    colnames(df_table) <- "break this so I can figure out what's up"
     df_table<-subset(df_table,!is.na(df_table[,1]))
     if(nrow(df_table)>0)
     {

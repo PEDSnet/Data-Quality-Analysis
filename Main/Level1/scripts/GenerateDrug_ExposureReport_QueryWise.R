@@ -26,7 +26,7 @@ generateDrugExposureReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
   ## write current total count to total counts 
-  write_total_counts(table_name, current_total_count)
+  write_total_counts(table_name, current_total_count) 
   
   
   df_total_patient_count<-retrieve_dataframe_count(data_tbl,"person_id", distinction = T)
@@ -36,7 +36,10 @@ generateDrugExposureReport <- function() {
 
   # visit concept id
   df_visit <-retrieve_dataframe_clause(concept_tbl,c("concept_id" ,"concept_name")
- ,"vocabulary_id =='Visit' | (vocabulary_id == 'PCORNet' & concept_class_id == 'Encounter Type') | (vocabulary_id == 'PCORNet' & concept_class_id == 'Undefined')")
+ ,"vocabulary_id =='Visit' | (vocabulary_id == 'PCORNet' & concept_class_id == 'Encounter Type') | 
+ (concept_class_id == 'Encounter Type' & domain_id == 'Visit') |
+ (vocabulary_id == 'PCORNet' & concept_class_id == 'Undefined')")
+  
   #condition / person id by visit types
   fileContent <-c(fileContent,paste("## Barplot for Drug:Patient ratio by visit type\n"))
 
@@ -50,8 +53,9 @@ generateDrugExposureReport <- function() {
     label<-df_visit[df_visit$concept_id==df_drug_patient_ratio[i,1],2]
     df_drug_patient_ratio[i,1]<-paste(df_drug_patient_ratio[i,1],"(",label,")",sep="")
   }
-  describeOrdinalField(df_drug_patient_ratio,table_name,"ratio");
-  fileContent<-c(fileContent,paste_image_name(table_name,"Drug:Patient ratio by visit type"));
+  describeOrdinalField(df_drug_patient_ratio,table_name,"drug_exposure_id_person_id_ratio", 
+                       group_ret = 1);
+  fileContent<-c(fileContent,paste_image_name(table_name,"drug_exposure_id_person_id_ratio"));
 
   #NOMINAL Fields
 
@@ -65,7 +69,7 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -78,7 +82,7 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
@@ -107,7 +111,7 @@ generateDrugExposureReport <- function() {
   if(length(message)>0)
   {
     # create meaningful message
-    new_message<-create_meaningful_message_concept_id(data_tbl, message,field_name)
+    new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   }
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
 
@@ -128,7 +132,7 @@ generateDrugExposureReport <- function() {
 
   message<-describeOrdinalField(df_table, table_name,field_name,ggplotting = F)
   # create meaningful message
-  new_message<-create_meaningful_message_concept_id(data_tbl, message,field_name)
+  new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
 
@@ -149,7 +153,7 @@ generateDrugExposureReport <- function() {
 
   message<-describeOrdinalField(df_table_new, "person_id",field_name, ggplotting = F)
   # create meaningful message
-  new_message<-create_meaningful_message_concept_id(data_tbl, message,field_name)
+  new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name("person_id",field_name));
 
   field_name<-"drug_exposure_start_datetime"
@@ -167,7 +171,7 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_exposure_end_datetime"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
 
   ###########DQA CHECKPOINT -- missing information##############
@@ -194,7 +198,7 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_exposure_end_date"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -205,7 +209,7 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_exposure_order_datetime"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -228,7 +232,7 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_exposure_order_date"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -278,7 +282,7 @@ generateDrugExposureReport <- function() {
   field_name<-"stop_reason"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
 
   ###########DQA CHECKPOINT -- missing information##############
@@ -290,7 +294,7 @@ generateDrugExposureReport <- function() {
   field_name="refills"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
 
   ###########DQA CHECKPOINT -- missing information##############
@@ -302,7 +306,7 @@ generateDrugExposureReport <- function() {
   field_name="quantity"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -314,7 +318,7 @@ generateDrugExposureReport <- function() {
   field_name="days_supply"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -326,7 +330,7 @@ generateDrugExposureReport <- function() {
   field_name<-"lot_number"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
 
   ###########DQA CHECKPOINT -- missing information##############
@@ -336,7 +340,7 @@ generateDrugExposureReport <- function() {
   field_name<-"frequency"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -348,7 +352,7 @@ generateDrugExposureReport <- function() {
   field_name<-"route_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -374,7 +378,7 @@ generateDrugExposureReport <- function() {
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   
   ###########DQA CHECKPOINT -- missing information##############
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -392,7 +396,7 @@ generateDrugExposureReport <- function() {
   field_name<-"dose_unit_source_value" # 3 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -417,7 +421,7 @@ generateDrugExposureReport <- function() {
   df_dose_unit_concept_id <-generate_df_concepts(table_name,"dose_unit_concept_id_dplyr.txt", concept_tbl)
 
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -453,7 +457,7 @@ generateDrugExposureReport <- function() {
   field_name<-"effective_drug_dose" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -467,7 +471,7 @@ generateDrugExposureReport <- function() {
   field_name<-"eff_drug_dose_source_value" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -479,7 +483,7 @@ generateDrugExposureReport <- function() {
   field_name<-"provider_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -493,7 +497,7 @@ generateDrugExposureReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
  
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
     
   ###########DQA CHECKPOINT -- missing information##############
@@ -508,7 +512,7 @@ generateDrugExposureReport <- function() {
   field_name="lot_number"
   fileContent <-c(fileContent,paste("## Description for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name))
+  fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name, group_ret = 1))
 
   # this is a nominal field - work on it
   field_name<-"dispense_as_written_concept_id" #
@@ -517,7 +521,7 @@ generateDrugExposureReport <- function() {
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
