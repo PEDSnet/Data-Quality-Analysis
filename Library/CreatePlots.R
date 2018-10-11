@@ -262,7 +262,6 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
   table_df[,1] = as.Date(table_df[,1])
   date_max <- max(table_df[,1])
   date_min <- min(table_df[,1])
-  table_df <- table(table_df)
   }
 
   if(nrow(table_df)>0){
