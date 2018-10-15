@@ -458,7 +458,6 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
     table_df[,2] <- as.numeric(table_df[,2])
     table_df <- table_df[order(table_df[,1]),]
   }
-  print(summary(table_df))
     if(nrow(table_df)>0){
       total_values<- nrow(table_df)
       png(paste(normalize_directory_path( g_config$reporting$site_directory),
@@ -468,7 +467,6 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
                 main = paste(field_name,": Distribution"), 
                 xlab = paste(field_name,"(Total: ",total_values,")"), 
                 ylab = paste(table_name,"Count"), xaxt='n')
-      print("HERE")
       #also plot in decreasing order of frequency (to compare distribution with source data)
       png(paste(normalize_directory_path( g_config$reporting$site_directory),get_image_name_sorted(table_name,field_name),sep=""))
       table_df <- table_df[order(-table_df[,2]),]

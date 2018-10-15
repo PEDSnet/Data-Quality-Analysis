@@ -23,16 +23,12 @@ applyCheck.UnexDiff <- function(theObject, table_list, field_list, current_total
   percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
   
   check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
-  #print(check_list_entry)
-  
-  #print(table_list)
+
   if(percentage_diff<check_list_entry$Lower_Threshold || percentage_diff>check_list_entry$Upper_Threshold)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, paste(percentage_diff,'%',sep=""))
-    #print(issue_obj)
-    # log issue 
-    #print(logIssue(issue_obj))
+
     return(logIssue(issue_obj))
     
   }

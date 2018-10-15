@@ -333,8 +333,6 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
     group_by_(field_name) %>%
     summarize(count = n()) %>%
     as.data.frame()
-  print(paste("CHECK THIS group Clause for ", field_name))
-  print(counts_group)
   return(table_df)
 }
 
