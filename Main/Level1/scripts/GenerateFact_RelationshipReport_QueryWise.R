@@ -8,7 +8,8 @@ generateFactRelationshipReport <- function() {
   flog.info(Sys.time())
 
   #writing to the final DQA Report
-  fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/",table_name,"_Report_Automatic.md",sep=""))
+  fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),
+                       "./reports/",table_name,"_Report_Automatic.md",sep=""))
   fileContent <-get_report_header(table_name, g_config)
 
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0), 
@@ -26,8 +27,9 @@ generateFactRelationshipReport <- function() {
   write_total_counts(table_name, current_total_count)
   
   #NOMINAL Fields
-  df_relationship_concept_id <-generate_df_concepts(table_name,"relationship_concept_id_dplyr.txt", concept_tbl)
-  print("Check 3")
+  df_relationship_concept_id <-generate_df_concepts(table_name,
+                                                    "relationship_concept_id_dplyr.txt", concept_tbl)
+
   # this is a nominal field - work on it
   field_name<-"relationship_concept_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))

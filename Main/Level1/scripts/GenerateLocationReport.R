@@ -43,7 +43,7 @@ generateLocationReport <- function() {
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name, ggplotting = F)
+  describeOrdinalField(data_tbl, table_name,field_name, ggplotting = F, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
                                                    ,"zip.csv", data_tbl)) 
@@ -53,7 +53,7 @@ generateLocationReport <- function() {
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeOrdinalField(data_tbl, table_name,field_name,ggplotting = F)
+  message<-describeOrdinalField(data_tbl, table_name,field_name,ggplotting = F, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
 
   #write all contents to the report file and close it.

@@ -5,7 +5,7 @@ generateImmunizationReport <- function() {
   table_name <- "immunization"
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
-  paste("check -2")
+
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/",table_name,"_Report_Automatic.md",sep=""))
   fileContent <-get_report_header(table_name, g_config)
@@ -14,7 +14,6 @@ generateImmunizationReport <- function() {
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0),
                           issue_description=character(0), alias=character()
                           , finding=character(0), prevalence=character(0))
-  paste("check -1")
 
   #PRIMARY FIELD
   field_name<-"immunization_id"
@@ -27,16 +26,15 @@ generateImmunizationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
-  paste("check 0")
   field_name<-"immunization_source_value" #  3 minutes
+  
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-  paste("check 1")
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    , 2, data_tbl))  ## number of components
-  paste("check 2")
+
   field_name<-"immunization_source_concept_id" #  3 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -45,14 +43,14 @@ generateImmunizationReport <- function() {
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  paste("check 3")
+
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   # some fields can have multiple vocabularies
   ### DQA CHECKPOINT ##########
-  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),con, 
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name), 
                                                    c('Drug',c('NDC','RxNorm', 'CVX', 'CPT4','ICD9CM'
                                                    , 'ICD10','HCPCS','OPCS4')),
                                                    concept_tbl, data_tbl)) 
@@ -80,7 +78,7 @@ generateImmunizationReport <- function() {
                                                    concept_tbl, data_tbl))
   
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
-  new_message<-create_meaningful_message_concept_id(concept_tlb, message,field_name)
+  new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
 
    flog.info(Sys.time())
@@ -105,18 +103,22 @@ generateImmunizationReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
+  print("TEST 1")
+  
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
+    print("TEST 2")
     message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
     fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
+    print("TEST 3")
   }
   field_name="imm_route_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  df_modifier <-generate_df_concepts(concept_tbl, table_name,"imm_route_concept_id_dplyr.txt")
-
+  df_modifier <-generate_df_concepts(table_name,"imm_route_concept_id_dplyr.txt", concept_tbl)
+  print("TEST 4")
 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
@@ -128,6 +130,7 @@ generateImmunizationReport <- function() {
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
+  print("TEST 5")
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
@@ -158,7 +161,7 @@ generateImmunizationReport <- function() {
     fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   }
    flog.info(Sys.time())
-
+   print("TEST 6")
 
   field_name="imm_dose_unit_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -170,12 +173,14 @@ generateImmunizationReport <- function() {
                                                    ,"imm_dose_unit_concept_id_dplyr.txt",
                                                    concept_tbl, data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  print("TEST 7")
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
+  print("TEST 8")
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
