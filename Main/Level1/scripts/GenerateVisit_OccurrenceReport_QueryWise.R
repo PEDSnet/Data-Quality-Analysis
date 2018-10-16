@@ -37,7 +37,7 @@ generateVisitOccurrenceReport <- function() {
   field_name<-"visit_start_datetime"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeDateField(df_table, table_name, field_name)
+  message<-describeDateField(df_table, table_name, field_name, datetime = 1)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
   message<-describeTimeField(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,paste(field_name,"_datetime",sep="")),message);
@@ -161,11 +161,13 @@ generateVisitOccurrenceReport <- function() {
                                                          "visit_occurrence_id", "person_id",
                                                          "visit_concept_id")
 
-  df_visit_patient_ratio[,1]<-paste(df_visit_patient_ratio[,1],"(",
-                     df_visit[df_visit$concept_id==df_visit_patient_ratio[,1],2],")",sep="")
+  for(i in 1:nrow(df_visit_patient_ratio)){
+    label<-df_visit[df_visit$concept_id==df_visit_patient_ratio[i,1],2]
+    df_visit_patient_ratio[i,1]<-paste(df_visit_patient_ratio[i,1],"(",label,")",sep="")
+  }
 
-  describeOrdinalField(df_visit_patient_ratio,table_name,"ratio");
-  fileContent<-c(fileContent,paste_image_name(table_name,"Visit:Patient ratio by visit type"));
+  describeOrdinalField(df_visit_patient_ratio,table_name,"visit_occurrence_id_person_id_ratio");
+  fileContent<-c(fileContent,paste_image_name(table_name,"visit_occurrence_id_person_id_ratio"));
   
   ### admitting source value 
   field_name="admitting_source_value"

@@ -21,7 +21,7 @@ applyCheck.ImplEvent<- function(theObject, table_list, field_list, table_df)
   check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, start_field, end_field)
 
   df_implausible_date_count<-retrieve_dataframe_clause(table_df,"count(*)",paste(start_field,">",end_field))
-  
+
   if(df_implausible_date_count[1][1]>0)
   {
      

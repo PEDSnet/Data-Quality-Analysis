@@ -206,6 +206,7 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
   if(column_list[1] == "count(*)"){
       table_df <- table_df %>%
         summarize(count = n()) %>%
+        mutate(count = as.integer(count)) %>%
         as.data.frame()
   }
   else{
@@ -236,14 +237,17 @@ retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, gro
 
 retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
   table_df <- table_df %>%
-    mutate(var1 = num, var2 = den) %>%
+    mutate_(var1 = num, var2 = den) %>%
     group_by_(group_by_field) %>%
     summarise(numer = n_distinct(var1),
               denom = n_distinct(var2)) %>%
+    mutate(numer = as.double(numer)) %>%
+    mutate(denom = as.double(denom)) %>%
     mutate(ratio = numer/denom) %>%
-    select(-numer, -denom) %>%
+    select_(group_by_field, 'ratio') %>%
     as.data.frame() %>%
     mutate(ratio = round(ratio, 2)) 
+  colnames(table_df)[2] = sprintf('%s_%s_ratio', num, den)
   return(table_df)
 }
 
@@ -332,6 +336,7 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
     filter_(clauses) %>%
     group_by_(field_name) %>%
     summarize(count = n()) %>%
+    mutate(count = as.numeric(count)) %>%
     as.data.frame()
   return(table_df)
 }
