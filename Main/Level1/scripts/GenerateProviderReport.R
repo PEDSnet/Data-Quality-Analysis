@@ -17,7 +17,8 @@ generateProviderReport <- function() {
   #PRIMARY FIELD(s)
   field_name<-"provider_id"
   current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
-  fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",current_total_count ,"\n"))
+  fileContent<-c(fileContent,paste("The total number of unique values for ",field_name,"is: ",
+                                   current_total_count ,"\n"))
   
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
@@ -35,26 +36,26 @@ generateProviderReport <- function() {
   #Gender Source Value
   field_name="gender_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(data_tbl,table_name,field_name);
+  missing_message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeNominalField(data_tbl,table_name,field_name)
+  describeNominalField(data_tbl,table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Gender Source Concept id
   field_name="gender_source_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(data_tbl,table_name,field_name);
+  missing_message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0);
   fileContent<-c(fileContent,missing_message)
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  describeNominalField(data_tbl,table_name,field_name)
+  describeNominalField(data_tbl,table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Gender Concept Id
@@ -63,7 +64,7 @@ generateProviderReport <- function() {
   null_message<-reportNullFlavors(data_tbl,table_name,field_name,
                                   44814653,44814649,44814650)
 
-  missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
+  missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
 
@@ -84,7 +85,7 @@ generateProviderReport <- function() {
   
   ###########DQA CHECKPOINT##############
 
-  describeNominalField(data_tbl,table_name,field_name)
+  describeNominalField(data_tbl,table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
 
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name), 
@@ -103,23 +104,23 @@ generateProviderReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(data_tbl, table_name, field_name)
+  describeOrdinalField(data_tbl, table_name, field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Specialty source value
   field_name="specialty_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(data_tbl,table_name,field_name)
+  message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0)
   missing_percent_source_value<-extract_numeric_value(message)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name)
+  describeOrdinalField(data_tbl, table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   ## specialty_source_concept_id
   field_name="specialty_source_concept_id"
-  missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
+  missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -127,7 +128,7 @@ generateProviderReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  describeNominalField(data_tbl,table_name,field_name)
+  describeNominalField(data_tbl,table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   #Specialty concept id
@@ -137,7 +138,7 @@ generateProviderReport <- function() {
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
                                                     c(field_name, "specialty_source_value"),data_tbl)) 
-  missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
+  missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -153,7 +154,7 @@ generateProviderReport <- function() {
   acceptable_specialty<- read.csv(paste(getwd(), "/Data/ValueSets/provider/specialty.csv", 
                                         sep= ""))$concept_id ## read from specialty list
   df_table_specialty_enhanced<-EnhanceFieldValues(data_tbl,field_name,as.data.frame(acceptable_specialty));
-  describeNominalField(df_table_specialty_enhanced,table_name,field_name);
+  describeNominalField(df_table_specialty_enhanced,table_name,field_name, group_ret = 0);
   fileContent<-c(fileContent, null_message,paste_image_name(table_name,field_name));
   
   ## check for providers with specific specialties
@@ -168,7 +169,7 @@ generateProviderReport <- function() {
   #Care site id
   field_name="care_site_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeForeignKeyIdentifiers(data_tbl,table_name, field_name)
+  message<-describeForeignKeyIdentifiers(data_tbl,table_name, field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
 

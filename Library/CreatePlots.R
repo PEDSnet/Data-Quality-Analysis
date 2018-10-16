@@ -73,10 +73,10 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
 
 reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_code){
   table_df <- table_df %>%
-    na.omit() %>%
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
-    as.data.frame()
+    as.data.frame() %>%
+    na.omit() 
   table_df[,2] <- as.numeric(table_df[,2])
   colnames(table_df) <- c("Var1", "Freq")
 
@@ -112,9 +112,9 @@ reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_co
 reportUnexpected<-function(table_df,field_name,permissible_values){
   table_df <- table_df %>%
     select_(field_name) %>%
-    na.omit() %>%
     distinct() %>% 
-    as.data.frame()
+    as.data.frame() %>%
+    na.omit() 
   
   test_that("Testing Report Unexpected selects one column", expect_equal(ncol(table_df), 1))
   table_df <- table_df[!is.element(table_df[,1], permissible_values),1]
@@ -142,10 +142,9 @@ describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
   else{
   table_df <- table_df %>%
     group_by_(field_name) %>%
-    na.omit() %>%
     dplyr::summarize(freq = n()) %>%
-    as.data.frame()
-  table_df[,1] <- as.character(table_df[,1])
+    as.data.frame() %>%
+    na.omit() 
   table_df[,2] <- as.numeric(table_df[,2])
   }
 
@@ -190,10 +189,10 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
   }
   else{
   table_df = table_df %>% 
-    na.omit() %>%
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
-    as.data.frame()
+    as.data.frame() %>%
+    na.omit() 
   }
 
   if(nrow(table_df) > 0){
@@ -331,10 +330,10 @@ describeYYMMField<-function(df_table, table_name,field_name,fact_type)
 describeTimeField<-function(table_df, table_name,field_name){     
   flog.info(paste("Plotting for Field: ", field_name))
   table_df <- table_df %>%
-    na.omit() %>%
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
-    as.data.frame()
+    as.data.frame() %>%
+    na.omit() 
   table_df[,1] <- as.character(table_df[,1])
   table_df[,2] <- as.numeric(table_df[,2])
 
@@ -377,10 +376,10 @@ describeTimeField<-function(table_df, table_name,field_name){
 #Output: write the histogram to a file
 describeRatioField<-function(table_df,table_name,field_name, unit){
   table_df <- table_df %>%
-    na.omit() %>%
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
-    as.data.frame()
+    as.data.frame() %>%
+    na.omit() 
   table_df[,2] <- as.numeric(table_df[,2])
   colnames(table_df) <- c("Var1", "Freq")
   table_df$Var1 = as.numeric(table_df$Var1)
