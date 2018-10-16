@@ -5,7 +5,7 @@ generateProcedureOccurrenceReport <- function() {
   table_name<-"procedure_occurrence"
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
-
+ 
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/",table_name,"_Report_Automatic.md",sep=""))
   fileContent <-get_report_header(table_name, g_config)
@@ -49,8 +49,8 @@ generateProcedureOccurrenceReport <- function() {
         label<-df_visit[df_visit$concept_id==df_procedure_patient_ratio[i,1],2]
         df_procedure_patient_ratio[i,1]<-paste(df_procedure_patient_ratio[i,1],"(",label,")",sep="")
       }
-  describeOrdinalField(df_procedure_patient_ratio,table_name,"ratio");
-  fileContent<-c(fileContent,paste_image_name(table_name,"Procedure:Patient ratio by visit type"));
+  describeOrdinalField(df_procedure_patient_ratio,table_name,"procedure_occurrence_id_person_id_ratio");
+  fileContent<-c(fileContent,paste_image_name(table_name,"procedure_occurrence_id_person_id_ratio"));
 
   #procedure type concept id
   field_name="procedure_type_concept_id"
@@ -95,7 +95,7 @@ generateProcedureOccurrenceReport <- function() {
   # some fields can have multiple vocabularies
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name), 
-                                                   c('Procedure',c('HCPCS','CPT4', 'OPCS', 'ICD9Proc','ICD10PCS')),
+                                                   c('Procedure', 'HCPCS','CPT4', 'OPCS', 'ICD9Proc','ICD10PCS'),
                                                    concept_tbl, data_tbl)) 
   
   message<-describeOrdinalField(df_table, table_name, field_name,ggplotting = F)
@@ -116,7 +116,7 @@ generateProcedureOccurrenceReport <- function() {
   
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
-                                                   c('Procedure',c('HCPCS','CPT4', 'SNOMED','ICD9Proc','ICD10PCS')),
+                                                  c('Procedure', 'HCPCS','CPT4', 'SNOMED','ICD9Proc','ICD10PCS'),
                                                    concept_tbl, data_tbl)) 
   
   message<-describeOrdinalField(df_table, table_name, field_name,ggplotting = F)
@@ -166,7 +166,6 @@ generateProcedureOccurrenceReport <- function() {
   field_name="modifier_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   df_modifier <-generate_df_concepts(table_name,"modifier_concept_id_dplyr.txt", concept_tbl)
-  order_bins <-c(df_modifier$concept_id,44814650,0,NA)
 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)

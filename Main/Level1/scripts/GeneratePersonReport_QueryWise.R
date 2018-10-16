@@ -158,7 +158,6 @@ generatePersonReport <- function() {
   field_name="ethnicity_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
 
-
   ###########DQA CHECKPOINT############## For ethinicity only 
   df_ethnicity<-generate_df_concepts( table_name,"ethnicity_dplyr.txt", concept_tbl)
   order_bins <-c(df_ethnicity$concept_id,NA)
@@ -302,10 +301,12 @@ generatePersonReport <- function() {
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
+  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
+
   #provider_id
   field_name="provider_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)

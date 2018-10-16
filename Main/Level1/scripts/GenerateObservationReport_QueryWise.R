@@ -51,8 +51,8 @@ generateObservationReport <- function() {
          label<-df_visit[df_visit$concept_id==df_observation_patient_ratio[i,1],2]
          df_observation_patient_ratio[i,1]<-paste(df_observation_patient_ratio[i,1],"(",label,")",sep="")
   }
-  describeOrdinalField(df_observation_patient_ratio,table_name,"ratio");
-  fileContent<-c(fileContent,paste_image_name(table_name,"Observation:Patient ratio by visit type"));
+  describeOrdinalField(df_observation_patient_ratio,table_name,"observation_id_person_id_ratio");
+  fileContent<-c(fileContent,paste_image_name(table_name,"observation_id_person_id_ratio"));
 
   field_name="observation_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))

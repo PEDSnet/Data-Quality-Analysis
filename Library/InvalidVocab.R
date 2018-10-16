@@ -23,7 +23,6 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vo
    
   used_vocabulary<-get_vocabulary_name_by_concept_ids(table_name, field_name,domain, table_df, table_df2)
   
-  
   acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)
   
   unexpected_message<-NULL
@@ -32,10 +31,9 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vo
   {
     for(i in 1:length(used_vocabulary))  
     {
-      if(is.na(match(used_vocabulary[i], acceptable_vocabulary)))
+      if(is.na(match(used_vocabulary[i,1], acceptable_vocabulary)))
       {
-     # print(used_vocabulary[i])
-      unexpected_message<-paste(used_vocabulary[i], sep=";")
+      unexpected_message<-paste(used_vocabulary[i,1], sep=";")
       }
     }
   }
