@@ -20,7 +20,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   
   #date_field<-field_list[2]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, date_field)
-  #print(fact_type)
+
   if(is.null(fact_type)) ### if generating summary for entire table
   {
   date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
@@ -39,17 +39,13 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
       collect()
   }
   
-  #print(class(date_dist_tbl[,1]))
-  #glimpse(date_dist_tbl)
   date_dist_tbl<-as.data.frame(date_dist_tbl)
   
-  #print(date_dist_tbl[1,1])
   date_dist_tbl$year = year(as.Date(date_dist_tbl[,1]))
   date_dist_tbl$month = str_pad(month(as.Date(date_dist_tbl[,1])), 2, pad = "0")
   
   if(table_name=="death")
     date_dist_tbl<-date_dist_tbl %>% filter(month <'12' & month > '01')
-  #print(glimpse(date_dist_tbl))
   
   ## this table contains monthly distributions 
   date_dist_tbl_simplified<- date_dist_tbl %>%
@@ -74,19 +70,16 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
       dplyr::mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
       select(yyyymm.y, change_over_last_month)
   
-  #print(glimpse(date_dist_delta))  
-  
   iqr_value<- IQR(date_dist_delta$change_over_last_month)
-  #print(quantile(date_dist_delta$change_over_last_month))
+
   q1<-as.integer(
     quantile(date_dist_delta$change_over_last_month)[2]  
   )
-  #print(q1)
+
   q3<-as.integer(quantile(date_dist_delta$change_over_last_month)[4])
   lower_bound<- q1-1.5*iqr_value
-  #print(lower_bound)
   upper_bound<-q3+1.5*iqr_value
-  #print(upper_bound)
+
   
   date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
   
@@ -95,15 +88,12 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   date_dist_delta$outlier<-FALSE
   for(i in 1:nrow(date_dist_delta))
   {
-    #print(date_dist_delta[i,2])
     if(date_dist_delta[i,2]<lower_bound) 
       date_dist_delta[i,3]<-TRUE
     if(date_dist_delta[i,2]>upper_bound) 
       date_dist_delta[i,3]<-TRUE
   }
 
-  
-  #print(mismatch_date_tbl)
   df_outliers<-date_dist_delta[date_dist_delta$outlier==TRUE,c(1,2)]
   if(is.null(fact_type)) 
   outlier_message<- "list of months with unexpected changes in number of records YYYY-MM (change since last month):\n"
@@ -121,7 +111,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, outlier_message)
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     

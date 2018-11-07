@@ -14,7 +14,6 @@ CheckType <- function(check_code,check_name, check_alias)
 }
 applyCheck <- function(theObject, table_list, field_list, metadata, table_df, table_df2)
 {
-  #print("Calling the base applyCheck function")
   UseMethod("applyCheck",theObject)
 }
 

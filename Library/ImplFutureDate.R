@@ -32,7 +32,6 @@ applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, table_d
     #df_table<-subset(df_table,!is.na(Var1))
     
     df_table$Var1<-as.Date(df_table[,1])
-    #df_table$Var1 <- as.factor(df_table$Var1)
     df_table$Var1 <- as.character(df_table$Var1)
     
     # aggregate df_table again by summing frequency for all equivalent dates
@@ -53,7 +52,6 @@ applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, table_d
       {
     # create an issue 
       issue_obj<-Issue(theObject, table_list, field_list, max(df_table$Var1))
-    #print(issue_obj)
     # log issue 
       return(logIssue(issue_obj))
     

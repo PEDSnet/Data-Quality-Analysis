@@ -20,8 +20,6 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
   date_field<-field_list[2]
   
   check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, time_field, date_field)
-  
-  #print(date_field)
 
   if(grepl('year', date_field)==TRUE)
   {
@@ -46,33 +44,34 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
                                                      " WHERE extract(day from ",time_field,") <> ",date_field,sep=''))
     )
   }
-  
-  #print(grepl('date', date_field))
+
+  #Note: removed distinct.
+  #Removed lubridate::date() function since it's comparing sql with R datatypes
   if(grepl('date', date_field)==TRUE) 
   {
    mismatch_date_tbl <- 
      cdm_tbl(req_env$db_src, table_name) %>%
       select(date_field, time_field) %>%
      rename_(time_field = time_field) %>% 
-     distinct() %>%
-     collect() %>%
-     mutate(time_field_as_date = lubridate::date(time_field)) %>%
-      #mutate_(time_field_as_date = paste0("sql('cast(",time_field," as date)')")) %>%
-     filter_(paste0(date_field,'!=time_field_as_date')) 
-      print(mismatch_date_tbl)
-     #%>%
-    #  collect()
+     mutate(time_field = sql('cast("time_field" as date)')) %>%
+     filter_(paste0(date_field,'!=time_field')) %>%
+     as.data.frame() 
+
+   #Double check by removing timestamps
+   mismatch_date_tbl[,1] = as.Date(mismatch_date_tbl[,1])
+   mismatch_date_tbl[,2] = as.Date(mismatch_date_tbl[,2])
+
+   mismatch_date_tbl <- mismatch_date_tbl %>%
+     filter_(paste0(date_field,'!=time_field')) 
   }
-  #print(mismatch_date_tbl)
+
   df_incon<-as.data.frame(mismatch_date_tbl)
   
  
   if(nrow(df_incon)>0)
   {
-    # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, nrow(df_incon))
-    #print(issue_obj)
-    # log issue 
+
     return(logIssue(issue_obj))
     
   }

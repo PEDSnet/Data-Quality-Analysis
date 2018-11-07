@@ -46,7 +46,7 @@ generateCareSiteReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent_source_value<-extract_numeric_value(missing_percent_message)
-  fileContent<-c(fileContent,missing_percent_source_value)
+  fileContent<-c(fileContent, paste("Fraction Missing:",missing_percent_source_value))
   describeNominalField(data_tbl, table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   ###########DQA CHECKPOINT##############
@@ -86,7 +86,7 @@ generateCareSiteReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_percent_message<-reportMissingCount(data_tbl,table_name,field_name)
   missing_percent_source_value<-extract_numeric_value(missing_percent_message)
-  fileContent<-c(fileContent,missing_percent_source_value)
+  fileContent<-c(fileContent,paste("Fraction Missing:",missing_percent_source_value))
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 

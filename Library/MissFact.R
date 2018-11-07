@@ -24,7 +24,6 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
   df_table<-retrieve_dataframe_group(table_df, field_name)
-  #print(length(list_of_facts))
   
   for(list_index in 1:length(list_of_facts))
   {
@@ -47,7 +46,7 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
       number_of_records<-retrieve_dataframe_clause(table_df,
                                                 "count(*)",
                                                 paste(field_name,"%in% c(",values,")")
-                                                )[1,1]
+                                                )
     
   }
   

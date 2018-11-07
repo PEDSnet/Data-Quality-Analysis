@@ -28,7 +28,6 @@ applyCheck.PostDeath<- function(theObject, table_list, field_list)
   
   patient_tbl<-cdm_tbl(req_env$db_src, table_name_2)
   
- # print(field_name_1)
   df_after_death<-as.data.frame(
     select_(
       filter_(inner_join(fact_tbl,patient_tbl, by =c("person_id"="person_id")),
@@ -36,12 +35,10 @@ applyCheck.PostDeath<- function(theObject, table_list, field_list)
       ,quote(person_id), field_name_1
     ))
  
-  #print(head(df_after_death))
   if(nrow(df_after_death)>0)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, (nrow(df_after_death)))
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     

@@ -35,9 +35,10 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, metadata,
   
   order_bins <-c(concept_id_list$concept_id,0,44814650,44814653, 44814649,NA)
   df_table<-retrieve_dataframe_group(table_df2,field_name)
-  unexpected_message<-  paste("",df_table[(!is.element(df_table[[1]], order_bins)
-                                        && !is.na(df_table[[1]]))], collapse = ';')
-  if( nchar(trim(unexpected_message))>0)
+
+  invalid <- setdiff(df_table[[1]], order_bins)
+  unexpected_message<-  paste("", invalid, collapse = ';')
+  if( length(invalid) > 0)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, unexpected_message)

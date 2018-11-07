@@ -61,16 +61,16 @@ generateObservationReport <- function() {
 
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   missing_percent_source_value<-extract_numeric_value(message)
 
   field_name="observation_source_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
@@ -80,7 +80,6 @@ generateObservationReport <- function() {
   describeNominalField(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
-  # this is a nominal field - work on it
   field_name<-"observation_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -111,7 +110,7 @@ generateObservationReport <- function() {
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
-
+  print("check 5")
   field_name<-"provider_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -140,14 +139,14 @@ generateObservationReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeDateField(df_table, table_name,field_name)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-  
+
   ###########DQA CHECKPOINT##############
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl))
   field_name<-"observation_datetime" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeTimeField(df_table, table_name,field_name)
@@ -157,7 +156,7 @@ generateObservationReport <- function() {
   field_name<-"value_as_string"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
 
@@ -191,7 +190,7 @@ generateObservationReport <- function() {
 
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  missing_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   test = df_table %>% as.data.frame()
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
@@ -247,7 +246,7 @@ generateObservationReport <- function() {
   field_name<-"qualifier_source_value" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -259,7 +258,7 @@ generateObservationReport <- function() {
   field_name<-"qualifier_concept_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -284,7 +283,7 @@ generateObservationReport <- function() {
   field_name<-"value_as_number"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############

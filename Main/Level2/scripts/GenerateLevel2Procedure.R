@@ -125,10 +125,7 @@ generateLevel2Procedure <- function () {
       ,visit_occurrence_id, concept_id, concept_name)
   )
   
-  #print(head(procedure_visit_join_tbl))
-  
- # main_tbl<-metadata[1]
-  #print(head(main_tbl))
+
   procedure_counts_by_visit <-
     filter(
       dplyr::arrange(
@@ -239,7 +236,4 @@ generateLevel2Procedure <- function () {
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
-  
-  #close the connection
-  #close_database_connection_OHDSI(con,config)
 }

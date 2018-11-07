@@ -28,7 +28,9 @@ create_meaningful_message_concept_id<-function(table_df, message,field_name){
   for(i in 1:5){
     if(unlist(strsplit(concept_id_list[i],"\\|count="))[1]=="\n NA ") break;
     new_message <- paste(new_message,unlist(strsplit(concept_id_list[i],"\\|count="))[1],
-                         "(",get_concept_name(table_df, unlist(strsplit(concept_id_list[i],"\\|count="))[1]),")"
+                         "(",get_concept_name(table_df, 
+                                  as.numeric(unlist(strsplit(concept_id_list[i],"\\|count="))[1]))
+                         ,")"
                            ,unlist(strsplit(concept_id_list[i],"\\|"))[2]
                          ,sep="")
     if(i<5)
@@ -235,7 +237,6 @@ write_total_fact_type_counts<-function(table_name, fact_type,current_total_count
   
   #colnames(total_count_df)<-c("table","counts")
   total_count_df<-cbind(total_count_df, c(current_total_count))
-  #print(total_count_df)
   colnames(total_count_df)[ncol(total_count_df)]<-paste0(table_name, ".",fact_type)
   write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
   

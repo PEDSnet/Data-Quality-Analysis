@@ -165,8 +165,9 @@ generateProcedureOccurrenceReport <- function() {
 
   field_name="modifier_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  
   df_modifier <-generate_df_concepts(table_name,"modifier_concept_id_dplyr.txt", concept_tbl)
-
+    
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"modifier_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
@@ -181,8 +182,11 @@ generateProcedureOccurrenceReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  if(grepl("100",missing_message)==FALSE) # if not 100% missing
+  print("CHECK")
+  print(missing_message)
+  if(grepl("100",missing_message)) # if not 100% missing
   {
+    print("IN HERE")
     describeNominalField(df_table_modifier_enhanced,table_name,field_name);
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 

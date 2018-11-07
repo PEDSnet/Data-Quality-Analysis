@@ -18,8 +18,6 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list)
   fact_table_name<-table_list[1]
   date_field<-field_list[1]
 
-  
-  #print(check_list_entry)
   fact_tbl <- cdm_tbl(req_env$db_src, fact_table_name)
   
   
@@ -40,12 +38,10 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list)
     filter_(paste0('birth_datetime >', date_field)) %>%
     select_(quote(person_id), date_field) %>% collect() 
   
-  print(nrow(df_before_dob))  
    if(nrow(df_before_dob)>0)
   {
     # create an issue 
     issue_obj<-Issue(theObject, fact_table_name, date_field, (nrow(df_before_dob)))
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     

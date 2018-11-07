@@ -22,7 +22,7 @@ generateConditionOccurrenceReport <- function() {
   current_total_count<-as.numeric(df_total_condition_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", 
                                    formatC(current_total_count, format="d", big.mark=','),"\n"))
-  
+
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
   ## write current total count to total counts 
@@ -67,8 +67,8 @@ generateConditionOccurrenceReport <- function() {
   field_name<-"condition_type_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  
   ###########DQA CHECKPOINT##############
-
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"condition_type_concept_id_dplyr.txt",
                                                    concept_tbl, data_tbl)) 
@@ -79,7 +79,6 @@ generateConditionOccurrenceReport <- function() {
   df_table_condition_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_condition_type_concept_id);
   describeNominalField(df_table_condition_type_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),
                                                    list(
                                                    list(2000000092,2000000093,2000000094,  "inpatient header primary"),
@@ -100,7 +99,7 @@ generateConditionOccurrenceReport <- function() {
 
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    ,3, data_tbl))  ## number of components in condition_source_value
-
+  
   field_name<-"condition_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
@@ -111,17 +110,16 @@ generateConditionOccurrenceReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
-  # some fields can have multiple vocabularies
+  # some fields can have multiple vocabularies  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
-                                                   c('Condition',c('ICD9','ICD9CM', 'ICD10', 'ICD10CM')),
+                                                   c('Condition','ICD9','ICD9CM', 'ICD10', 'ICD10CM'),
                                                    concept_tbl, data_tbl)) 
 
   message<-describeOrdinalField(df_table, table_name,field_name,ggplotting = F)
   # create meaningful message
   new_message<-create_meaningful_message_concept_id(concept_tbl,message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
-
   flog.info(Sys.time())
   field_name<-"condition_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -166,6 +164,7 @@ generateConditionOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
+  
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -186,7 +185,7 @@ generateConditionOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), table_name, field_name, data_tbl)) 
@@ -231,6 +230,7 @@ generateConditionOccurrenceReport <- function() {
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
     message<-reportMissingCount(df_table,table_name,field_name)
     fileContent<-c(fileContent,message)
+    
     ###########DQA CHECKPOINT -- missing information##############
     missing_percent<-extract_numeric_value(message)
     logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -256,7 +256,7 @@ generateConditionOccurrenceReport <- function() {
     missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
     missing_percent<- extract_numeric_value(missing_percent_message)
     fileContent<-c(fileContent,missing_percent_message)
-  
+
     ###########DQA CHECKPOINT##############
     logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                      ,"condition_status_concept_id.csv", concept_tbl,

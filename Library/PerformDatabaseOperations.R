@@ -68,13 +68,12 @@ create_database_copy<-function(db_tbl, table_name)
 retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
   if(distinction) table_df <- table_df %>% distinct_(column_list)
   counts  = table_df %>%
-    filter_(paste('!is.na(', column_list, ')')) %>%
-    mutate(num = n()) %>%
-    select(num) %>%
-    distinct() %>%
-    mutate(total = as.integer(num)) %>%
-    select(total) %>%
-    collect() 
+    select_(column_list) %>%
+    na.omit() %>%
+    tally() %>%
+    collect() %>%
+    as.integer()
+
   test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
@@ -82,9 +81,10 @@ retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
 
 retrieve_dataframe_record_count<-function(table_df)
 {
-   table_df = as.data.frame(distinct(table_df %>%
-     mutate(counts = n()) %>%
-     select(counts)))
+   table_df = table_df %>%
+       tally() %>%
+       collect() %>%
+       as.integer()
   test_that("Retrieve_dataframe_record_count does not have unique total row value", 
             expect_equal(length(table_df), 1))
   return(table_df)
@@ -205,9 +205,9 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
     filter_(clauses) 
   if(column_list[1] == "count(*)"){
       table_df <- table_df %>%
-        summarize(count = n()) %>%
-        mutate(count = as.integer(count)) %>%
-        as.data.frame()
+        tally() %>%
+        collect() %>%
+        as.integer()
   }
   else{
     table_df = table_df %>%

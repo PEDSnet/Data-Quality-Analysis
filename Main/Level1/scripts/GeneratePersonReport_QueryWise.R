@@ -39,7 +39,7 @@ generatePersonReport <- function() {
                                                    c("person_id",field_name),data_tbl)) 
     
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -226,7 +226,7 @@ generatePersonReport <- function() {
   field_name="month_of_birth"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -243,7 +243,7 @@ generatePersonReport <- function() {
   field_name="day_of_birth"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -259,7 +259,7 @@ generatePersonReport <- function() {
   field_name<-"birth_datetime"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -278,7 +278,7 @@ generatePersonReport <- function() {
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   unit<-"weeks"
   fileContent <-c(fileContent,paste("## Histogram for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -298,7 +298,7 @@ generatePersonReport <- function() {
   field_name<-"location_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -311,7 +311,7 @@ generatePersonReport <- function() {
   field_name="provider_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   

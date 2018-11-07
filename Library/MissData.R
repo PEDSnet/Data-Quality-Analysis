@@ -19,9 +19,9 @@ applyCheck.MissData <- function(theObject, table_list, field_list, table_df)
   field_name<-field_list[1]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
-  df_null<-retrieve_dataframe_clause(table_df,"count(*)",paste0('is.null(',field_name,')') )
+  df_null<-retrieve_dataframe_clause(table_df,"count(*)",paste0('is.na(',field_name,')') )
   df_count<-retrieve_dataframe_record_count(table_df)
-  missing_percent<-round(((100 * df_null[1,1])/ df_count[1,1]),digits=2)
+  missing_percent<-round(((100 * df_null)/ df_count),digits=2)
   
   if(missing_percent<check_list_entry$Lower_Threshold || missing_percent>check_list_entry$Upper_Threshold)
   {

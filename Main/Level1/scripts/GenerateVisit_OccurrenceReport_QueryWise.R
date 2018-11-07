@@ -80,7 +80,7 @@ generateVisitOccurrenceReport <- function() {
   field_name<-"visit_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -92,7 +92,7 @@ generateVisitOccurrenceReport <- function() {
   # visit source concept id
   field_name="visit_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  missing_percent_message<-reportMissingCount(df_table,table_name,field_name)
+  missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
   
@@ -173,7 +173,7 @@ generateVisitOccurrenceReport <- function() {
   field_name="admitting_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  missing_message<-reportMissingCount(df_table,table_name,field_name);
+  missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
   
@@ -211,7 +211,7 @@ generateVisitOccurrenceReport <- function() {
   field_name="discharge_to_source_value"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  missing_message<-reportMissingCount(df_table,table_name,field_name);
+  missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
   
@@ -255,7 +255,7 @@ generateVisitOccurrenceReport <- function() {
   field_name<-"provider_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -268,7 +268,7 @@ generateVisitOccurrenceReport <- function() {
   field_name<-"care_site_id" # 8 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-reportMissingCount(df_table,table_name,field_name)
+  message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
   
   ###########DQA CHECKPOINT -- missing information##############

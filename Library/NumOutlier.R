@@ -18,7 +18,6 @@ applyCheck.NumOutlier<- function(theObject, table_list, field_list,table_df)
   table_name<-table_list[1]
   field_name<-field_list[1]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
-  #print(check_list_entry)
    
   df_table<-retrieve_dataframe_group(table_df,field_name)
 
@@ -30,7 +29,6 @@ applyCheck.NumOutlier<- function(theObject, table_list, field_list,table_df)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, paste(min(new_df_table$Var1), "-", max(new_df_table$Var1)))
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     
