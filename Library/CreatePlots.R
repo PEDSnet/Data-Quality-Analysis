@@ -243,19 +243,17 @@ reportUnexpected<-function(df_table,table_name,field_name,permissible_values,big
     else # with dplyr package or query wise scripts
     {
            current_values<-c(df_table[,1])
-
+      if(length(current_values) > 0){
            for(i in 1:nrow(df_table))
             {
                value <-df_table[i,1]
+
                # flog.info(df_table[i,1])
                if(!is.element(value,permissible_values) && !is.na(value))
                    return_message<-paste(return_message, "invalid value found: ",value,";")
-
            }
-
-
-
     }
+  }
 
     return(return_message)
 }

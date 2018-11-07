@@ -156,15 +156,21 @@ generateMeasurementReport <- function() {
   
   
   ### Vitals 
+  print("check 1")
   df_vitals<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (2000000033, 2000000032)")
+  print("check 2")
   acceptable_vitals<-generate_list_concepts(table_name,"vital_list.csv")$concept_id ## read from vitals list
+  print("check 3")
   acceptable_fevs<-generate_list_concepts(table_name,"fev_list.csv")$concept_id ## read from fev list
+  print("check 4")
   acceptable_vitals<-rbind(acceptable_vitals, acceptable_fevs)
+  print("check 5")
   unexpected_message<- reportUnexpected(df_vitals,table_name,field_name,acceptable_vitals,big_data_flag)
+  print("check 5.5")
   if(length(trim(unexpected_message))>1)
     logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, paste0("VITALS: ",unexpected_message), table_name, 
                                                              g_data_version));
-  
+  print("check 6")
   ### patient reported 
   df_pro<-retrieve_dataframe_group_clause(con,g_config,table_name,field_name, "measurement_type_concept_id in (44818704)")
   acceptable_pt_reported<-generate_list_concepts(table_name,"patient_reported_list.csv")$concept_id ## read from vitals list
