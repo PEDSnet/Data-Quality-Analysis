@@ -49,24 +49,22 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
   #Removed lubridate::date() function since it's comparing sql with R datatypes
   if(grepl('date', date_field)==TRUE) 
   {
-   mismatch_date_tbl <- 
+   df_incon <- 
      cdm_tbl(req_env$db_src, table_name) %>%
       select(date_field, time_field) %>%
-     rename_(time_field = time_field) %>% 
-     mutate(time_field = sql('cast("time_field" as date)')) %>%
-     filter_(paste0(date_field,'!=time_field')) %>%
-     as.data.frame() 
-
-   #Double check by removing timestamps
-   mismatch_date_tbl[,1] = as.Date(mismatch_date_tbl[,1])
-   mismatch_date_tbl[,2] = as.Date(mismatch_date_tbl[,2])
-
-   mismatch_date_tbl <- mismatch_date_tbl %>%
-     filter_(paste0(date_field,'!=time_field')) 
+     rename_(time_field = time_field, 
+            date_field = date_field) %>%
+     mutate(time_day = sql('extract(day from "time_field")')) %>%
+     mutate(time_month = sql('extract(month from "time_field")')) %>%
+     mutate(time_year = sql('extract(year from "time_field")')) %>%
+     mutate(date_day = sql('extract(day from "date_field")')) %>%
+     mutate(date_month = sql('extract(month from "date_field")')) %>%
+     mutate(date_year = sql('extract(year from "date_field")')) %>%
+     filter(time_day != date_day,
+            time_month != date_month,
+            time_year != date_year) %>%
+     as.data.frame()
   }
-
-  df_incon<-as.data.frame(mismatch_date_tbl)
-  
  
   if(nrow(df_incon)>0)
   {
