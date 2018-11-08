@@ -225,7 +225,7 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
               ylab = paste(table_name,"Count"))
       }
     
-    table_df<-table_df[order(table_df[,2], decreasing = TRUE),] ###Put data in order
+    table_df<-table_df[order(table_df[,2], decreasing = TRUE),] 
     return_message<- paste("The most frequent values for",field_name,"are:","\n")
     minr <- min(nrow(table_df), 5)
     for(index in 1:minr){

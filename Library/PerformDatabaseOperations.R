@@ -319,12 +319,23 @@ retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
   return(table_df)
 }
 
-retrieve_dataframe_group <- function(table_df, field_name){
+retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL){
   table_df = table_df %>%
-    group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
-    as.data.frame()
-    table_df$freq = as.integer(table_df$freq) 
+    group_by_(field_name)
+  print(distinct_field)
+  if(!is.null(distinct_field)){
+    table_df <- table_df %>%
+      dplyr::summarize_(freq = n_distinct(distinct_field)) %>%
+      as.data.frame()
+  }
+  else{
+    table_df <- table_df %>%
+      dplyr::summarize(freq = n()) %>%
+      as.data.frame()
+  }
+  
+  print(max(table_df[,2]))
+  table_df$freq = as.integer(table_df$freq) 
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)
