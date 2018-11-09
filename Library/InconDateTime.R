@@ -45,11 +45,12 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
     )
   }
 
+  mismatch_date_tbl <- NULL
   #Note: removed distinct.
   #Removed lubridate::date() function since it's comparing sql with R datatypes
   if(grepl('date', date_field)==TRUE) 
   {
-   df_incon <- 
+   mismatch_date_tbl<- 
      cdm_tbl(req_env$db_src, table_name) %>%
       select(date_field, time_field) %>%
      rename_(time_field = time_field, 
@@ -63,9 +64,10 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
      filter(time_day != date_day,
             time_month != date_month,
             time_year != date_year) %>%
-     as.data.frame()
+     collect()
   }
- 
+  
+  df_incon <- as.data.frame(mismatch_date_tbl)
   if(nrow(df_incon)>0)
   {
     issue_obj<-Issue(theObject, table_list, field_list, nrow(df_incon))

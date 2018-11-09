@@ -91,12 +91,12 @@ retrieve_dataframe_record_count<-function(table_df)
 }
 
 
-retrieve_dataframe_count_group<-function(table_df, column_list, field_name){
+retrieve_dataframe_count_group<-function(table_df, count_column, field_name){
   counts = table_df %>%
+      rename_(count_column = count_column) %>%
       group_by_(field_name) %>%
-      filter_(paste("!is.na(",column_list,")")) %>%
-      distinct() %>%
-      summarise(count = n()) %>%
+      filter(!is.na(count_column)) %>%
+      summarize(count = n_distinct(count_column)) %>%
       as.data.frame()
    test_that("Testing Retrieve Dataframe Count Group", 
              expect_equal(colnames(counts), c(field_name, "count")))
@@ -320,21 +320,20 @@ retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
 }
 
 retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL){
+  if(!is.null(distinct_field)) table_df <- table_df %>% rename_(distinct_field = distinct_field)
   table_df = table_df %>%
     group_by_(field_name)
-  print(distinct_field)
+
   if(!is.null(distinct_field)){
     table_df <- table_df %>%
-      dplyr::summarize_(freq = n_distinct(distinct_field)) %>%
+      summarize(freq = n_distinct(distinct_field)) %>%
       as.data.frame()
   }
   else{
     table_df <- table_df %>%
-      dplyr::summarize(freq = n()) %>%
+      summarize(freq = n()) %>%
       as.data.frame()
   }
-  
-  print(max(table_df[,2]))
   table_df$freq = as.integer(table_df$freq) 
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))

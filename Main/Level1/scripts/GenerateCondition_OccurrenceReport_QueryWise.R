@@ -122,7 +122,7 @@ generateConditionOccurrenceReport <- function() {
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
   flog.info(Sys.time())
   field_name<-"condition_concept_id" #
-  df_table<-retrieve_dataframe_group(data_tbl,field_name, 'person_id')
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
 
   # add % of no matching concept (concept id = 0). for the completeness report

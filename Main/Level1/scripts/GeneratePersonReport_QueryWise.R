@@ -32,7 +32,7 @@ generatePersonReport <- function() {
   field_name<-"person_source_value"
   df_total_person_source_value<-retrieve_dataframe_count(data_tbl,field_name)
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ",
-                                   formatC(df_total_person_source_value[1,1], format="d", big.mark=','),"\n"))
+                                   formatC(df_total_person_source_value, format="d", big.mark=','),"\n"))
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name),
