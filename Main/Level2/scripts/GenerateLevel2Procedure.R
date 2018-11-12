@@ -3,24 +3,15 @@ library(yaml)
 library(dplyr)
 
 generateLevel2Procedure <- function () {
-  #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
-  
-  big_data_flag<-TRUE
+
   table_name<-"procedure_occurrence"
-  # load the configuration file
-  #get path for current script
-  #config = yaml.load_file(g_config_path)
+
   log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
   
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Procedure_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",g_config)
-  
-  
-  # Connection basics ---------------------------------------------------------
-  # To connect to a database first create a src:
- 
-             
+
   # Then reference a tbl within that src
   visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
   patient_tbl<-cdm_tbl(req_env$db_src, "person")
@@ -106,7 +97,6 @@ generateLevel2Procedure <- function () {
  
  
   ###### Identifying outliers in top inpatient procedures 
-  #inpatient_visit_df<-as.data.frame(inpatient_visit_tbl)
   inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
                                         , visit_occurrence_id)
   
@@ -165,7 +155,7 @@ generateLevel2Procedure <- function () {
   
      }
   ### implementation of unexpected top outpatient procedures check 
-  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
+  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202 | visit_concept_id==2000000469)
                                ,visit_occurrence_id, person_id)
   
   

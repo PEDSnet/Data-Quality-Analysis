@@ -3,39 +3,21 @@ library(yaml)
 library(dplyr)
 
 generateLevel2Visit <- function () {
-  #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
-  
-  big_data_flag<-TRUE
+
   table_name<-"visit_occurrence"
-  
-  
-  # load the configuration file
-  #get path for current script
-#  config = yaml.load_file(g_config_path)
-  
   
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Visit_Report_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",g_config)
   log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/visit_occurrence_issue.csv",sep="")
-  
-  
-  # Connection basics ---------------------------------------------------------
-  # To connect to a database first create a src:
- 
            
   # Then reference a tbl within that src
   visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
-  
-  
-  #patient_tbl<-tbl(my_db, "person")
   
   death_tbl <- cdm_tbl(req_env$db_src, "death")
   
   concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
   
-  #patient_dob_tbl <- tbl(my_db, dplyr::sql
-   #                      ('SELECT person_id, to_date(year_of_birth||\'-\'||month_of_birth||\'-\'||day_of_birth,\'YYYY-MM-DD\') as dob FROM person'))
   ### temporal outlier check 
   field_name<-"visit_start_date"
   log_entry_content<-(read.csv(log_file_name))
@@ -58,11 +40,21 @@ generateLevel2Visit <- function () {
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
                                                                c(field_name, 'visit_concept_id'), c(9203,'ED'))) 
+  
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(ED)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-ED')));
   
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), 
+                                                               c(2000000469,'OP Non-Physician'))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"(OP Non-Physician)","\n"))
+  fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-OP-NonPhysician')));
   
   ### AA009 datetime inconsistency
   log_entry_content<-(read.csv(log_file_name))
@@ -121,13 +113,9 @@ generateLevel2Visit <- function () {
                                                                )) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
-  #print('CHECKPOINT')
-  
+
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
-  
-  #close the connection
-  #close_database_connection_OHDSI(con,config)
+
 }

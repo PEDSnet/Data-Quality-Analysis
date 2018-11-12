@@ -1,7 +1,7 @@
 flog.info(Sys.time())
 
 generateDrugExposureReport <- function() {
-  #establish table
+
   table_name<-"drug_exposure"
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")

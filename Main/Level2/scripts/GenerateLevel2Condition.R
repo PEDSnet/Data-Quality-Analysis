@@ -71,6 +71,16 @@ generateLevel2Condition <- function() {
   
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "outpatient (non-physician) visits linked to inpatient condition headers",
+                                                                 2000000469, 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
 
   ### Print top 100 no matching concept source values in condition table 
   condition_no_match<- select( filter(condition_tbl, condition_concept_id==0)
@@ -103,13 +113,12 @@ generateLevel2Condition <- function() {
   ### implementation of unexpected top inpatient conditions check 
   #filter by inpatient and outpatient visits and select visit occurrence id column
   inpatient_visit_tbl<-select(filter(visit_tbl,
-                                     (visit_concept_id==9201
+                                     (visit_concept_id==9201 
                                       | visit_concept_id==2000000048) & !is.na(visit_end_date)
   )
   ,visit_occurrence_id,visit_start_date, visit_end_date)
   
   ###### Identifying outliers in top inpatient conditions 
-  #inpatient_visit_df<-as.data.frame(inpatient_visit_tbl)
   inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
                                         , visit_occurrence_id)
 
@@ -168,7 +177,7 @@ generateLevel2Condition <- function() {
   
   
   ### printing top 100 outpatient conditions by patient counts
-  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
+  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202 | visit_concept_id==2000000469)
                                ,visit_occurrence_id, person_id)
   
   ### implementation of unexpected top outpatient conditions check 

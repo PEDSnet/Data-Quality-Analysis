@@ -25,7 +25,7 @@ generateVisitPayerReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,current_total_count)) 
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
-  
+
   df_total_visit_count<-retrieve_dataframe_count(data_tbl,"visit_occurrence_id", distinction = T)
   fileContent<-c(fileContent,paste("The visit_payer to visit ratio is ",
                                    round(df_total_procedure_count[1][1]/df_total_visit_count[1][1],2),"\n"))
@@ -38,7 +38,7 @@ generateVisitPayerReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))

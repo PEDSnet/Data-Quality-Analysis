@@ -33,6 +33,7 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
                                          & (visit_concept_id ==9201
                                             |visit_concept_id== 9202
                                             |visit_concept_id== 9203
+                                            |visit_concept_id==2000000469
                                             |visit_concept_id==42898160
                                             |visit_concept_id==44814710
                                             |visit_concept_id==2000000048

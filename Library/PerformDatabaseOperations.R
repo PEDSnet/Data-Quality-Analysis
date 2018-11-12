@@ -48,16 +48,11 @@ dqa_tbl <-
 ### write to a remote source 
 create_database_copy<-function(db_tbl, table_name)
 {
-  print(table_name)
   if(db_has_table(req_env$db_src, table_name))
   {
     db_drop_table(req_env$db_src, table_name, force = FALSE)
-    print(table_name)
   }
-  print('here')
-  print(table_name)
   dplyr::copy_to(req_env$db_src, db_tbl, name  = table_name, overwrite = FALSE)
-  print(table_name)
   db_tbl<- tbl(req_env$db_src, table_name)
   
   return(db_tbl)
@@ -71,9 +66,9 @@ retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
     select_(column_list) %>%
     na.omit() %>%
     tally() %>%
-    collect() %>%
-    as.integer()
-
+    as.data.frame()
+  
+  counts = as.integer(counts[1,1])
   test_that("Retrieve Dataframe Count Correct Length", expect_equal(length(counts), 1))
   return(counts)
 }
@@ -83,8 +78,7 @@ retrieve_dataframe_record_count<-function(table_df)
 {
    table_df = table_df %>%
        tally() %>%
-       collect() %>%
-       as.integer()
+       as.data.frame()
   test_that("Retrieve_dataframe_record_count does not have unique total row value", 
             expect_equal(length(table_df), 1))
   return(table_df)
@@ -206,11 +200,10 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
   if(column_list[1] == "count(*)"){
       table_df <- table_df %>%
         tally() %>%
-        collect() %>%
-        as.integer()
+        as.data.frame()
   }
   else{
-    table_df = table_df %>%
+    table_df <- table_df %>%
       select_(.dots = column_list) %>%
       as.data.frame()
   }
@@ -334,7 +327,7 @@ retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL
       summarize(freq = n()) %>%
       as.data.frame()
   }
-  table_df$freq = as.integer(table_df$freq) 
+  table_df$freq = as.numeric(table_df$freq) 
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   return(table_df)

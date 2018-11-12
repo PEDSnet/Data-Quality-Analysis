@@ -18,7 +18,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   table_name<-table_list[1]
   date_field<-field_list[1]
   
-  #date_field<-field_list[2]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, date_field)
 
   if(is.null(fact_type)) ### if generating summary for entire table
@@ -61,9 +60,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   describeYYMMField(date_dist_tbl_simplified%>% select(yyyymm, yyyymm_level_count)
                     , table_name, date_field, fact_type)
   
-  
-  #print(glimpse(date_dist_tbl_simplified))
-  
   ## this table contains deltas and the data points used for outlier detection 
   date_dist_delta<- date_dist_tbl_simplified %>% 
       inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) %>%
@@ -83,7 +79,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   
   date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
   
-  if(nrow(date_dist_delta)>0)
+  if(nrow(date_dist_delta)>0) 
   {
   date_dist_delta$outlier<-FALSE
   for(i in 1:nrow(date_dist_delta))
@@ -106,7 +102,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     outlier_message<-paste(outlier_message,df_outliers[i,1], "(", df_outliers[i,2],")")
   }
   
-    
   if(nrow(df_outliers)>0)
   {
     # create an issue 
