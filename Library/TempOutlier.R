@@ -103,7 +103,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   if(is.null(fact_type)) 
   outlier_message<- "list of months with unexpected changes in number of records YYYY-MM (change since last month):\n"
   else
-    outlier_message<- paste0("list of months for ", field_list[1], fact_type[1] ,
+    outlier_message<- paste0("list of months for ", field_list[1], "-",fact_type[1] ,
                              " with unexpected changes in number of records below ",floor(lower_bound), 
                              " or above ", ceiling(upper_bound), " for ",fact_type[2], 
                              " YYYY-MM (change since last month):\n")
@@ -119,7 +119,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     issue_obj<-Issue(theObject, table_list, field_list, outlier_message)
     # log issue 
     return(logIssue(issue_obj))
-    
   }
   }
   NextMethod("applyCheck",theObject)
