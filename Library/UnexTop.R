@@ -63,7 +63,7 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
   temp1<-inner_join(procedure_concept_ancestor_tbl, procedure_concept_ancestor_tbl, 
                     by =c("ancestor_concept_id"="ancestor_concept_id"))
   temp2<-filter(temp1
-                , max_levels_of_separation.x==1 & max_levels_of_separation.y==1)
+                , max_levels_of_separation.x==2 & max_levels_of_separation.y==2)
   sibling_concepts_tbl<-
     (select (temp2,
              descendant_concept_id.x, descendant_concept_id.y)
@@ -104,7 +104,7 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
     extended_list<-top_facts_other_sites_list
   }
   issues_list<-matrix("",ncol=8, nrow=0)
-  for(row in 1:20)
+  for(row in 1:10)
   {
     ## add to descriptive report
     ## match with lists from other sites.
@@ -115,6 +115,7 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
         # create an issue 
         issue_obj<-Issue(theObject, table_name, field_name, paste(error_message,
                                                                   data_file[row,1],
+                                                                  "for your site ranked number", row,
                                                                   data_file[row,2])
                          )
         # log issue 

@@ -49,9 +49,9 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   ## this table contains monthly distributions 
   date_dist_tbl_simplified<- date_dist_tbl %>%
       filter(year>= 2012) %>%
-      filter(year<= 2017) %>%
+      filter(year<= year(Sys.Date())) %>%
     mutate(yyyymm = paste0(year,'-',month)) %>%
-    group_by (yyyymm) %>%
+    group_by(yyyymm) %>%
     dplyr::summarise(yyyymm_level_count = sum(date_level_count)) %>%
     dplyr::mutate(rnum = row_number()) %>%
     dplyr::mutate(next_rnum = rnum+1)
@@ -67,15 +67,24 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
       select(yyyymm.y, change_over_last_month)
   
   iqr_value<- IQR(date_dist_delta$change_over_last_month)
+  sd_value <- sd(date_dist_delta$change_over_last_month)
+  mean_value <- mean(date_dist_delta$change_over_last_month)
 
   q1<-as.integer(
     quantile(date_dist_delta$change_over_last_month)[2]  
   )
 
   q3<-as.integer(quantile(date_dist_delta$change_over_last_month)[4])
-  lower_bound<- q1-1.5*iqr_value
-  upper_bound<-q3+1.5*iqr_value
+  lower_bound<-as.integer(round(mean_value-3*sd_value))
+  upper_bound<-as.integer(round(mean_value+4*sd_value))
 
+  if(!(is.na(lower_bound) | is.na(upper_bound))){
+    png(paste(normalize_directory_path(g_config$reporting$site_directory),
+            get_image_name(table_list[1],paste(field_list[1],"_",fact_type[1],sep="")),sep=""))
+    hist(as.integer(date_dist_delta$change_over_last_month),col = 'blue', 
+       main = paste0(field_list[1]," Difference Month-to-Month"))
+    dev.off()
+  }
   
   date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
   
@@ -94,8 +103,10 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   if(is.null(fact_type)) 
   outlier_message<- "list of months with unexpected changes in number of records YYYY-MM (change since last month):\n"
   else
-    outlier_message<- paste0("list of months with unexpected changes in number of records ",fact_type[2],
-                             "YYYY-MM (change since last month):\n")
+    outlier_message<- paste0("list of months for ", field_list[1], "-",fact_type[1] ,
+                             " with unexpected changes in number of records below ",floor(lower_bound), 
+                             " or above ", ceiling(upper_bound), " for ",fact_type[2], 
+                             " YYYY-MM (change since last month):\n")
   
   for( i in 1:nrow(df_outliers))
   {
@@ -108,7 +119,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     issue_obj<-Issue(theObject, table_list, field_list, outlier_message)
     # log issue 
     return(logIssue(issue_obj))
-    
   }
   }
   NextMethod("applyCheck",theObject)

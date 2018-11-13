@@ -60,7 +60,6 @@ generateLevel2ADT_Occurrence <- function () {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

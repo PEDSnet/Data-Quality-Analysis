@@ -28,12 +28,13 @@ applyCheck.PostDeath<- function(theObject, table_list, field_list)
   
   patient_tbl<-cdm_tbl(req_env$db_src, table_name_2)
   
-  df_after_death<-as.data.frame(
-    select_(
-      filter_(inner_join(fact_tbl,patient_tbl, by =c("person_id"="person_id")),
-              paste0(field_name_1, '>', field_name_2))
-      ,quote(person_id), field_name_1
-    ))
+  df_after_death<- fact_tbl %>%
+      inner_join(patient_tbl, by ="person_id") %>%
+      rename_(field_name_1 = field_name_1) %>%
+      mutate(field_name_1 = sql('cast("field_name_1" as date)')) %>%
+      filter_(paste0('field_name_1 >', field_name_2)) %>%
+      select(person_id, field_name_1) %>%
+      as.data.frame()
  
   if(nrow(df_after_death)>0)
   {
