@@ -20,21 +20,13 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list)
 
   fact_tbl <- cdm_tbl(req_env$db_src, fact_table_name)
   
-  
   patient_tbl<-cdm_tbl(req_env$db_src, 'person') %>% 
     select(person_id, birth_datetime) 
-    #%>% 
-    #collect() %>%
-    #dplyr::mutate(birth_date = lubridate::date(birth_datetime)) %>%
-    #select(person_id, birth_date)
-    #copy_to(req_env$db_src,'patient_birth_date')
-  
-  #patient_tbl<-create_database_copy(patient_tbl, 'patient_birth_date')
-  
                    
   df_before_dob<- fact_tbl %>% 
       inner_join(patient_tbl, by =c("person_id"="person_id")
                              ) %>%
+    mutate(birth_datetime = sql('cast("birth_datetime" as date)')) %>%
     filter_(paste0('birth_datetime >', date_field)) %>%
     select_(quote(person_id), date_field) %>% collect() 
   
