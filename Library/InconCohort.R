@@ -57,7 +57,7 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
   df_invalid_patients<-as.data.frame(invalid_patients)
 
   
-  if(nrow(df_invalid_patients)>0)
+  if(nrow(df_invalid_patients)>1)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, nrow(df_invalid_patients))

@@ -119,7 +119,7 @@ reportUnexpected<-function(table_df,field_name,permissible_values){
   test_that("Testing Report Unexpected selects one column", expect_equal(ncol(table_df), 1))
   table_df <- table_df[!is.element(table_df[,1], permissible_values),1]
   return_message<-""
-  return_message <- paste(return_message, table_df, sep = "invalid_valid_found:", collapse = ";")
+  return_message <- paste(return_message, table_df, sep = "invalid_value_found:", collapse = ";")
   return(return_message)
 }
 
@@ -230,7 +230,7 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
     minr <- min(nrow(table_df), 5)
     for(index in 1:minr){
         return_message<-paste(return_message,table_df[index,1], "|count=",table_df[index,2])
-        if(index<5) return_message<-paste(return_message,",\n")
+        if(index < minr){ return_message<-paste(return_message,",\n")}
     }
     dev.off()
     return(return_message)

@@ -25,8 +25,9 @@ create_meaningful_message_concept_id<-function(table_df, message,field_name){
                      ")",sep="")
   
   new_message <- paste("The most frequent values for",field_name,"are:")
+
   for(i in 1:5){
-    if(unlist(strsplit(concept_id_list[i],"\\|count="))[1]=="\n NA ") break;
+    if(is.na(unlist(strsplit(concept_id_list[i],"\\|count="))[1])) break;
     new_message <- paste(new_message,unlist(strsplit(concept_id_list[i],"\\|count="))[1],
                          "(",get_concept_name(table_df, 
                                   as.numeric(unlist(strsplit(concept_id_list[i],"\\|count="))[1]))

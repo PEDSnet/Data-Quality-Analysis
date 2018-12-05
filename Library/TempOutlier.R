@@ -48,9 +48,11 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   
   ## this table contains monthly distributions 
   date_dist_tbl_simplified<- date_dist_tbl %>%
-      filter(year>= 2012) %>%
-      filter(year<= year(Sys.Date())) %>%
+    filter(year>= 2012) %>%
+    filter(year<= year(Sys.Date())) %>%
     mutate(yyyymm = paste0(year,'-',month)) %>%
+    filter(yyyymm != paste0(year(Sys.Date()),'-',month(Sys.Date())),
+           yyyymm != paste0(year(Sys.Date()),'-',month(Sys.Date() - 30))) %>%
     group_by(yyyymm) %>%
     dplyr::summarise(yyyymm_level_count = sum(date_level_count)) %>%
     dplyr::mutate(rnum = row_number()) %>%
