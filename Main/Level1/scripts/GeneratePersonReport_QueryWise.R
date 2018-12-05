@@ -265,7 +265,7 @@ generatePersonReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeDateField(df_table, table_name,field_name)
+  message<-describeDateField(df_table, table_name,field_name, datetime = 1)
   
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), 

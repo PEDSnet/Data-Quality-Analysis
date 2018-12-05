@@ -45,9 +45,9 @@ generateDrugExposureReport <- function() {
 
   df_drug_patient_ratio <- retrieve_dataframe_ratio_group_join(data_tbl,
                                                                     cdm_tbl(req_env$db_src,"visit_occurrence"),
-                                                                    "drug_exposure_id", "person_id",
+                                                                    num ="drug_exposure_id", den = "person_id",
                                                                     "visit_concept_id", "visit_occurrence_id")
-  
+
   for(i in 1:nrow(df_drug_patient_ratio))
   {
     label<-df_visit[df_visit$concept_id==df_drug_patient_ratio[i,1],2]
@@ -95,8 +95,7 @@ generateDrugExposureReport <- function() {
   {
     fileContent<-c(fileContent,paste("\n The source vocabulary is",get_vocabulary_name(concept_tbl, df_table[2,1]),"\n"))
   }
-  if(nrow(df_table)==1)
-  {
+  if(nrow(df_table)==1){
       if(is.na(df_table[1,1]))
       {
           fileContent<-c(fileContent,paste("\n The source vocabulary is NA \n"))
@@ -119,9 +118,6 @@ generateDrugExposureReport <- function() {
   field_name<-"drug_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-
-  ###########DQA CHECKPOINT -- missing information##############
-  # add % of no matching concept (concept id = 0). for the completeness report
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
@@ -155,15 +151,14 @@ generateDrugExposureReport <- function() {
   # create meaningful message
   new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name("person_id",field_name));
-
   field_name<-"drug_exposure_start_datetime"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
+
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  message<-describeDateField(df_table, table_name,field_name)
+  message<-describeDateField(df_table, table_name,field_name, datetime = 1)
 
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
-  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   message<-describeTimeField(df_table, table_name,field_name)
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
@@ -179,7 +174,7 @@ generateDrugExposureReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   if(missing_percent<100)
   {
-    message<-describeDateField(df_table, table_name,field_name)
+    message<-describeDateField(df_table, table_name,field_name, datetime = 1)
     
     ### DQA checkpoint - future date
     logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 

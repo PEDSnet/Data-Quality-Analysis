@@ -103,22 +103,18 @@ generateImmunizationReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
-  print("TEST 1")
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
   {
-    print("TEST 2")
     message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
     fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-    print("TEST 3")
   }
   field_name="imm_route_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   df_modifier <-generate_df_concepts(table_name,"imm_route_concept_id_dplyr.txt", concept_tbl)
-  print("TEST 4")
 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)

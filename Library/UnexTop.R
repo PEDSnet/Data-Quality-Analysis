@@ -104,14 +104,18 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
     extended_list<-top_facts_other_sites_list
   }
   issues_list<-matrix("",ncol=8, nrow=0)
-  for(row in 1:10)
-  {
+  
+  issues_findings <- NULL
+  
+  for(row in 1:10){
     ## add to descriptive report
     ## match with lists from other sites.
     if(is.element(data_file[row,1],extended_list)==FALSE
         && (data_file[row,1]!=444093) # filter out "patient status finding" concept - for procedure domain
       )
     {
+       issues_findings <- c(issues_findings, data_file[row,1])
+      
         # create an issue 
         issue_obj<-Issue(theObject, table_name, field_name, paste(error_message,
                                                                   data_file[row,1],
