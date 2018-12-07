@@ -1,6 +1,6 @@
 generateCareSiteReport <- function() {
 
-  # read a table 
+  #Read tables 
   table_name<-"care_site"
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
@@ -122,8 +122,6 @@ generateCareSiteReport <- function() {
                                                    list(38004479,45756813, "nephrology") ,
                                                     list(45756810,38004455, "GI(Gastroenterology)")),
                                                    data_tbl))
-  
-
 
   #FOREIGN KEY fields
   #location id
@@ -138,8 +136,7 @@ generateCareSiteReport <- function() {
   message<-describeForeignKeyIdentifiers(data_tbl,table_name, field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
-
-
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

@@ -76,6 +76,7 @@ generateMeasurementOrganismReport <- function() {
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), 
                                                    c(table_name),c(field_name),data_tbl)) 
+
   message<-describeDateField(df_table, table_name,field_name, datetime = 1)
  
   if(missing_percent<100)

@@ -245,11 +245,11 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
     table_df <- table_df %>% na.omit()
     table_df[,1] <- as.Date(table_df[,1])
     ###Aggregate datetimes to not treat different times as unique dates
-    if(datetime){ 
+    if(datetime & nrow(table_df) > 1){ 
       table_df <- aggregate(reformulate(termlabels = field_name,response = "freq"),
                                         table_df,FUN = sum)}
-    date_max = max(table_df[,1])
-    date_min = min(table_df[,1])
+    date_max = max(table_df[,1], na.rm = T)
+    date_min = min(table_df[,1], na.rm = T)
   }
   else{
   table_df <- table_df %>%
@@ -260,8 +260,8 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
   table_df[,2] <- as.numeric(table_df[,2])
 
   table_df[,1] = as.Date(table_df[,1])
-  date_max <- max(table_df[,1])
-  date_min <- min(table_df[,1])
+  date_max <- max(table_df[,1], na.rm = T)
+  date_min <- min(table_df[,1], na.rm = T)
   }
 
   if(nrow(table_df)>0){
