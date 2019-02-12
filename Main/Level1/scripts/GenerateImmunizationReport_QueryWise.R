@@ -27,20 +27,22 @@ generateImmunizationReport <- function() {
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
   field_name<-"immunization_source_value" #  3 minutes
-  
+  print("HEre 1")
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  print("HEre 2")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
+  print("HEre 3")
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    , 2, data_tbl))  ## number of components
-
+  print("HEre 4")
   field_name<-"immunization_source_concept_id" #  3 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
-  
+  print("HEre 5")
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
 

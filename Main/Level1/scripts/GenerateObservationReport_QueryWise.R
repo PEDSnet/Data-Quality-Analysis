@@ -1,6 +1,5 @@
 generateObservationReport <- function() {
   flog.info(Sys.time())
-
   #Read table
   table_name<-"observation"
   data_tbl <- cdm_tbl(req_env$db_src, table_name)
@@ -15,19 +14,18 @@ generateObservationReport <- function() {
                           issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
 
-
   #PRIMARY FIELD and related measures
   field_name<-"observation_id"
   df_total_observation_count<-retrieve_dataframe_count(data_tbl,field_name)
   current_total_count<-as.numeric(df_total_observation_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", 
                                    formatC(current_total_count, format="d", big.mark=','),"\n"))
-  
+
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
-  
+
   df_total_patient_count<-retrieve_dataframe_count(data_tbl,"person_id", distinction = T)
   fileContent<-c(fileContent,paste("The observation to patient ratio is ",
                                    round(df_total_observation_count[1][1]/df_total_patient_count[1][1],2),"\n"))
@@ -71,7 +69,7 @@ generateObservationReport <- function() {
 
   ###########DQA CHECKPOINT -- missing information##############
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
-  
+ 
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   fileContent<-c(fileContent,message)
@@ -86,7 +84,7 @@ generateObservationReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,"observation_concept_id.csv", concept_tbl, data_tbl)) 
+                                                   ,"observation_concept_id.csv", concept_tbl, df_table)) 
   #fileContent<-c(fileContent,unexpected_message)
   describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
@@ -99,9 +97,8 @@ generateObservationReport <- function() {
                                                      list(3040464,  "DRG") ,
                                                     list(40760190,  "Delivery Mode") ,
                                                     list(4005823, 4219336, 4275495,  "Tobacco")
-                                                    ), data_tbl)
+                                                    ), df_table)
 )
-  
   
   #NOMINAL Fields
   field_name<-"person_id" #
@@ -110,7 +107,7 @@ generateObservationReport <- function() {
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
-  print("check 5")
+
   field_name<-"provider_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -134,16 +131,16 @@ generateObservationReport <- function() {
                                                            missing_visit_percent, table_name, g_data_version));
 
   # ORDINAL Fields
-  field_name<-"observation_date" #
-  df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  message<-describeDateField(df_table, table_name,field_name)
-  fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
+  field_name<-"observation_date" 
+  df_table<-retrieve_dataframe_group(table_df = data_tbl,field_name = field_name)
+  try(fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n")))
+  try(message<-describeDateField(df_table, table_name,field_name))
+  fileContent<-c(fileContent,message,paste_image_name(table_name,field_name))
 
   ###########DQA CHECKPOINT##############
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl))
-  field_name<-"observation_datetime" #
+  field_name<-"observation_datetime" 
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
 
@@ -151,7 +148,6 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeTimeField(df_table, table_name,field_name)
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
-
   # not plotting the value_as_string column as it's a free text field
   field_name<-"value_as_string"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -166,7 +162,7 @@ generateObservationReport <- function() {
   field_name<-"value_as_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-  
+
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
 
@@ -180,7 +176,7 @@ generateObservationReport <- function() {
   df_concepts <- generate_df_concepts(table_name,"value_as_concept_id_dplyr.txt", concept_tbl)
   df_concepts <- rbind(df_concepts, condition_2)
   remove(condition_2)
-  
+
   unexpected_message<- reportUnexpected(df_table, field_name, df_concepts$concept_id)
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,df_concepts, concept_tbl, data_tbl)) 
@@ -214,14 +210,16 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"unit_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  
+
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  
+  try(logFileData<- custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl))) 
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+
   df_table_unit_enhanced<-EnhanceFieldValues(df_table,field_name,df_unit);
-  if( is.na(df_table_unit_enhanced[1,1]) && nrow (df_table_unit_enhanced==1))
+
+  if( is.na(df_table_unit_enhanced[1,1]) && nrow(df_table_unit_enhanced) == 1)
   {
      flog.info("unit concept id data not available")
   } else
@@ -238,11 +236,21 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"observation_type_concept_id.csv", concept_tbl, data_tbl)) 
   
+  
+  fact_type_count<-df_table[df_table$observation_type_concept_id==38000280,2]
+  write_total_fact_type_counts(table_name,"EHR" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("EHR",fact_type_count))) 
+  
+  fact_type_count<-df_table[df_table$observation_type_concept_id==44814721,2]
+  write_total_fact_type_counts(table_name,"Patient_Reported" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Patient_Reported",fact_type_count))) 
+  
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
   field_name<-"qualifier_source_value" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -264,7 +272,7 @@ generateObservationReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  
+
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
@@ -279,6 +287,18 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"qualifier_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
 
+  
+  ###TESTING FOR COMPLETELY MISSING FIELD###
+  field_name<-"fake_date" 
+  df_table<-retrieve_dataframe_group(table_df = data_tbl,field_name = field_name)
+  try(fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n")))
+  try(message<-describeDateField(df_table, table_name,field_name))
+  fileContent<-c(fileContent,message,paste_image_name(table_name,field_name))
+  
+  ###########DQA CHECKPOINT##############
+  ### DQA checkpoint - future date
+  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl))
+  
   #ordinal field
   field_name<-"value_as_number"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -291,14 +311,13 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeRatioField(df_table, table_name,field_name,"")
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-
   flog.info(Sys.time())
 
   colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
-
+  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

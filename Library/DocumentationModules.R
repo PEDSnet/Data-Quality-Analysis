@@ -16,7 +16,8 @@ strEndsWith <- function(haystack, needle)
 
 create_meaningful_message_concept_id<-function(table_df, message,field_name){
   # store concept identifiers in a list
-  concept_id_list <- unlist(strsplit(unlist(strsplit(message,":"))[2],","))
+  concept_id_list <- tryCatch(unlist(strsplit(unlist(strsplit(message,":"))[2],",")),
+           error = function(e) character(0))
   in_clause <- paste("(",concept_id_list[1],
                      ",",concept_id_list[2],
                      ",",concept_id_list[3],
@@ -25,7 +26,8 @@ create_meaningful_message_concept_id<-function(table_df, message,field_name){
                      ")",sep="")
   
   new_message <- paste("The most frequent values for",field_name,"are:")
-
+  
+  if(length(concept_id_list[1]) > 0){
   for(i in 1:5){
     if(is.na(unlist(strsplit(concept_id_list[i],"\\|count="))[1])) break;
     new_message <- paste(new_message,unlist(strsplit(concept_id_list[i],"\\|count="))[1],
@@ -36,6 +38,7 @@ create_meaningful_message_concept_id<-function(table_df, message,field_name){
                          ,sep="")
     if(i<5)
       new_message<- paste(new_message,",\n")
+  }
   }
   return(new_message)
 }
@@ -55,7 +58,6 @@ create_meaningful_message_concept_code<-function(message,field_name,con,config)
   new_message <- paste("The most frequent values for",field_name,"are:")
   for(i in 1:5)
   {
-
     new_message <- paste(new_message,unlist(strsplit(concept_code_list[i],"\\|count="))[1],
                          "(",get_concept_name_by_concept_code(unlist(strsplit(concept_code_list[i],"\\|count="))[1],con, config),")"
                          ,unlist(strsplit(concept_code_list[i],"\\|"))[2])
@@ -188,7 +190,6 @@ get_previous_cycle_total_count<-function(site_name, table_name)
 }
 get_previous_cycle_total_fact_type_count<-function(site_name, col_name)
 {
-  #flog.info(getwd())
   df_total_counts<-read.csv(g_total_fact_type_counts_path, header = TRUE, sep = ",", quote = "\"",
                             dec = ".", fill = TRUE, comment.char = "")
   # flog.info(df_total_counts)

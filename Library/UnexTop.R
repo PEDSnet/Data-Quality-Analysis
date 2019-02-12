@@ -16,7 +16,7 @@ UnexTop <- function()
 applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
 {
  count_colname<-metadata[4]
- data_filename<-metadata[5]
+ data_filename<-metadata[5] 
  error_message<-metadata[6]
  ranked_facts_previous_cycle_path<-as.character(metadata[7])
  domain<-as.character(metadata[8])

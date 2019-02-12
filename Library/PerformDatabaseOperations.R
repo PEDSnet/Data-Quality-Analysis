@@ -313,8 +313,9 @@ retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
 }
 
 retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL){
+
   if(!is.null(distinct_field)) table_df <- table_df %>% rename_(distinct_field = distinct_field)
-  table_df = table_df %>%
+  table_df <- table_df %>%
     group_by_(field_name)
 
   if(!is.null(distinct_field)){
@@ -323,13 +324,15 @@ retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL
       as.data.frame()
   }
   else{
-    table_df <- table_df %>%
+    table_df <- tryCatch(table_df %>%
       summarize(freq = n()) %>%
       as.data.frame()
+    , error = function(e){setNames(data.frame(matrix(ncol = 2, nrow = 0)), c(field_name, "freq"))})
   }
-  table_df$freq = as.numeric(table_df$freq) 
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
+  table_df[,"freq"] = as.numeric(table_df[,"freq"]) 
+
   return(table_df)
 }
 

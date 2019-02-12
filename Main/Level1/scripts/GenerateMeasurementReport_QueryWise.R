@@ -113,7 +113,6 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
-  
   print(field_name)
   
   field_name = "measurement_type_concept_id"
@@ -125,7 +124,29 @@ generateMeasurementReport <- function() {
                                                      list(2000000033,  2000000032, "vital signs"),
                                                      list(44818702, "lab records")), data_tbl) )
   
+  print("CHECK HERE 1")
+  fact_type_count<-data_tbl %>% 
+    filter(measurement_type_concept_id == 44818702) %>% 
+    summarize(total = n()) %>%
+    select(total) %>%
+    as.data.frame() %>%
+    sum()
+  write_total_fact_type_counts(table_name,"Labs" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Labs",fact_type_count))) 
+  print("CHECK HERE 2")
+  fact_type_count<-data_tbl %>%
+    filter(measurement_type_concept_id %in% c(2000000033, 2000000032)) %>% 
+    summarize(total = n()) %>%
+    select(total) %>%
+    as.data.frame() %>%
+    sum()
+  print("CHECK HERE 3")
+  write_total_fact_type_counts(table_name,"Vitals" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Vitals",fact_type_count))) 
   
+  print("CHECK HERE 4")
   print(field_name)
   
   field_name="measurement_source_value"
@@ -292,3 +313,8 @@ generateMeasurementReport <- function() {
   
   
 }
+
+
+
+
+

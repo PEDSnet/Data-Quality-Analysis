@@ -25,8 +25,6 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vo
   
   acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)
   
-
-  
   unexpected_message<-NULL
  
    if(length(used_vocabulary)>0)

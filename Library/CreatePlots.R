@@ -232,7 +232,7 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
         return_message<-paste(return_message,table_df[index,1], "|count=",table_df[index,2])
         if(index < minr){ return_message<-paste(return_message,",\n")}
     }
-    dev.off()
+    if(!is.null(dev.list())) dev.off()
     return(return_message)
    }
 }
@@ -258,16 +258,19 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
     dplyr::summarize(freq = n()) %>%
     as.data.frame()
   table_df[,2] <- as.numeric(table_df[,2])
-
+  flog.info("test 13")
   table_df[,1] = as.Date(table_df[,1])
+  flog.info("test 4")
   date_max <- max(table_df[,1], na.rm = T)
   date_min <- min(table_df[,1], na.rm = T)
   }
-
+  flog.info("test 15")
   if(nrow(table_df)>0){
+    flog.info("test 16")
     date_range <- paste("\n Date range: ",
                       date_min,"-", date_max)
     total_locations <- nrow(table_df)
+    flog.info("test 17")
     png(paste(normalize_directory_path( g_config$reporting$site_directory),
               get_image_name(table_name,field_name),sep=""))
 
@@ -276,22 +279,23 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
               main = paste(field_name,": Distribution"),
               xlab = paste(field_name,"(Total: ",total_locations,")"), 
               ylab = paste(table_name,"Count"))
-
+    flog.info("test 18")
     table_df <- as.data.frame(table_df)
     table_df <- table_df[order(table_df[,2], decreasing = T),]
-
+    flog.info("test 19")
     return_message<-paste("The most frequent values for",field_name,"are:")
     for (index in 1:5)
     {
       return_message<-paste(return_message,(table_df[index,1]))
       if(index<5){return_message<-paste(return_message,",")}
     }
+    flog.info("test 20")
     return_message<-c(return_message, date_range)
     # check if future dates are included
     if(Sys.Date() < date_max)
       return_message<-c(return_message,"\nWARNING: includes future dates")
     
-    dev.off()
+    if(!is.null(dev.list())) dev.off()
     return(return_message)  
   }
 }
@@ -360,7 +364,7 @@ describeTimeField<-function(table_df, table_name,field_name){
     }
     return_message<-c(return_message, paste("\n Time range: ",time_min," - ",time_max))
     
-    dev.off()
+    if(!is.null(dev.list())) dev.off()
     return(return_message)
   } 
 }
@@ -480,8 +484,8 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
         return_message<-paste(return_message,table_df[index,1]);
         if(index<5) {return_message<-paste(return_message,",")}
       }
-      dev.off()
-      dev.off()
+      if(!is.null(dev.list())) dev.off()
+      if(!is.null(dev.list())) dev.off()
       return(return_message)
     }
 }

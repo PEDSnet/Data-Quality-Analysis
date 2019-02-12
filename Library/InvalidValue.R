@@ -28,12 +28,16 @@ applyCheck.InvalidValue <- function(theObject, table_list, field_list,metadata, 
   df_table<-retrieve_dataframe_group(table_df,field_name)
   current_values<-c(df_table[,1])
   unexpected_message<-""
+
+  if(nrow(df_table) > 0){
   for(i in 1:nrow(df_table))
   {
     value <-df_table[i,1]
-    if(!is.element(trim(value),order_bins) && !is.na(value))
+    print(value)
+    if(!is.element(trim(value),order_bins) & !is.na(value))
       unexpected_message<-paste(unexpected_message, trim(value),";")
     
+  }
   }
   
   if( nchar(trim(unexpected_message))>0)

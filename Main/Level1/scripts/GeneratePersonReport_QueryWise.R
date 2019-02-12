@@ -199,11 +199,12 @@ generatePersonReport <- function() {
   ## reading specific subset of the concept table to retrieve language concepts
   field_name="language_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
+  
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"language.csv", concept_tbl, data_tbl)) 
-  df_lang <-generate_list_concepts(table_name,"language.csv")
 
+  df_lang <-generate_list_concepts(table_name,"language.csv")
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting

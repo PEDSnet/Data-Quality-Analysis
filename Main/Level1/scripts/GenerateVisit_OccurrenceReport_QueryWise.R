@@ -170,7 +170,7 @@ generateVisitOccurrenceReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,"visit_occurrence_id_person_id_ratio"));
   
   ### admitting source value 
-  field_name="admitting_source_value"
+  field_name="admitted_from_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
@@ -186,26 +186,26 @@ generateVisitOccurrenceReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   
   ### admitting source concept id 
-  field_name="admitting_source_concept_id"
+  field_name="admitted_from_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,"admitting_source_concept_id.csv", concept_tbl, data_tbl)) 
-  df_admitting_source_concept_id <-generate_list_concepts(table_name,"admitting_source_concept_id.csv")
+                                                   ,"admitted_from_concept_id.csv", concept_tbl, data_tbl)) 
+  df_admitted_from_concept_id <-generate_list_concepts(table_name,"admitted_from_concept_id.csv")
   
    ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
-  df_admitting_source_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_admitting_source_concept_id);
-  describeNominalField(df_admitting_source_concept_id_enhanced,table_name,field_name)
+  df_admitted_from_concept_id_enhanced<-EnhanceFieldValues(df_table,field_name,df_admitted_from_concept_id);
+  describeNominalField(df_admitted_from_concept_id_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name))
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl))
   
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
-                                                   c(field_name, "admitting_source_value"),data_tbl)) 
+                                                   c(field_name, "admitted_from_source_value"),data_tbl)) 
 
   ### admitting source value 
   field_name="discharge_to_source_value"

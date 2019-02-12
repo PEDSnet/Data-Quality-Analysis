@@ -27,10 +27,8 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
   
   for(list_index in 1:length(list_of_facts))
   {
-  #print(list_index)
   metadata<- unlist(list_of_facts[list_index])
   value_name<-metadata[length(metadata)]
-  #print(value_name)
   
   if(length(metadata)==2)
   {
@@ -60,8 +58,7 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
   } ## for loop ends
   
   NextMethod("applyCheck",theObject)
-  #return(c())
-  #print(issue_list)
+
   colnames(issue_list)<-c("g_data_version", "table","field", "issue_code", "issue_description",
                             "alias", "finding", "prevalence")
   

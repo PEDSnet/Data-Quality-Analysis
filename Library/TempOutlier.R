@@ -45,14 +45,14 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   
   if(table_name=="death")
     date_dist_tbl<-date_dist_tbl %>% filter(month <'12' & month > '01')
+
   
   ## this table contains monthly distributions 
   date_dist_tbl_simplified<- date_dist_tbl %>%
     filter(year>= 2012) %>%
     filter(year<= year(Sys.Date())) %>%
     mutate(yyyymm = paste0(year,'-',month)) %>%
-    filter(yyyymm != paste0(year(Sys.Date()),'-',month(Sys.Date())),
-           yyyymm != paste0(year(Sys.Date()),'-',month(Sys.Date() - 30))) %>%
+    filter(yyyymm <= paste0(year(Sys.Date() - 31),'-',month(Sys.Date() - 31))) %>%
     group_by(yyyymm) %>%
     dplyr::summarise(yyyymm_level_count = sum(date_level_count)) %>%
     dplyr::mutate(rnum = row_number()) %>%
@@ -67,16 +67,10 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
       inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) %>%
       dplyr::mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
       select(yyyymm.y, change_over_last_month)
-  
-  iqr_value<- IQR(date_dist_delta$change_over_last_month)
+
   sd_value <- sd(date_dist_delta$change_over_last_month)
   mean_value <- mean(date_dist_delta$change_over_last_month)
 
-  q1<-as.integer(
-    quantile(date_dist_delta$change_over_last_month)[2]  
-  )
-
-  q3<-as.integer(quantile(date_dist_delta$change_over_last_month)[4])
   lower_bound<-as.integer(round(mean_value-3*sd_value))
   upper_bound<-as.integer(round(mean_value+4*sd_value))
 

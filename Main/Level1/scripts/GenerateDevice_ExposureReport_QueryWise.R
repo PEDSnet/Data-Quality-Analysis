@@ -164,37 +164,33 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   
   ######## Need to have discussion on what goes into this field before we can implement #######
-  
-  # field_name = "device_type_concept_id"
-  # df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
-  # order_bins <-c("2000000033","2000000032","44818702","44818703","44818704","45754907",NA)
-  # label_bins<-c("Vital Sign from healthcare delivery setting (2000000033)","Vital Sign from healthcare device (2000000032)","Lab result (44818702)","Pathology finding (44818703)","Patient reported value (44818704)","Derived Value (45754907)","NULL")
-  # color_bins <-c("2000000033"="lightcoral","2000000032"="steelblue1","44818702"="red","44818703"="grey64","44818704"="grey64","45754907"="grey64")
-  # fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  # #fileContent<-c(fileContent,reportMissingCount(df_table,table_name,field_name,big_data_flag))
-  # unexpected_message<- reportUnexpected(df_table,table_name,field_name,order_bins,big_data_flag)
-  # ###########DQA CHECKPOINT##############
-  # no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name,big_data_flag)
-  # fileContent<-c(fileContent,no_matching_message)
-  # logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
-  # logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
-  # fileContent<-c(fileContent,unexpected_message)
-  # describeNominalField(df_table,table_name,field_name, label_bins, order_bins,color_bins, big_data_flag)
-  # fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  # 
-  # if( nrow(subset(df_table,df_table$measurement_type_concept_id==2000000033))==0 && nrow(subset(df_table,df_table$measurement_type_concept_id==2000000032))==0 )  
-  # {
-  #   fileContent<-c(fileContent,"DQA WARNING: No Device Type","\n");
-  #   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Vitals sign records found", table_name, g_data_version));
-  #   
-  # }
-  # if(nrow(subset(df_table,df_table$measurement_type_concept_id==44818702))==0)
-  # {
-  #   fileContent<-c(fileContent,"DQA WARNING: No Lab Records","\n");
-  #   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Lab records found", table_name, g_data_version));
-  #   
-  # }
-  # 
+   
+  field_name = "device_type_concept_id"
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  unexpected_message<- reportUnexpected(df_table,table_name,field_name  )
+  ###########DQA CHECKPOINT##############
+  no_matching_message<-reportNoMatchingCount(df_table,table_name,field_name)
+  fileContent<-c(fileContent,no_matching_message)
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-002", field_name,extract_numeric_value(no_matching_message ), table_name, g_data_version));
+  logFileData<-custom_rbind(logFileData,apply_check_type_1("AA-002", field_name, unexpected_message, table_name, g_data_version));
+  fileContent<-c(fileContent,unexpected_message)
+  describeNominalField(df_table,table_name,field_name)
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+
+  if( nrow(subset(df_table,df_table$measurement_type_concept_id==2000000033))==0 && nrow(subset(df_table,df_table$measurement_type_concept_id==2000000032))==0 )
+  {
+    fileContent<-c(fileContent,"DQA WARNING: No Device Type","\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Vitals sign records found", table_name, g_data_version));
+
+  }
+  if(nrow(subset(df_table,df_table$measurement_type_concept_id==44818702))==0)
+  {
+    fileContent<-c(fileContent,"DQA WARNING: No Lab Records","\n");
+    logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-003", field_name, "No Lab records found", table_name, g_data_version));
+
+  }
+
   
   
   field_name<-"device_exposure_start_date"

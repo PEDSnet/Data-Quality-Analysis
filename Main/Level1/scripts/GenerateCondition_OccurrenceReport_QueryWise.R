@@ -72,10 +72,9 @@ generateConditionOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"condition_type_concept_id_dplyr.txt",
                                                    concept_tbl, data_tbl)) 
-  
+
   df_condition_type_concept_id <-generate_df_concepts(table_name,"condition_type_concept_id_dplyr.txt",
                                                       concept_tbl)
-
   df_table_condition_type_enhanced<-EnhanceFieldValues(df_table,field_name,df_condition_type_concept_id);
   describeNominalField(df_table_condition_type_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
@@ -87,7 +86,21 @@ generateConditionOccurrenceReport <- function() {
                                                    list(2000000101,2000000102,2000000103,  "outpatient header 2nd position"), 
                                                    list(2000000089,2000000090,2000000091,  "EHR problem list entry")
                                                    ), data_tbl)) 
+
+  fact_type_count<-sum(df_table[df_table[,field_name] %in% c(2000000098,2000000093,2000000092,2000000099),2])
+  write_total_fact_type_counts(table_name,"Inpatient_Condition_Headers" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Inpatient_Conditon_Headers",fact_type_count))) 
+
+  fact_type_count<-sum(df_table[df_table[,field_name] %in% c(2000000102,2000000096,2000000095,2000000101),2])
+  write_total_fact_type_counts(table_name,"Outpatient_Condition_Headers" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("Outpatient_Condition_Headers",fact_type_count))) 
   
+  fact_type_count<-sum(df_table[df_table[,field_name] %in% c(2000001280,2000001281,2000001282,2000001283,2000001284,2000001285),2])
+  write_total_fact_type_counts(table_name,"ED_Condition_Headers" , fact_type_count)
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
+                                                   ,c("ED_Condition_Headers",fact_type_count)))
 
   # ORDINAL Fields
   field_name<-"condition_source_value"

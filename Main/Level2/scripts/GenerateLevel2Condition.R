@@ -54,20 +54,42 @@ generateLevel2Condition <- function() {
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
                                                    c("condition_type_concept_id", "visit_concept_id"), c(
-                                                     "inpatient visits linked to outpatient condition headers",
+                                                     "inpatient visits linked to incorrect condition headers",
                                                      9201
-                                                     , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102
-                                                     , 2000000103))) 
+                                                     , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102, 2000000103,
+                                                     2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))) 
   
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
- 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
                                                                c("condition_type_concept_id", "visit_concept_id"), c(
-                                                                 "outpatient visits linked to inpatient condition headers",
+                                                                 "inpatient (ED to inpatient) visits linked to incorrect condition headers",
+                                                                 2000000048
+                                                                 , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102, 2000000103,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "inpatient (observation) visits linked to incorrect condition headers",
+                                                                 2000000088
+                                                                 , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102, 2000000103,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "outpatient visits linked to incorrect condition headers",
                                                                  9202, 
-                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100))) 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))) 
   
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
@@ -75,13 +97,25 @@ generateLevel2Condition <- function() {
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
                                                                c("condition_type_concept_id", "visit_concept_id"), c(
-                                                                 "outpatient (non-physician) visits linked to inpatient condition headers",
+                                                                 "outpatient (non-physician) visits linked to incorrect condition headers",
                                                                  2000000469, 
-                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100))) 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))) 
   
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-
+  
+  log_entry_content<-(read.csv(log_file_name))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "Emergency visits linked to incorrect condition headers",
+                                                                 9203, 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100,
+                                                                 2000000095, 2000000096, 2000000097, 2000000101, 2000000102,2000000103))) 
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  
   ### Print top 100 no matching concept source values in condition table 
   condition_no_match<- select( filter(condition_tbl, condition_concept_id==0)
                                , condition_occurrence_id, condition_source_value)

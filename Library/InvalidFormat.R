@@ -25,8 +25,8 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, format, 
   
   invalid_message<-""
    ## check is source value has 2 pipes
-    for(i in 1:nrow(df_table))  
-    {
+  if(nrow(df_table) > 0){
+    for(i in 1:nrow(df_table)){
       source_value<-  df_table[i,1]
       if(length(unlist(strsplit(source_value, '\\|')))!=format) 
       {
@@ -36,7 +36,7 @@ applyCheck.InvalidFormat <- function(theObject, table_list, field_list, format, 
       if(nchar(trim(invalid_message)>500)) ## if sufficient examples have been collected
         break;
     }
-
+  }
   if( nchar(trim(invalid_message))>0)
   {
     # create an issue 
