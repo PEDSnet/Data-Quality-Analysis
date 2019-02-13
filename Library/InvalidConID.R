@@ -18,7 +18,7 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, metadata,
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
-  print('to here')
+
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   if(is.character(metadata)){
    if(grepl('csv$', metadata))

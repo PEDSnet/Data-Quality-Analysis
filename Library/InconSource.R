@@ -61,7 +61,6 @@ applyCheck.InconSource<- function(theObject, table_list, field_list,table_df)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, paste(concept_id_field, ",",source_value_field), paste(diff, "%",sep=""))
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     

@@ -1,5 +1,5 @@
-library(DBI)
-library(yaml)
+require(DBI)
+require(yaml)
 
 flog.info(Sys.time())
 

@@ -29,7 +29,6 @@ applyCheck.ImplEvent<- function(theObject, table_list, field_list, table_df)
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, df_implausible_date_count)
     # log issue 
-    print(issue_obj$issue)
     return(logIssue(issue_obj))
     
   }

@@ -287,14 +287,6 @@ generateObservationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"qualifier_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
 
-  
-  ###TESTING FOR COMPLETELY MISSING FIELD###
-  field_name<-"fake_date" 
-  df_table<-retrieve_dataframe_group(table_df = data_tbl,field_name = field_name)
-  try(fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n")))
-  try(message<-describeDateField(df_table, table_name,field_name))
-  fileContent<-c(fileContent,message,paste_image_name(table_name,field_name))
-  
   ###########DQA CHECKPOINT##############
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl))

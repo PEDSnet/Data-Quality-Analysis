@@ -27,22 +27,20 @@ generateImmunizationReport <- function() {
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
   field_name<-"immunization_source_value" #  3 minutes
-  print("HEre 1")
+  
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  print("HEre 2")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
-  print("HEre 3")
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    , 2, data_tbl))  ## number of components
-  print("HEre 4")
+
   field_name<-"immunization_source_concept_id" #  3 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
-  print("HEre 5")
+
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
 
@@ -56,7 +54,7 @@ generateImmunizationReport <- function() {
                                                    c('Drug',c('NDC','RxNorm', 'CVX', 'CPT4','ICD9CM'
                                                    , 'ICD10','HCPCS','OPCS4')),
                                                    concept_tbl, data_tbl)) 
-  paste("check 4")
+
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
   new_message<-""
   if(length(message)>0)
@@ -128,7 +126,6 @@ generateImmunizationReport <- function() {
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
-  print("TEST 5")
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
@@ -159,7 +156,6 @@ generateImmunizationReport <- function() {
     fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   }
    flog.info(Sys.time())
-   print("TEST 6")
 
   field_name="imm_dose_unit_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -171,14 +167,12 @@ generateImmunizationReport <- function() {
                                                    ,"imm_dose_unit_concept_id_dplyr.txt",
                                                    concept_tbl, data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  print("TEST 7")
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
-  print("TEST 8")
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)

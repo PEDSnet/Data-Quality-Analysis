@@ -108,6 +108,7 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+  
   #race source Concept id
   field_name="race_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
@@ -184,7 +185,6 @@ generatePersonReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   describeNominalField(df_table,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
 
   #language source Concept id
   field_name="language_source_concept_id"

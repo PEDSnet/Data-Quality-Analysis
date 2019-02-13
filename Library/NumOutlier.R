@@ -22,7 +22,6 @@ applyCheck.NumOutlier<- function(theObject, table_list, field_list,table_df)
   df_table<-retrieve_dataframe_group(table_df,field_name)
 
   colnames(df_table)[1] <- "Var1"
-  #colnames(df_table)[2] <- "Freq"
   # identify row with null value
   new_df_table<-subset(df_table, !is.na(df_table[1]))
   if(min(new_df_table$Var1)<check_list_entry$Lower_Threshold || max(new_df_table$Var1)>check_list_entry$Upper_Threshold)

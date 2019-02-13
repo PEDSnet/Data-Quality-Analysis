@@ -35,17 +35,15 @@ generateDeathReport <- function() {
   field_name="death_date"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeDateField(data_tbl, table_name,field_name, group_ret = 0)
-  print("TO HERE")
+  
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
-  print("TO HERE")
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message)
   field_name<-"death_datetime"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeTimeField(data_tbl, table_name,field_name)
-  print("TO HERE")
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
-  print("TO HERE")
+
   #death type concept id
 
   field_name="death_type_concept_id"
@@ -55,8 +53,6 @@ generateDeathReport <- function() {
                                                    ,"death_type_dplyr.txt", concept_tbl, data_tbl)) 
   
   df_death_type_concept_id <-generate_df_concepts(table_name, "death_type_dplyr.txt", concept_tbl)
-  
-  print("TO HERE")
   
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -68,8 +64,6 @@ generateDeathReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(data_tbl, table_name, field_name, group_ret = 0)
   fileContent<-c(fileContent,message)
-  
-  print("TO HERE")
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)

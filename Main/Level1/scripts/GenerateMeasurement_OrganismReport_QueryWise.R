@@ -42,7 +42,7 @@ generateMeasurementOrganismReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
 
-  field_name<-"measurement_id" #
+  field_name<-"measurement_id" 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
 

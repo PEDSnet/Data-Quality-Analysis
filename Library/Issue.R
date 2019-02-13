@@ -33,7 +33,7 @@ logIssue.default <- function(theObject)
 logIssue.Issue <- function(theObject)
 {
   table_name<-theObject$table_list[1]
-  #print(length(theObject$field_list))
+
   if(length(theObject$field_list)==0)
   {
   field_list_character<-""
@@ -57,10 +57,8 @@ logIssue.Issue <- function(theObject)
                     as.character(theObject$message),
                     ' ')
   
-  #print(log_file_entry)
   NextMethod("logIssue",theObject)
-  #print(log_file_entry)
+
   return (log_file_entry);
-  
 }
 

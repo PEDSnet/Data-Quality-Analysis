@@ -28,7 +28,6 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
   total_visit_count<-  as.data.frame( dplyr::summarise(visit_tbl,n = n()))[1,1]
   
   ### % of visits with no facts associated. 
-  ## step 1 print # visits in 9202 , 9201, and 9203
   key_visits<-select(filter(visit_tbl, visit_concept_id==9201| visit_concept_id==9202|visit_concept_id==9203)
                      , visit_occurrence_id)
   
@@ -38,17 +37,9 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
   ## step 2 get  key visits that dont have any associated facts 
   temp<-dplyr::union(select(condition_tbl, visit_occurrence_id), select(procedure_tbl, visit_occurrence_id), 
               select(measurement_tbl, visit_occurrence_id),   select(drug_tbl, visit_occurrence_id))
-  
-  #print(glimpse(key_visits))
-  #print(glimpse(temp))
-  
-  #print(class(key_visits))
-  #print(class(temp))
-  
+
   ## step 
   result<-anti_join(key_visits,temp, by ="visit_occurrence_id")
-  
-  #print(result)
   
   final_result<- dplyr::summarize(result, n=n())
   

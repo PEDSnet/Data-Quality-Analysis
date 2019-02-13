@@ -63,7 +63,8 @@ generateMeasurementReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"value_as_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl))
+  
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
@@ -79,7 +80,8 @@ generateMeasurementReport <- function() {
   
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
-                                                   ,"unit_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
+                                                   ,"unit_concept_id_dplyr.txt", concept_tbl, data_tbl))
+  
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
@@ -110,6 +112,7 @@ generateMeasurementReport <- function() {
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
@@ -124,42 +127,39 @@ generateMeasurementReport <- function() {
                                                      list(2000000033,  2000000032, "vital signs"),
                                                      list(44818702, "lab records")), data_tbl) )
   
-  print("CHECK HERE 1")
   fact_type_count<-data_tbl %>% 
     filter(measurement_type_concept_id == 44818702) %>% 
     summarize(total = n()) %>%
     select(total) %>%
-    as.data.frame() %>%
-    sum()
+    as.data.frame()
+  fact_type_count <-  as.integer(sum(fact_type_count[,1])) 
   write_total_fact_type_counts(table_name,"Labs" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
                                                    ,c("Labs",fact_type_count))) 
-  print("CHECK HERE 2")
+  
   fact_type_count<-data_tbl %>%
     filter(measurement_type_concept_id %in% c(2000000033, 2000000032)) %>% 
     summarize(total = n()) %>%
     select(total) %>%
-    as.data.frame() %>%
-    sum()
-  print("CHECK HERE 3")
+    as.data.frame() 
+  fact_type_count <-  as.integer(sum(fact_type_count[,1])) 
   write_total_fact_type_counts(table_name,"Vitals" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
                                                    ,c("Vitals",fact_type_count))) 
-  
-  print("CHECK HERE 4")
+
   print(field_name)
   
   field_name="measurement_source_value"
   
   field_name<-"measurement_source_concept_id"
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl))
+  
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   # this is a nominal field - work on it
   
   print(field_name)
-  
   
   field_name<-"measurement_concept_id" #
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -226,13 +226,10 @@ generateMeasurementReport <- function() {
                                                      list(3013721,  "Aspartate Aminotransferase (AST)")
                                                    ), data_tbl)) 
   
-  #concept_id_list <- unique(df_table[,1])
-  
   print(field_name)
   
   ## compute missing % for labs only 
   field_name<-"specimen_source_value" #
-  
   
   ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
   count_lab_no_specimen<-retrieve_dataframe_clause(data_tbl,"count(*)"
@@ -241,6 +238,7 @@ generateMeasurementReport <- function() {
                                        ,"measurement_type_concept_id == 44818702")
   # compute % (# of records with missing visit info for problem list visits) / (# problem list visits)
   missing_specimen_percent_lab<-round(count_lab_no_specimen*100/count_lab,2)
+  
   ###########DQA CHECKPOINT -- missing information##############
   #missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_specimen_percent_lab, 
@@ -310,8 +308,6 @@ generateMeasurementReport <- function() {
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
-  
-  
 }
 
 

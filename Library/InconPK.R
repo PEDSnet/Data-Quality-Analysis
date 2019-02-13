@@ -32,7 +32,6 @@ applyCheck.InconPK <- function(theObject, table_list, field_list, table_df)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, diff)
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     

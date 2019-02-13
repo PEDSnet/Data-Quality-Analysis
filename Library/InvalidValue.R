@@ -33,7 +33,6 @@ applyCheck.InvalidValue <- function(theObject, table_list, field_list,metadata, 
   for(i in 1:nrow(df_table))
   {
     value <-df_table[i,1]
-    print(value)
     if(!is.element(trim(value),order_bins) & !is.na(value))
       unexpected_message<-paste(unexpected_message, trim(value),";")
     

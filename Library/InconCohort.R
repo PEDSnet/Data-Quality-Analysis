@@ -30,9 +30,9 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
                 
   ## Patients  satisfying inclusion criteria
   valid_patients_by_visit<-select(filter(visit_tbl_new,visit_year >=2009
-                                         & (visit_concept_id ==9201
-                                            |visit_concept_id== 9202
-                                            |visit_concept_id== 9203
+                                         & (visit_concept_id==9201
+                                            |visit_concept_id==9202
+                                            |visit_concept_id==9203
                                             |visit_concept_id==2000000469
                                             |visit_concept_id==42898160
                                             |visit_concept_id==44814710
@@ -40,8 +40,7 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
                                             |visit_concept_id==2000000088)
   ), person_id
   )
-
-
+  
   condition_tbl_new<- condition_tbl %>%  
     dplyr::mutate(condition_year = sql('extract(year from "condition_start_date")')) %>%
     select (condition_year, person_id)
@@ -55,7 +54,6 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
   #patients not satisfying inclusion criteria
   invalid_patients<-anti_join(all_patients,all_valid_patients, by ="person_id")
   df_invalid_patients<-as.data.frame(invalid_patients)
-
   
   if(nrow(df_invalid_patients)>1)
   {
@@ -63,7 +61,6 @@ applyCheck.InconCohort <- function(theObject, table_list, field_list)
     issue_obj<-Issue(theObject, table_list, field_list, nrow(df_invalid_patients))
     # log issue 
     return(logIssue(issue_obj))
-    
   }
   
   NextMethod("applyCheck",theObject)
