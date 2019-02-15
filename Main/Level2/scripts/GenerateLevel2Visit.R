@@ -115,7 +115,7 @@ generateLevel2Visit <- function () {
   
   ###Check Date Alignment between visit_start_date and other tables
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(DateAlign(), c(table_name), c('visit_start_date'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(DateAlign(), c(table_name), c('visit_start_date'))))
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
