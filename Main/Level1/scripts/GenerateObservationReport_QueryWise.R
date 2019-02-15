@@ -269,14 +269,14 @@ generateObservationReport <- function() {
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
 
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
-  
+
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
                                                    c(field_name, "qualifier_source_value"),data_tbl)) 
@@ -286,10 +286,6 @@ generateObservationReport <- function() {
   ##########DQA CHECKPOINT################
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"qualifier_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
-
-  ###########DQA CHECKPOINT##############
-  ### DQA checkpoint - future date
-  logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl))
   
   #ordinal field
   field_name<-"value_as_number"
@@ -297,7 +293,7 @@ generateObservationReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   fileContent<-c(fileContent,message)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -309,7 +305,7 @@ generateObservationReport <- function() {
   logFileData<-subset(logFileData,!is.na(issue_code))
   write.csv(logFileData, file = paste(normalize_directory_path( g_config$reporting$site_directory),"./issues/",table_name,"_issue.csv",sep="")
             ,row.names=FALSE)
-  
+
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)

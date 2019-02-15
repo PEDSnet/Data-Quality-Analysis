@@ -6,7 +6,7 @@
     name <- dbplyr::in_schema(config(schema_tag),
                               DBI::dbQuoteIdentifier(con, name))
   }
-  tbl(db, name) #%>% show_query()
+  tbl(db, name) 
 }
 
 
@@ -302,8 +302,7 @@ retrieve_dataframe_join_clause_group<-function(table_df, table_df2,join_field,
 
 
 retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
-                                        group_by_field,join_field)
-{
+                                        group_by_field,join_field){
   table_df <- table_df %>%
     inner_join(table_df2, by = join_field) %>%
     group_by_(group_by_field) %>%
