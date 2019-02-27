@@ -20,9 +20,9 @@ applyCheck.UnexDiffFactType <- function(theObject, table_list, field_list, metad
   
   fact_type<-metadata[1]
   current_total_count<-as.numeric(metadata[2])
-  prev_total_count<-get_previous_cycle_total_fact_type_count( g_config$reporting$site, 
-                                                              paste0(table_name, ".",fact_type))
-  if(is.na(prev_total_count)==TRUE) ## if previously this table was not generated
+  prev_total_count<- as.data.frame(get_previous_cycle_total_fact_type_count( g_config$reporting$site, 
+                                                              paste0(table_name, ".",fact_type)))
+  if(is.null(prev_total_count[1,1])) ## if previously this table was not generated
     return(c())
   
   percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)

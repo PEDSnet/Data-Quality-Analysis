@@ -30,7 +30,7 @@ BA-001,Visit_Occurrence,provider_id,0,0
 BA-001,Visit_Occurrence,care_site_id,0,0
 BA-001,Visit_Occurrence,visit_source_value,0,0
 BA-001,Visit_Occurrence,visit_source_concept_id,0,0
-BA-001,Visit_Occurrence,admitted_from_value,0,0
+BA-001,Visit_Occurrence,admitted_from_source_value,0,0
 BA-001,Visit_Occurrence,admitted_from_concept_id,0,0
 BA-001,Visit_Occurrence,discharge_to_source_value,0,0
 BA-001,Visit_Occurrence,discharge_to_concept_id,0,0

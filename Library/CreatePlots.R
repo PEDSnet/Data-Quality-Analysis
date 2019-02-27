@@ -35,12 +35,12 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
 
   if(group_ret){
     total <- table_df %>%
-      mutate(total = sum(freq)) %>%
+      dplyr::mutate(total = sum(freq)) %>%
       select(total) %>%
       distinct() %>%
       collect()
     missn <- table_df %>%
-      mutate_(miss_field = field_name) %>%
+      dplyr::mutate_(miss_field = field_name) %>%
       filter(is.na(miss_field)) %>%
       select(freq) %>%
       collect()
@@ -49,13 +49,13 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
   else{
     total <- table_df %>%
       select_(field_name) %>%
-      summarize(n = n()) %>%
+      dplyr::summarize(n = n()) %>%
       collect()
     missn <- table_df %>%
       collect() %>%
       select_(field_name) %>%
       na.omit() %>%
-      summarize(n = n()) %>%
+      dplyr::summarize(n = n()) %>%
       collect() 
     ##Switch from rate present to missing rate
     missn = total - missn 

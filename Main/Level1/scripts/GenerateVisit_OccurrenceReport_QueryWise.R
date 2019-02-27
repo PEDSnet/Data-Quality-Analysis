@@ -110,11 +110,12 @@ generateVisitOccurrenceReport <- function() {
   field_name="visit_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   ### write fact type counts 
+
   fact_type_count<-df_table[df_table$visit_concept_id==9201,2]
   write_total_fact_type_counts(table_name,"Inpatient" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
                                                    ,c("Inpatient",fact_type_count))) 
-  
+
   fact_type_count<-df_table[df_table$visit_concept_id==9202,2]
   write_total_fact_type_counts(table_name,"Outpatient" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
@@ -124,7 +125,7 @@ generateVisitOccurrenceReport <- function() {
   write_total_fact_type_counts(table_name,"ED" , fact_type_count)
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiffFactType(), c(table_name), c(field_name)
                                                    ,c("ED",fact_type_count))) 
-  
+
   ###########DQA CHECKPOINT##############
   df_visit <-generate_df_concepts(table_name,"visit_concept_id_dplyr.txt", concept_tbl)
   order_bins <-c(df_visit$concept_id, 2000000088, 0, NA)
@@ -133,15 +134,15 @@ generateVisitOccurrenceReport <- function() {
   
   ###########DQA CHECKPOINT##############
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
-  
+
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
                                                    c(field_name, "visit_source_value"),data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl))
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissFact(), c(table_name),c(field_name),
                                                    list(
@@ -158,7 +159,7 @@ generateVisitOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for Visit:Patient ratio by visit type\n"))
 
   df_visit_patient_ratio<-retrieve_dataframe_ratio_group(data_tbl,
-                                                         "visit_occurrence_id", "person_id",
+                                                         num="visit_occurrence_id", den="person_id",
                                                          "visit_concept_id")
 
   for(i in 1:nrow(df_visit_patient_ratio)){
@@ -168,7 +169,7 @@ generateVisitOccurrenceReport <- function() {
 
   describeOrdinalField(df_visit_patient_ratio,table_name,"visit_occurrence_id_person_id_ratio");
   fileContent<-c(fileContent,paste_image_name(table_name,"visit_occurrence_id_person_id_ratio"));
-  
+
   ### admitting source value 
   field_name="admitted_from_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -176,24 +177,26 @@ generateVisitOccurrenceReport <- function() {
   missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+
   if(missing_percent_source_value<100)
   {
   	describeNominalField(df_table,table_name,field_name)
   }
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-  
+
   ### admitting source concept id 
   field_name="admitted_from_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"admitted_from_concept_id.csv", concept_tbl, data_tbl)) 
-  df_admitted_from_concept_id <-generate_list_concepts(table_name,"admitted_from_concept_id.csv")
   
+  df_admitted_from_concept_id <-generate_list_concepts(table_name,"admitted_from_concept_id.csv")
+
    ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting
@@ -201,8 +204,9 @@ generateVisitOccurrenceReport <- function() {
   describeNominalField(df_admitted_from_concept_id_enhanced,table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name))
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl))
-  
+
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
                                                    c(field_name, "admitted_from_source_value"),data_tbl)) 
@@ -214,7 +218,7 @@ generateVisitOccurrenceReport <- function() {
   missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
   fileContent<-c(fileContent,missing_message)
   missing_percent_source_value<-extract_numeric_value(missing_message)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   describeNominalField(df_table,table_name,field_name)
@@ -228,7 +232,7 @@ generateVisitOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"discharge_to_concept_id.csv", concept_tbl, data_tbl)) 
   df_discharge_to_concept_id <-generate_list_concepts(table_name,"discharge_to_concept_id.csv")
-  
+
   ###########DQA CHECKPOINT##############
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   #update values of the field before plotting

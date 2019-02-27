@@ -16,8 +16,9 @@ UnexDiff <- function()
 applyCheck.UnexDiff <- function(theObject, table_list, field_list, current_total_count)
 {
   table_name<-table_list[1]
-  prev_total_count<-get_previous_cycle_total_count( g_config$reporting$site, table_name)
-  if(is.na(prev_total_count)==TRUE) ## if previously this table was not generated
+  prev_total_count<-as.data.frame(get_previous_cycle_total_count( g_config$reporting$site, table_name))
+
+  if(is.null(prev_total_count[1,1])) ## if previously this table was not generated
     return(c())
   
   percentage_diff<-get_percentage_diff(prev_total_count, current_total_count)
@@ -25,12 +26,10 @@ applyCheck.UnexDiff <- function(theObject, table_list, field_list, current_total
   check_list_entry<-get_check_entry_table_level(theObject$check_code, table_name)
 
   if(percentage_diff<check_list_entry$Lower_Threshold || percentage_diff>check_list_entry$Upper_Threshold)
-  {
-    # create an issue 
+  { # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, paste(percentage_diff,'%',sep=""))
 
     return(logIssue(issue_obj))
-    
   }
   
   NextMethod("applyCheck",theObject)

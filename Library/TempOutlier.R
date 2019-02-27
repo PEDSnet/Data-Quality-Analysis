@@ -58,6 +58,8 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     dplyr::mutate(rnum = row_number()) %>%
     dplyr::mutate(next_rnum = rnum+1)
   
+  print(date_dist_tbl_simplified)
+  
   ## plot this table 
   describeYYMMField(date_dist_tbl_simplified%>% select(yyyymm, yyyymm_level_count)
                     , table_name, date_field, fact_type)

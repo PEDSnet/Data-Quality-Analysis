@@ -213,14 +213,14 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
 
 retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, group_by_field,join_field){
   table_df <- table_df %>%
-    mutate_(var1 = num, var2 = den) %>% ###Need to avoid .x and .y columns
+    dplyr::mutate_(var1 = num, var2 = den) %>% ###Need to avoid .x and .y columns
     inner_join(table_df2, by = join_field) %>%
     group_by_(group_by_field) %>%
-    summarize(numer = n_distinct(var1),
+    dplyr::summarize(numer = n_distinct(var1),
               denom = n_distinct(var2)) %>%
-    mutate(numer = as.double(numer)) %>%
-    mutate(denom = as.double(denom)) %>%
-    mutate(ratio = numer/denom) %>%
+    dplyr::mutate(numer = as.double(numer)) %>%
+    dplyr::mutate(denom = as.double(denom)) %>%
+    dplyr::mutate(ratio = numer/denom) %>%
     select_(group_by_field, 'ratio') %>%
     as.data.frame() %>%
     mutate(ratio = round(ratio, 2)) 
@@ -232,11 +232,11 @@ retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
   table_df <- table_df %>%
     mutate_(var1 = num, var2 = den) %>%
     group_by_(group_by_field) %>%
-    summarise(numer = n_distinct(var1),
+    dplyr::summarize(numer = n_distinct(var1),
               denom = n_distinct(var2)) %>%
-    mutate(numer = as.double(numer)) %>%
-    mutate(denom = as.double(denom)) %>%
-    mutate(ratio = numer/denom) %>%
+    dplyr::mutate(numer = as.double(numer)) %>%
+    dplyr::mutate(denom = as.double(denom)) %>%
+    dplyr:: mutate(ratio = numer/denom) %>%
     select_(group_by_field, 'ratio') %>%
     as.data.frame() %>%
     mutate(ratio = round(ratio, 2)) 
