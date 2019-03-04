@@ -26,8 +26,6 @@ applyCheck.MissData <- function(theObject, table_list, field_list, table_df)
   if(df_count != 0){missing_percent<-round(((100 * df_null)/ df_count),digits=2)}
   else{missing_percent = -100}
 
-  print(missing_percent)
-  print(check_list_entry$Lower_Threshold)
   if(missing_percent<check_list_entry$Lower_Threshold || missing_percent>check_list_entry$Upper_Threshold)
   {
     # create an issue 

@@ -25,10 +25,10 @@ generateDeviceExposureReport <- function(g_data_version) {
   current_total_count<-as.numeric(df_total_measurement_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:",
                                    formatC(current_total_count, format="d", big.mark=','),"\n"))
-  
+
    ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
-  
+
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
   
@@ -38,7 +38,7 @@ generateDeviceExposureReport <- function(g_data_version) {
   df_total_visit_count<-retrieve_dataframe_count(data_tbl,"visit_occurrence_id", distinction = T)
   fileContent<-c(fileContent,paste("The device exposure to visit ratio is ",
                                    round(df_total_measurement_count[1][1]/df_total_visit_count[1][1],2),"\n"))
-  
+
   # visit concept id
   df_visit <-retrieve_dataframe_clause(concept_tbl,c("concept_id","concept_name")
                                        ,"vocabulary_id =='Visit' | (vocabulary_id=='PCORNet' & concept_class_id=='Encounter Type') |
@@ -51,6 +51,7 @@ generateDeviceExposureReport <- function(g_data_version) {
                                                                     cdm_tbl(req_env$db_src, "visit_occurrence"),
                                                                   num= "device_exposure_id", den = "person_id",    
                                                                   group_by_field = "visit_concept_id", join_field = "visit_occurrence_id")
+
 
   for(i in 1:nrow(df_device_patient_ratio))
   {
@@ -93,7 +94,7 @@ generateDeviceExposureReport <- function(g_data_version) {
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
-  
+
   ##### ##### ##### ##### May Need Work ##### ##### ##### ##### ##### #####
   field_name<-"device_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -103,7 +104,7 @@ generateDeviceExposureReport <- function(g_data_version) {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"device_concept_id_dplyr.txt", concept_tbl, df_table)) 
   df_device_concept_id <-generate_df_concepts(table_name, "device_concept_id_dplyr.txt", concept_tbl)
-  
+
   ###########DQA CHECKPOINT -- missing information##############
   # add % of no matching concept (concept id = 0). for the completeness report
   ###########DQA CHECKPOINT -- no matching concept ##############
@@ -112,10 +113,12 @@ generateDeviceExposureReport <- function(g_data_version) {
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name), 
                                                    c('Device','HCPCS'), concept_tbl,data_tbl)) 
-  
+
   message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
+
   # create meaningful message
-  new_message<-create_meaningful_message_concept_id(df_table, message,field_name)
+  new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
+
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
   
   null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
@@ -144,21 +147,22 @@ generateDeviceExposureReport <- function(g_data_version) {
   if(length(message)>0)
   {
     # create meaningful message
-    new_message<-create_meaningful_message_concept_id(df_table ,message,field_name)
+    new_message<-create_meaningful_message_concept_id(concept_tbl ,message,field_name)
   }
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
-  
+
   field_name<-"device_source_value"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
+
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
   message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
-  
+
   ######## Need to have discussion on what goes into this field before we can implement #######
    
   field_name = "device_type_concept_id"
