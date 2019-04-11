@@ -19,14 +19,14 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vo
   field_name<-field_list[1]
   domain<-domain_vocabulary[1]
   
-  check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
+  #check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
    
   used_vocabulary<-get_vocabulary_name_by_concept_ids(table_name, field_name,domain, table_df, table_df2)
   
   acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)
   
   unexpected_message<-NULL
- 
+
    if(length(used_vocabulary)>0)
   {
     for(i in 1:length(used_vocabulary))  

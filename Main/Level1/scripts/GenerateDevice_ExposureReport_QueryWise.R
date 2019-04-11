@@ -77,7 +77,7 @@ generateDeviceExposureReport <- function(g_data_version) {
 
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
@@ -90,7 +90,7 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name,field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
@@ -136,11 +136,11 @@ generateDeviceExposureReport <- function(g_data_version) {
   fileContent<-c(fileContent,message)
 
   ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
 
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
 
   new_message<-""
@@ -159,7 +159,7 @@ generateDeviceExposureReport <- function(g_data_version) {
 
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent_source_value<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
@@ -211,7 +211,7 @@ generateDeviceExposureReport <- function(g_data_version) {
 
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeDateField(df_table, table_name,field_name)
   
   if(missing_percent<100)
@@ -231,7 +231,7 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
@@ -244,7 +244,7 @@ generateDeviceExposureReport <- function(g_data_version) {
   
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),df_table)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);

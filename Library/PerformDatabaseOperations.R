@@ -349,11 +349,11 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
 get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, table_df, table_df2)
 {
   vocab_name = table_df %>%
-    filter(domain_id %in% domain) %>%
     inner_join(table_df2 , by = c("concept_id" = field_name)) %>%
     select(vocabulary_id) %>%
     distinct() %>%
-    collect()
+    as.data.frame()
+
   return(vocab_name)
 }
 
