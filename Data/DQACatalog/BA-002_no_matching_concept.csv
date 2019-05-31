@@ -22,10 +22,10 @@ BA-002,Visit_Occurrence,visit_type_concept_id,0,10
 BA-002,Visit_Occurrence,visit_source_concept_id,0,10
 BA-002,Visit_Occurrence,admitted_from_concept_id,0,10
 BA-002,Visit_Occurrence,discharge_to_concept_id,0,10
-BA-002,Condition_Occurrence,condition_concept_id,0.1,10
+BA-002,Condition_Occurrence,condition_concept_id,0,10
 BA-002,Condition_Occurrence,condition_type_concept_id,0,10
 BA-002,Condition_Occurrence,condition_source_concept_id,0,10
-BA-002,Procedure_Occurrence,procedure_concept_id,0.1,10
+BA-002,Procedure_Occurrence,procedure_concept_id,0,10
 BA-002,Procedure_Occurrence,modifier_concept_id,0,10
 BA-002,Procedure_Occurrence,procedure_type_concept_id,0,10
 BA-002,Procedure_Occurrence,procedure_source_concept_id,0,10
@@ -34,12 +34,12 @@ BA-002,Observation,value_as_concept_id,0,10
 BA-002,Observation,qualifier_concept_id,0,10
 BA-002,Observation,unit_concept_id,0,10
 BA-002,Observation,observation_source_concept_id,0,10
-BA-002,Drug_Exposure,drug_concept_id,0.1,10
+BA-002,Drug_Exposure,drug_concept_id,0,10
 BA-002,Drug_Exposure,drug_type_concept_id,0,10
 BA-002,Drug_Exposure,route_concept_id,0,10
 BA-002,Drug_Exposure,dose_unit_concept_id,0,10
 BA-002,Drug_Exposure,drug_source_concept_id,0,10
-BA-002,Measurement,measurement_concept_id,0.1,10
+BA-002,Measurement,measurement_concept_id,0,10
 BA-002,Measurement,measurement_type_concept_id,0,10
 BA-002,Measurement,operator_concept_id,0,10
 BA-002,Measurement,value_as_concept_id,0,10

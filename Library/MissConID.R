@@ -28,7 +28,7 @@ applyCheck.MissConID<- function(theObject, table_list, field_list, table_df)
 
   if(df_total > 0){ no_matching_perc<-round(df_nomatch*100/df_total, 2)}
   else{ no_matching_perc = -100}
-  
+
   if(no_matching_perc<check_list_entry$Lower_Threshold || no_matching_perc>check_list_entry$Upper_Threshold)
   {
     # create an issue 

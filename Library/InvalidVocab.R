@@ -26,12 +26,11 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vo
   acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)
   
   unexpected_message<-NULL
-
-   if(length(used_vocabulary)>0){
+  
+  if(nrow(used_vocabulary)>0){
     for(i in 1:nrow(used_vocabulary)){
-      if(is.na(match(used_vocabulary[i,1], acceptable_vocabulary)))
-      {
-      unexpected_message<-paste(unexpected_message, used_vocabulary[i,1], sep=";")
+      if(is.na(match(used_vocabulary[i,1], acceptable_vocabulary))){
+        unexpected_message<-paste(unexpected_message, used_vocabulary[i,1], sep=";")
       }
     }
   }
