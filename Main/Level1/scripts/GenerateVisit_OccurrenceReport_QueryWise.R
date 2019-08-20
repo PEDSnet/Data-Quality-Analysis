@@ -100,10 +100,9 @@ generateVisitOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  if(missing_percent<100)
-  {
-  describeNominalField(df_table,table_name,field_name)
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+  if(missing_percent<100){
+    describeNominalField(df_table,table_name,field_name)
+    fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   }
 
   # visit concept id

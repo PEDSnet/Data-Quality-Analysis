@@ -53,58 +53,56 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
   if(domain!='Drug')
   {
   concept_ancestor_tbl <- vocab_tbl(req_env$db_src, 'concept_ancestor')
-  
   ## sibling concepts 
   concept_tbl <- vocab_tbl(req_env$db_src, 'concept')
   procedure_concept_tbl <- select(filter_(concept_tbl, paste0("domain_id=='",domain,"'")), concept_id, concept_name)
   procedure_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, procedure_concept_tbl, 
                                                by = c("ancestor_concept_id" = "concept_id"))
-  
   temp1<-inner_join(procedure_concept_ancestor_tbl, procedure_concept_ancestor_tbl, 
                     by =c("ancestor_concept_id"="ancestor_concept_id"))
   temp2<-filter(temp1
                 , max_levels_of_separation.x==2 & max_levels_of_separation.y==2)
   sibling_concepts_tbl<-
-    (select (temp2,
+    (select(temp2,
              descendant_concept_id.x, descendant_concept_id.y)
       )
-  
+
   extended_list<-list()
+
   for (list_index in 1:length(top_facts_other_sites_list))
   {
     temp1<-select(
-      filter(concept_ancestor_tbl, ancestor_concept_id==top_facts_other_sites_list[list_index]
+      filter(concept_ancestor_tbl, ancestor_concept_id== !!top_facts_other_sites_list[list_index]
       ), descendant_concept_id) %>% 
       dplyr::rename(final_concept_id=descendant_concept_id )
-    
     temp2<-select(
-      filter(concept_ancestor_tbl, descendant_concept_id==top_facts_other_sites_list[list_index]
+      filter(concept_ancestor_tbl, descendant_concept_id == !!top_facts_other_sites_list[list_index]
       ), ancestor_concept_id) %>% 
       dplyr::rename(final_concept_id=ancestor_concept_id)
-
     temp<- 
       as.data.frame(dplyr::union(temp1 ,temp2))
-    
+
     extended_list<-(c(extended_list, unique(temp$final_concept_id)))
   }
-  
+
   extended_list<-unique(extended_list)
-  
+
   ## further extend by including siblings of those concepts 
   for (list_index in 1:length(top_facts_other_sites_list))
   {
-    temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x==top_facts_other_sites_list[list_index])
+    temp3<-filter(sibling_concepts_tbl, descendant_concept_id.x== !!top_facts_other_sites_list[list_index])
     sibling_table<- as.data.frame(select(temp3, descendant_concept_id.y))
     extended_list<-(c(extended_list, unique(sibling_table$descendant_concept_id.y))) 
     
   }  
+
   extended_list<-unique(extended_list)
   }
   else {
     extended_list<-top_facts_other_sites_list
   }
   issues_list<-matrix("",ncol=8, nrow=0)
-  
+
   issues_findings <- NULL
   
   for(row in 1:10){

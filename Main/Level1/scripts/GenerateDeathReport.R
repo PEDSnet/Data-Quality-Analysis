@@ -93,6 +93,7 @@ generateDeathReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
 
   ###########DQA CHECKPOINT --vocabulary check ##############
+  
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
                                                    c('Condition','SNOMED'), concept_tbl, data_tbl)) 
 

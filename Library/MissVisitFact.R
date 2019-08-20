@@ -32,7 +32,6 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
                      , visit_occurrence_id)
   
   total_key_visits<-  as.data.frame( dplyr::summarise(key_visits,n = n()))[1,1]
-  
 
   ## step 2 get  key visits that dont have any associated facts 
   temp<-dplyr::union(select(condition_tbl, visit_occurrence_id), select(procedure_tbl, visit_occurrence_id), 
@@ -42,7 +41,6 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
   result<-anti_join(key_visits,temp, by ="visit_occurrence_id")
   
   final_result<- dplyr::summarize(result, n=n())
-  
 
   key_visits_without_facts<-as.data.frame(final_result)[1,1]
 
@@ -56,7 +54,6 @@ applyCheck.MissVisitFact <- function(theObject, table_list, field_list)
     issue_obj<-Issue(theObject, table_list, field_list, paste(no_fact_percentage,"%",sep=""))
     # log issue 
     return(logIssue(issue_obj))
-    
   }
   
   NextMethod("applyCheck",theObject)

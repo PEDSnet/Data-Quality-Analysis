@@ -33,7 +33,6 @@ applyCheck.MissData <- function(theObject, table_list, field_list, table_df)
     issue_obj<-Issue(theObject, table_list, field_list, paste(missing_percent,'%'))
     # log issue 
     return(logIssue(issue_obj))
-    
   }
 
   NextMethod("applyCheck",theObject)

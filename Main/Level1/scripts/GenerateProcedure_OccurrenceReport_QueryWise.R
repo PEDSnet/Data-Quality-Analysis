@@ -182,11 +182,8 @@ generateProcedureOccurrenceReport <- function() {
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  print("CHECK")
-  print(missing_message)
   if(grepl("100",missing_message)) # if not 100% missing
   {
-    print("IN HERE")
     describeNominalField(df_table_modifier_enhanced,table_name,field_name);
     fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 

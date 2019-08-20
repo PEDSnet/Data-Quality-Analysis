@@ -20,33 +20,44 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, date_field)
 
+  earliest_date <- cdm_tbl(req_env$db_src, table_name) %>% 
+    select_(date_field) %>%
+    distinct() %>%
+    as.data.frame() 
+
+  earliest_date <- as.character(earliest_date[,date_field])
+  earliest_date <- max(as.Date(earliest_date), na.rm = T)
+  earliest_date <- earliest_date - 60
+
   if(is.null(fact_type)) ### if generating summary for entire table
   {
   date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
+             filter(date_field < earliest_date) %>%
              group_by_(date_field) %>% 
-              dplyr::summarise(date_level_count = n()) %>%
-              collect()
+             dplyr::summarise(date_level_count = n()) %>%
+             collect()
   } else 
   {
     fact_type_concept_id<-fact_type[1]
     fact_type_concept_id_colname<-field_list[2]
-    
     date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
-      filter_(paste0(fact_type_concept_id_colname,'==',fact_type_concept_id)) %>%
-      group_by_(date_field) %>% 
-      dplyr::summarise(date_level_count = n()) %>%
-      collect()
+    filter_(paste0(fact_type_concept_id_colname,'==',fact_type_concept_id)) %>%
+    group_by_(date_field) %>% 
+    dplyr::summarise(date_level_count = n()) %>%
+    as.data.frame() %>%
+    filter_(paste(date_field,"<", "\"",as.Date(earliest_date), "\"")) 
   }
   
   date_dist_tbl<-as.data.frame(date_dist_tbl)
-  
   date_dist_tbl$year = year(as.Date(date_dist_tbl[,1]))
   date_dist_tbl$month = str_pad(month(as.Date(date_dist_tbl[,1])), 2, pad = "0")
-  
+
   if(table_name=="death")
     date_dist_tbl<-date_dist_tbl %>% filter(month <'12' & month > '01')
 
-  
+  lower_bound <- NA
+  upper_bound <- NA
+
   ## this table contains monthly distributions 
   date_dist_tbl_simplified<- date_dist_tbl %>%
     filter(year>= 2012) %>%
@@ -57,22 +68,23 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     dplyr::summarise(yyyymm_level_count = sum(date_level_count)) %>%
     dplyr::mutate(rnum = row_number()) %>%
     dplyr::mutate(next_rnum = rnum+1)
-  
   ## plot this table 
-  describeYYMMField(date_dist_tbl_simplified%>% select(yyyymm, yyyymm_level_count)
+
+  describeYYMMField(date_dist_tbl_simplified %>% select(yyyymm, yyyymm_level_count)
                     , table_name, date_field, fact_type)
-  
   ## this table contains deltas and the data points used for outlier detection 
   date_dist_delta<- date_dist_tbl_simplified %>% 
-      inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) %>%
-      dplyr::mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
-      select(yyyymm.y, change_over_last_month)
-
-  sd_value <- sd(date_dist_delta$change_over_last_month)
-  mean_value <- mean(date_dist_delta$change_over_last_month)
-
-  lower_bound<-as.integer(round(mean_value-3*sd_value))
-  upper_bound<-as.integer(round(mean_value+4*sd_value))
+      inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) 
+if(length(date_dist_delta$yyyymm_level_count.y) > 0){
+      date_dist_delta <- date_dist_delta %>%
+        dplyr::mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
+        select(yyyymm.y, change_over_last_month)
+      date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
+      sd_value <- sd(date_dist_delta$change_over_last_month)
+      mean_value <- mean(date_dist_delta$change_over_last_month)
+      lower_bound<-as.integer(round(mean_value-3*sd_value))
+      upper_bound<-as.integer(round(mean_value+4*sd_value))
+}
 
   if(!(is.na(lower_bound) | is.na(upper_bound))){
     png(paste(normalize_directory_path(g_config$reporting$site_directory),
@@ -81,9 +93,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
        main = paste0(field_list[1]," Difference Month-to-Month"))
     dev.off()
   }
-  
-  date_dist_delta$change_over_last_month<-as.integer(date_dist_delta$change_over_last_month)
-  
+
   if(nrow(date_dist_delta)>0) 
   {
   date_dist_delta$outlier<-FALSE
@@ -108,7 +118,6 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   {
     outlier_message<-paste(outlier_message,df_outliers[i,1], "(", df_outliers[i,2],")")
   }
-  
   if(nrow(df_outliers)>0)
   {
     # create an issue 

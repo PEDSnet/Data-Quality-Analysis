@@ -23,7 +23,7 @@ applyCheck.InconVisitType<- function(theObject, table_list, field_list, metadata
   
   error_message<-metadata[1]
   visit_type<-metadata[2]
-  
+
   check_list_entry<-get_check_entry_two_variables_diff_tables(theObject$check_code, table_name_1, field_name_1, 
                                                               table_name_2, field_name_2)
   

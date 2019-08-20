@@ -48,9 +48,7 @@ generateLevel2Measurement <- function () {
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_datetime', 
                                                                                                  'measurement_date'))) 
-  write.csv(log_entry_content, file = log_file_name
-            ,row.names=FALSE)
-  
+  write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
   
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('measurement_order_datetime', 
@@ -93,8 +91,7 @@ generateLevel2Measurement <- function () {
   data_file<-rbind(df_no_match_measurement_counts)
   colnames(data_file)<-c("measurement_source_value","occurrence_counts")
   write.csv(data_file, file = paste(normalize_directory_path( g_config$reporting$site_directory),
-                                    "./data/no_match_measurements.csv",sep="")
-            ,row.names=FALSE)
+                                    "./data/no_match_measurements.csv",sep=""),row.names=FALSE)
   }
   
   ##### Printing top 100 vital measurements ##### 
@@ -168,16 +165,13 @@ generateLevel2Measurement <- function () {
   table_name<-"measurement"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name), c('measurement_date'))) 
-  write.csv(log_entry_content, file = log_file_name
-            ,row.names=FALSE)
+  write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
   
   table_name<-"measurement"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('measurement_date', 
                                                                                                       'death_date'))) 
-  write.csv(log_entry_content, file = log_file_name
-            ,row.names=FALSE)
-  
+  write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
   
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)

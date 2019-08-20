@@ -25,6 +25,8 @@ source("../../Library/InconSource.R", chdir = T)
 source("../../Library/ImplEvent.R", chdir = T)
 source("../../Library/UnexTop.R", chdir = T)
 source("../../Library/TempOutlier.R", chdir = T)
+source("../../Library/LabRange.R", chdir = T)
+source("../../Library/DrugClass.R", chdir = T)
 
 generateReportDependencies <- function(){
   norm_path <- normalize_directory_path(g_config$reporting$site_directory)

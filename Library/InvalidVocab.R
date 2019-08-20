@@ -23,7 +23,7 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vo
    
   used_vocabulary<-get_vocabulary_name_by_concept_ids(table_name, field_name,domain, table_df, table_df2)
   
-  acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)
+  acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA, 'None')
   
   unexpected_message<-NULL
   

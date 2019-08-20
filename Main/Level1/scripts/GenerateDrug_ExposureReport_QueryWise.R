@@ -14,7 +14,7 @@ generateDrugExposureReport <- function() {
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0),
                           issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
-
+  logFileData<- custom_rbind(logFileData,applyCheck(DrugClass(), c("drug_exposure"),c("drug_concept_id")))
   #PRIMARY FIELD
   field_name<-"drug_exposure_id"
   df_total_measurement_count<-retrieve_dataframe_count(data_tbl,field_name)
@@ -142,10 +142,10 @@ generateDrugExposureReport <- function() {
   df_concept_class<-retrieve_dataframe_join_clause_group(data_tbl, concept_tbl, "drug_concept_id",
                                                          "concept_class_id","drug_concept_id!=0")
   fileContent<-c(fileContent,print_2d_dataframe(df_concept_class))
-
+  
   ### ingredient-level normalization
   # also draw distribution of drug concept id vs person_id
-  field_name<-"drug_concept_id" #
+  field_name<-"drug_concept_id" 
   df_table_new<-retrieve_dataframe_count_group(data_tbl,"person_id", field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"by person_id","\n"))
 

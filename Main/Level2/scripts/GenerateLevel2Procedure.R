@@ -29,18 +29,27 @@ generateLevel2Procedure <- function () {
                                                                c(field_name), NULL)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
+  message("Completed Temp Outliers")
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm')));
   
   
-  ### AA009 date time inconsistency 
+  ### CA-018 procedure date vs visit dates check 
+  field_name<-"procedure_date"
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_datetime', 
-                                                                                                 'procedure_date'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(ProcedureVisitDate(), c(table_name), c('procedure_date'))))
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
+  
+  ### AA009 date time inconsistency 
+  log_entry_content<-(read.csv(log_file_name))
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('procedure_datetime', 
+                                                                                                 'procedure_date'))),
+      silent = F)
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  message("Completed incondatetime")
   ## sibling concepts 
   procedure_concept_ancestor_tbl<-  inner_join(concept_ancestor_tbl, procedure_concept_tbl, 
                                                by = c("ancestor_concept_id" = "concept_id"))
@@ -129,18 +138,20 @@ generateLevel2Procedure <- function () {
                  by=c("concept_id"="concept_id"))
       , concept_id, concept_name, count)
   )
-  #print(df_procedure_counts_by_visit)
-  
+
      if(nrow(df_procedure_counts_by_visit)>0)
      {
-    outlier_inpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
+       outlier_inpatient_procedures <- as.data.frame(NULL)
+       print(dim(df_procedure_counts_by_visit))
+       print(summary(df_procedure_counts_by_visit))
+    try(outlier_inpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_procedure_counts_by_visit,'vt_counts',
                                              'top_inpatient_procedure.csv',
                                              'outlier inpatient procedure:',
                                              g_top50_inpatient_procedures_path
-                                             , 'Procedure'))
+                                             , 'Procedure')), silent = F)
      
-  
+  message("unextop inpatient procedure complete")
     if(nrow(outlier_inpatient_procedures)>0)
     for ( issue_count in 1: nrow(outlier_inpatient_procedures))
     {
@@ -186,11 +197,14 @@ generateLevel2Procedure <- function () {
   
   if(nrow(df_out_procedure_counts_by_person)>0)
   {
-  outlier_outpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
+    outlier_outpatient_procedures <- as.data.frame(NULL)
+    print(dim(df_out_procedure_counts_by_person))
+    print(summary(df_out_procedure_counts_by_person))
+  try(outlier_outpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_out_procedure_counts_by_person,'pt_counts','top_outpatient_procedure.csv',
                                              'outlier outpatient procedure:',g_top50_outpatient_procedures_path
-                                             , 'Procedure'))
-  
+                                             , 'Procedure')), silent = F )
+    message("unextop outpatient procedure complete")
   if(nrow(outlier_outpatient_procedures)>0)
   for ( issue_count in 1: nrow(outlier_outpatient_procedures))
   {
@@ -204,7 +218,7 @@ generateLevel2Procedure <- function () {
   }
   
   }
-  
+  message("Completed unexpected top values")
   fileContent<-c(fileContent,"##Implausible Events")
   
   log_entry_content<-(read.csv(log_file_name))
@@ -212,14 +226,14 @@ generateLevel2Procedure <- function () {
                                                                )) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
+  message("Completed pre-birth")
   table_name<-"procedure_occurrence"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PostDeath(), c(table_name, "death"), c('procedure_date', 
                                                                                                       'death_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
+  message("Completed post-death")
   
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)

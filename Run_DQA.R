@@ -61,7 +61,7 @@ generateSingleReport <- function(level, report) {
     else {
         runAndLog(
             FUN = test_report,
-            success_log = paste(report, ' report succesfully generated.', sep=""),
+            success_log = paste(report, ' report successfully generated.', sep=""),
             error_log = paste('Failed to generate ', report, ' report, see dqa.log for more details.', sep="")
         )
     }
