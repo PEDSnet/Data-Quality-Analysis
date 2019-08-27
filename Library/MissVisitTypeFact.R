@@ -26,7 +26,7 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
   ### % of visits with no facts associated. 
   ## limit to key visits
   
-  key_visits<-select(filter(visit_tbl, visit_concept_id==field_list[1])
+  key_visits<-select(filter(visit_tbl, visit_concept_id== !!field_list[1])
                      , visit_occurrence_id)
   
     total_key_visits<-
