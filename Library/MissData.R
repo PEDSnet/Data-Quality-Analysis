@@ -26,6 +26,15 @@ applyCheck.MissData <- function(theObject, table_list, field_list, table_df)
 
   if(df_count != 0){missing_percent<-round(((100 * df_null)/ df_count),digits=2)}
   else{missing_percent = -100}
+  
+  check_info <- read_check_info('MissData_checks')
+  check_data <- as.data.frame(c(g_config$reporting$site, g_config$reporting$conventions_version,
+                  g_config$reporting$etl_script_version, table_name, field_name,
+                  df_null, df_count, missing_percent))
+  colnames(check_data) <- c('site','cdm_version','etl_version','table',
+                            'field','total','missing','missing_percent')
+
+  write_check_info(rbind(check_info,check_data),'MissData_checks')
 
   if(missing_percent<check_list_entry$Lower_Threshold || missing_percent>check_list_entry$Upper_Threshold)
   {

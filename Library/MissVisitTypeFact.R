@@ -25,15 +25,15 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
   
   ### % of visits with no facts associated. 
   ## limit to key visits
-  
-  key_visits<-select(filter(visit_tbl, visit_concept_id==field_list[1])
+
+  key_visits<-select(filter(visit_tbl, visit_concept_id==!!field_list[1])
                      , visit_occurrence_id)
   
     total_key_visits<-
     as.data.frame(
       key_visits %>%  dplyr::summarise(count=n()) 
     )[1,1]
- 
+
   ## step 2 get  key visits that dont have any associated facts 
   
   if(length(field_list)==3)
@@ -44,7 +44,7 @@ applyCheck.MissVisitTypeFact <- function(theObject, table_list, field_list, chec
     temp<-second_tbl
 
   second_tbl_with_facts<-select(temp, visit_occurrence_id)
-  
+
   ## step 
   result<-anti_join(key_visits,second_tbl_with_facts, by ="visit_occurrence_id")
   

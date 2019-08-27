@@ -26,7 +26,7 @@ generateImmunizationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
-  field_name<-"immunization_source_value" #  3 minutes
+  field_name<-"immunization_source_value" 
   
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -35,7 +35,7 @@ generateImmunizationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    , 2, data_tbl))  ## number of components
 
-  field_name<-"immunization_source_concept_id" #  3 minutes
+  field_name<-"immunization_source_concept_id" 
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
@@ -56,7 +56,7 @@ generateImmunizationReport <- function() {
                                                    concept_tbl, data_tbl)) 
 
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
-  new_message<-""
+  new_message <- ""
   if(length(message)>0)
   {
     new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
@@ -65,7 +65,7 @@ generateImmunizationReport <- function() {
 
    flog.info(Sys.time())
 
-  field_name<-"immunization_concept_id" #
+  field_name<-"immunization_concept_id" 
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
 
@@ -83,7 +83,7 @@ generateImmunizationReport <- function() {
 
    flog.info(Sys.time())
 
-  field_name<-"immunization_date" #
+  field_name<-"immunization_date" 
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeDateField(df_table, table_name, field_name)
@@ -206,7 +206,8 @@ generateImmunizationReport <- function() {
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
-  fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name),
+                 paste_image_name_sorted(table_name,field_name),message);
 
     field_name<-"visit_occurrence_id"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -234,7 +235,7 @@ generateImmunizationReport <- function() {
      fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                     paste_image_name_sorted(table_name,field_name),message);
 
-    field_name<-"provider_id" #  4 minutes
+  field_name<-"provider_id" #  4 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
@@ -252,7 +253,6 @@ generateImmunizationReport <- function() {
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
-
 
   colnames(logFileData)<-c("g_data_version", "table","field", "issue_code", "issue_description","alias","finding", "prevalence")
   logFileData<-subset(logFileData,!is.na(issue_code))

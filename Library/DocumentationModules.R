@@ -68,8 +68,6 @@ create_meaningful_message_concept_code<-function(message,field_name,con,config)
   return(new_message)
 }
 
-
-
 extract_numeric_value<-function(test_message)
 {
   return(
@@ -88,6 +86,7 @@ extract_start_range<-function(test_message)
     )
   )
 }
+
 extract_ni_missing_percent<-function(test_message)
 {
   return(
@@ -124,6 +123,7 @@ paste_image_name<-function(table_name,field_name)
 {
     return(paste("![",field_name,"](.",get_image_name(table_name,field_name),")\n",sep=""))
 }
+
 get_image_name<-function(table_name,field_name)
 {
     return(paste("./images/RPlot_",table_name,"_",field_name,".png",sep=""))
@@ -188,11 +188,12 @@ get_previous_cycle_total_count<-function(site_name, table_name)
   }
  return(0);
 }
+
 get_previous_cycle_total_fact_type_count<-function(site_name, col_name)
 {
   df_total_counts<-read.csv(g_total_fact_type_counts_path, header = TRUE, sep = ",", quote = "\"",
                             dec = ".", fill = TRUE, comment.char = "")
-  # flog.info(df_total_counts)
+  
   column_index<-which(colnames(df_total_counts)==col_name)
   for(row_index in 1:nrow(df_total_counts))
   {
@@ -201,10 +202,12 @@ get_previous_cycle_total_fact_type_count<-function(site_name, col_name)
   }
   return(0);
 }
+
 get_percentage_diff<-function(prev_total_count, current_total_count)
 {
   return(round((current_total_count-prev_total_count)*100/prev_total_count,2))
 }
+
 get_percentage_diff_message<-function(percentage_diff)
 {
   if(percentage_diff>0)
@@ -228,6 +231,7 @@ write_total_counts<-function(table_name, current_total_count)
   write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
   
 }
+
 write_total_fact_type_counts<-function(table_name, fact_type,current_total_count)
 {
   if(length(current_total_count)==0)
@@ -237,9 +241,18 @@ write_total_fact_type_counts<-function(table_name, fact_type,current_total_count
   total_count_df<-read.csv(total_counts_filename)
   total_count_df$site<-as.character(total_count_df$site)
   
-  #colnames(total_count_df)<-c("table","counts")
   total_count_df<-cbind(total_count_df, c(current_total_count))
   colnames(total_count_df)[ncol(total_count_df)]<-paste0(table_name, ".",fact_type)
   write.csv(total_count_df,file=total_counts_filename, row.names = FALSE)
   
 }
+
+read_check_info <- function(file_name){
+  data <- as.data.frame(read.csv(paste0('check_data/',file_name,'.csv')))
+  return(data)
+}
+
+write_check_info <- function(data,file_name){
+  write.csv(data, file = paste0('check_data/',file_name,'.csv'),row.names = F)
+}
+

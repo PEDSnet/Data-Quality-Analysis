@@ -58,7 +58,7 @@ generateLevel2Procedure <- function () {
                     by =c("ancestor_concept_id"="ancestor_concept_id"))
   temp2<-filter(temp1
                 , max_levels_of_separation.x==1 & max_levels_of_separation.y==1)
-  #print(head(temp2))
+
   sibling_concepts_tbl<-
     (select (temp2,
              descendant_concept_id.x, descendant_concept_id.y)
