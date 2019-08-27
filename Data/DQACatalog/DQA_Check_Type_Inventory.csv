@@ -35,4 +35,4 @@ CA-018,procedure_date is before visit_start_date or after visit_end_date,counts 
 CB-001,unexpected fact to patient ratio,identifies irregular ratios of facts per patient as compared between sites,atemporal plausibility validation,number,UnexPtRato,1,2,manual
 CB-002,unexpected most frequent values,identifies unexpected frequent values based on cross-site comparison,atemporal plausibility validation,set of value(s),UnexTop ,1,1,done
 CB-003,labs outside normal range,identifies lab values which are not between range_low and range_high,value plausibility validation, number,LabRange,1,1,done
-CB-004,Drug concept_class_id is not branded/clinical/dose pack,value plausibility validation, number,DrugClass,1,1,done
+CB-004,Drug concept_class_id is not branded/clinical/dose pack,checks percentage that is not in the valid class_id values,value plausibility validation,number,DrugClass,1,1,done
