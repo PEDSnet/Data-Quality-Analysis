@@ -125,7 +125,7 @@ generateDrugExposureReport <- function() {
   
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name), 
-                                                   c('Drug','RxNorm', 'RxNorm Extension'), 
+                                                   c('Drug','RxNorm', 'RxNorm Extension','NDC'), 
                                                    concept_tbl, data_tbl)) 
 
   message<-describeOrdinalField(df_table, table_name,field_name,ggplotting = F)

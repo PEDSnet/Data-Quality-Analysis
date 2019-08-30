@@ -95,7 +95,7 @@ generateDeathReport <- function() {
   ###########DQA CHECKPOINT --vocabulary check ##############
   
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
-                                                   c('Condition','SNOMED'), concept_tbl, data_tbl)) 
+                                                   c('Condition','SNOMED','PCORNet'), concept_tbl, data_tbl)) 
 
    ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
@@ -104,9 +104,6 @@ generateDeathReport <- function() {
   
   describeOrdinalField(data_tbl, table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
-  #death impute concept id
-
 
   field_name="death_impute_concept_id"
   ###########DQA CHECKPOINT##############
