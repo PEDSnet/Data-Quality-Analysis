@@ -1,0 +1,1 @@
+(domain_id=='Spec Anatomic' & is.na(invalid_reason)) | concept_id %in% c(44814650,44814653,44814649)

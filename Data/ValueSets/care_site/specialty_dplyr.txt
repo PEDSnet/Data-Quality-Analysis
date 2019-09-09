@@ -1,0 +1,1 @@
+domain_id =='Provider Specialty' & vocabulary_id %in% ('Specialty', 'ABMS','NUCC','PEDSnet')

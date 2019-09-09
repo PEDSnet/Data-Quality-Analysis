@@ -13,30 +13,24 @@ InvalidVocab <- function()
 }
 
 
-applyCheck.InvalidVocab <- function(theObject, table_list, field_list, con, domain_vocabulary)
+applyCheck.InvalidVocab <- function(theObject, table_list, field_list, domain_vocabulary, table_df, table_df2)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
   domain<-domain_vocabulary[1]
   
-  check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
-  
+  #check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
    
-  used_vocabulary<-get_vocabulary_name_by_concept_ids(con, g_config, table_name, field_name,domain)
+  used_vocabulary<-get_vocabulary_name_by_concept_ids(table_name, field_name,domain, table_df, table_df2)
   
-  
-  acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA)
+  acceptable_vocabulary<-c(domain_vocabulary[2:length(domain_vocabulary)], NA, 'None')
   
   unexpected_message<-NULL
- 
-   if(length(used_vocabulary)>0)
-  {
-    for(i in 1:length(used_vocabulary))  
-    {
-      if(is.na(match(used_vocabulary[i], acceptable_vocabulary)))
-      {
-     # print(used_vocabulary[i])
-      unexpected_message<-paste(used_vocabulary[i], sep=";")
+  
+  if(nrow(used_vocabulary)>0){
+    for(i in 1:nrow(used_vocabulary)){
+      if(is.na(match(used_vocabulary[i,1], acceptable_vocabulary))){
+        unexpected_message<-paste(unexpected_message, used_vocabulary[i,1], sep=";")
       }
     }
   }
@@ -45,7 +39,6 @@ applyCheck.InvalidVocab <- function(theObject, table_list, field_list, con, doma
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, unexpected_message)
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
   }

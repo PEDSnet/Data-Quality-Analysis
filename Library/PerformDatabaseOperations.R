@@ -76,9 +76,11 @@ retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
 
 retrieve_dataframe_record_count<-function(table_df)
 {
-  table_df = table_df %>%
-    tally() %>%
-    as.data.frame()
+
+   table_df = table_df %>%
+       tally() %>%
+       as.data.frame()
+
   test_that("Retrieve_dataframe_record_count does not have unique total row value", 
             expect_equal(length(table_df), 1))
   return(table_df)
@@ -87,14 +89,16 @@ retrieve_dataframe_record_count<-function(table_df)
 
 retrieve_dataframe_count_group<-function(table_df, count_column, field_name){
   counts = table_df %>%
-    rename_(count_column = count_column) %>%
-    group_by_(field_name) %>%
-    filter(!is.na(count_column)) %>%
-    summarize(count = n_distinct(count_column)) %>%
-    as.data.frame()
-  test_that("Testing Retrieve Dataframe Count Group", 
-            expect_equal(colnames(counts), c(field_name, "count")))
-  return(counts)
+
+      rename_(count_column = count_column) %>%
+      group_by_(field_name) %>%
+      filter(!is.na(count_column)) %>%
+      summarize(count = n_distinct(count_column)) %>%
+      as.data.frame()
+   test_that("Testing Retrieve Dataframe Count Group", 
+             expect_equal(colnames(counts), c(field_name, "count")))
+   return(counts)
+
 }
 
 
@@ -151,6 +155,18 @@ retrieve_dataframe_top_5<-function(table_df, field_name){
   return(table_df[1:l,])
 }
 
+retrieve_dataframe_top_5<-function(table_df, field_name){
+  table_df <- table_df %>%
+    filter_(paste("!is.na(", field_name, ")")) %>%
+    group_by_(field_name) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count)) %>%
+    as.data.frame()
+
+  l = min(nrow(table_df), 5)
+  return(table_df[1:l,])
+}
+
 retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,clause)
 {
   
@@ -198,9 +214,11 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
   table_df = table_df %>%
     filter_(clauses) 
   if(column_list[1] == "count(*)"){
-    table_df <- table_df %>%
-      tally() %>%
-      as.data.frame()
+
+      table_df <- table_df %>%
+        tally() %>%
+        as.data.frame()
+
   }
   else{
     table_df <- table_df %>%
@@ -211,13 +229,14 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
 }
 
 
+
 retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, group_by_field,join_field){
   table_df <- table_df %>%
     dplyr::mutate_(var1 = num, var2 = den) %>% ###Need to avoid .x and .y columns
     inner_join(table_df2, by = join_field) %>%
     group_by_(group_by_field) %>%
     dplyr::summarize(numer = n_distinct(var1),
-                     denom = n_distinct(var2)) %>%
+              denom = n_distinct(var2)) %>%
     dplyr::mutate(numer = as.double(numer)) %>%
     dplyr::mutate(denom = as.double(denom)) %>%
     dplyr::mutate(ratio = numer/denom) %>%
@@ -228,12 +247,15 @@ retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, gro
   return(table_df)
 }
 
+
 retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
   table_df <- table_df %>%
     mutate_(var1 = num, var2 = den) %>%
     group_by_(group_by_field) %>%
     dplyr::summarize(numer = n_distinct(var1),
-                     denom = n_distinct(var2)) %>%
+
+              denom = n_distinct(var2)) %>%
+
     dplyr::mutate(numer = as.double(numer)) %>%
     dplyr::mutate(denom = as.double(denom)) %>%
     dplyr:: mutate(ratio = numer/denom) %>%
@@ -257,33 +279,23 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
     query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
                  ,",",schema2,".",table_name2
                  ," where ",clauses,sep="");
-    df<-sqlQuery(con, query)
+
+    df<-querySql(con, query)
   }
   else
   {
-    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-    {
-      table_name1<-toupper(table_name1)
-      table_name2<-toupper(table_name2)
-      column_list<-toupper(column_list)
-      clauses<-toupper(clauses)
-      query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
-                   ,",",schema2,".",table_name2
-                   ," where ",clauses,sep="");
-      df<-querySql(con, query)
-    }
-    else
-    {
-      query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
-                   ,",",schema2,".",table_name2
-                   ," where ",clauses,sep="");
-      # flog.info(query)
-      df<-querySql(con, query)
-    }
+    query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
+                 ,",",schema2,".",table_name2
+                 ," where ",clauses,sep="");
+    # flog.info(query)
+    df<-querySql(con, query)
+  }
+
   }
   #converting all names to lower case for consistency
   names(df) <- tolower(names(df))
   return(df);
+
 }
 
 
@@ -296,7 +308,7 @@ retrieve_dataframe_join_clause_group<-function(table_df, table_df2,join_field,
     summarise(counts = n()) %>%
     arrange(desc(counts)) %>%
     as.data.frame()
-  
+   
   return(table_df)
 }
 
@@ -312,11 +324,11 @@ retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
 }
 
 retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL){
-  
+
   if(!is.null(distinct_field)) table_df <- table_df %>% rename_(distinct_field = distinct_field)
   table_df <- table_df %>%
     group_by_(field_name)
-  
+
   if(!is.null(distinct_field)){
     table_df <- table_df %>%
       summarize(freq = n_distinct(distinct_field)) %>%
@@ -324,14 +336,14 @@ retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL
   }
   else{
     table_df <- tryCatch(table_df %>%
-                           summarize(freq = n()) %>%
-                           as.data.frame()
-                         , error = function(e){setNames(data.frame(matrix(ncol = 2, nrow = 0)), c(field_name, "freq"))})
+      summarize(freq = n()) %>%
+      as.data.frame()
+    , error = function(e){setNames(data.frame(matrix(ncol = 2, nrow = 0)), c(field_name, "freq"))})
   }
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   table_df[,"freq"] = as.numeric(table_df[,"freq"]) 
-  
+
   return(table_df)
 }
 
@@ -342,9 +354,11 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
     group_by_(field_name) %>%
     summarize(count = n()) %>%
     mutate(count = as.numeric(count)) %>%
+
     as.data.frame()
   return(table_df)
 }
+
 
 get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, table_df, table_df2)
 {
@@ -353,7 +367,7 @@ get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, 
     select(vocabulary_id) %>%
     distinct() %>%
     as.data.frame()
-  
+
   return(vocab_name)
 }
 
@@ -365,6 +379,7 @@ get_concept_name <- function(table_df, df_concept_id){
   return(concept_name)
 }
 
+
 get_vocabulary_name <- function(table_df, df_concept_id){
   vocab_name <- table_df %>%
     filter(concept_id == df_concept_id) %>%
@@ -372,3 +387,4 @@ get_vocabulary_name <- function(table_df, df_concept_id){
     collect()
   return(vocab_name)
 }
+

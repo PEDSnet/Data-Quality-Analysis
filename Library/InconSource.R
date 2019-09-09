@@ -13,7 +13,7 @@ InconSource <- function()
 }
 
 
-applyCheck.InconSource<- function(theObject, table_list, field_list, con)
+applyCheck.InconSource<- function(theObject, table_list, field_list,table_df)
 {
   table_name<-table_list[1]
   concept_id_field<-field_list[1]
@@ -21,7 +21,7 @@ applyCheck.InconSource<- function(theObject, table_list, field_list, con)
   
   check_list_entry<-get_check_entry_two_variables(theObject$check_code, table_name, concept_id_field, source_value_field)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,source_value_field)
+  df_table<-retrieve_dataframe_group(table_df,source_value_field)
   colnames(df_table)[2] <- "Freq"
   # identify row with null value
   new_df_table<-subset(df_table, is.na(df_table[1]))
@@ -37,7 +37,7 @@ applyCheck.InconSource<- function(theObject, table_list, field_list, con)
     missing_percent_source_value<-na_df_table[1,3]
   } else missing_percent_source_value<-0
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,concept_id_field)
+  df_table<-retrieve_dataframe_group(table_df,concept_id_field)
   colnames(df_table)[2] <- "Freq"
   colnames(df_table)[1] <- "Var1"
   # identify row with NI concept value
@@ -61,7 +61,6 @@ applyCheck.InconSource<- function(theObject, table_list, field_list, con)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, paste(concept_id_field, ",",source_value_field), paste(diff, "%",sep=""))
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
     

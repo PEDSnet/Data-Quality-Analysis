@@ -1,0 +1,1 @@
+domain_id =='Route' & is.na(invalid_reason)

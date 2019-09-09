@@ -1,0 +1,1 @@
+domain_id=='Visit' | (vocabulary_id=='PCORNet' & concept_class_id=='Encounter Type' & !(concept_code %like% '%-ED%' | concept_code %like% '%-IP%' | concept_code %like% '%-AV%')) | (vocabulary_id=='PCORNet' & concept_class_id=='Undefined' & !(concept_code %like% '%-ED%' | concept_code %like% '%-IP%' | concept_code %like% '%-AV%')) & is.na(invalid_reason)

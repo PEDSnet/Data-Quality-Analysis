@@ -1,5 +1,8 @@
 concept_id,concept_name
 38004498,Addiction Psychiatry
+38004488,Psychology
+38004489,Audiology
+38003678,Dental Providers | Dentist | Periodontics
 45756747,Adolescent Medicine
 45756748,Adult Congenital Heart Disease
 45756749,Advanced Heart Failure and Transplant Cardiology
@@ -132,3 +135,5 @@ concept_id,concept_name
 44814653,Unknown
 44814649,Other
 44814650,No information
+38004490,Physical Therapy
+38004514,Unknown Physician Specialty

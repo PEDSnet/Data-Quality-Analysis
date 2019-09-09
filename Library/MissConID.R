@@ -13,33 +13,29 @@ MissConID <- function()
 }
 
 
-applyCheck.MissConID<- function(theObject, table_list, field_list, con)
-{
+applyCheck.MissConID<- function(theObject, table_list, field_list, table_df)
+{ 
   table_name<-table_list[1]
   field_name<-field_list[1]
+
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
- 
-  #print(check_list_entry)
-  #df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
 
-  df_nomatch<-retrieve_dataframe_clause(con, g_config,g_config$db$schema, table_name,"count(*)", paste0(field_name,"=0"))
-  
-  df_total<-retrieve_dataframe_record_count(con,g_config,table_name)
+  df_nomatch <- tryCatch(retrieve_dataframe_clause(table_df,"count(*)", paste0(field_name,"==0")),
+           error = function(e) 0)
 
+  df_total <- tryCatch(retrieve_dataframe_record_count(table_df),
+                       error = function(e) 0)
 
-  no_matching_perc<-round(df_nomatch[1,1]*100/df_total[1,1], 2)
+  if(df_total > 0){ no_matching_perc<-round(df_nomatch*100/df_total, 2)}
+  else{ no_matching_perc = -100}
 
-  #print(no_matching_perc)
   if(no_matching_perc<check_list_entry$Lower_Threshold || no_matching_perc>check_list_entry$Upper_Threshold)
   {
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, paste(no_matching_perc,"%",sep=""))
-    #print(issue_obj)
     # log issue 
     return(logIssue(issue_obj))
-    
   }
-  
   NextMethod("applyCheck",theObject)
   return(c())
 }

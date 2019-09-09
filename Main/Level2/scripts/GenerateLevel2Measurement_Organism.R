@@ -3,28 +3,10 @@ library(yaml)
 library(dplyr)
 
 generateLevel2MeasurementOrganism <- function () {
-  #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
-
-  big_data_flag<-TRUE
-
-  # load the configuration file
-  #config = yaml.load_file(g_config_path)
-
-  #establish connection to database
-  #con <- establish_database_connection_OHDSI(config)
-
-  #con <- establish_database_connection(config)
-
+  
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Measurement_Organism_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",g_config)
-
-  
-  # Connection basics ---------------------------------------------------------
-  # To connect to a database first create a src:
-
-            
-  # Then reference a tbl within that src
 
   measurement_organism_tbl <- cdm_tbl(req_env$db_src, "measurement_organism")
 
@@ -89,9 +71,6 @@ generateLevel2MeasurementOrganism <- function () {
     ), desc(occurrence_counts)
     ))
   
-  #print(df_measurement_organism_counts_all)
-  #print(df_lab_counts)
-  
   ## writing to the issue log file
   data_file<-data.frame(concept_id=character(0), concept_name=character(0), occurrence_counts=character(0))
   
@@ -106,7 +85,4 @@ generateLevel2MeasurementOrganism <- function () {
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
-
-  #close the connection
-  #close_database_connection_OHDSI(con,config)
 }

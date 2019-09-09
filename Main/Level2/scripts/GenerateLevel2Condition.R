@@ -5,16 +5,6 @@ library(dplyr)
 generateLevel2Condition <- function() {
   #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
 
-  big_data_flag<-TRUE
-
-  # load the configuration file
-  #get path for current script
-
-  #establish connection to database
-  #con <- establish_database_connection_OHDSI(config)
-
-  #con <- establish_database_connection(config)
-
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Condition_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",g_config)
@@ -32,7 +22,7 @@ generateLevel2Condition <- function() {
   death_tbl <- cdm_tbl(req_env$db_src, "death")
 
   concept_tbl <- vocab_tbl(req_env$db_src,'concept')
-  #print(glimpse(concept_tbl))
+
   condition_concept_tbl <- select(filter(concept_tbl, domain_id=='Condition'), concept_id, concept_name)
 
   ### CA008 temporal outlier check 
@@ -46,7 +36,7 @@ generateLevel2Condition <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm')));
   
-  
+  message("Temp outliers complete")
   ##AA009 date time inconsistency 
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('condition_start_datetime', 
@@ -60,30 +50,79 @@ generateLevel2Condition <- function() {
                                                                                                  'condition_end_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
+  message("incondatetime complete")
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
                                                    c("condition_type_concept_id", "visit_concept_id"), c(
-                                                     "inpatient visits linked to outpatient condition headers",
+                                                     "inpatient visits linked to incorrect condition headers",
                                                      9201
-                                                     , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102
-                                                     , 2000000103))) 
+                                                     , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102, 2000000103,
+                                                     2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))),
+      silent = F)
   
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
- 
+  message("inconvisittype inpatient visits complete")
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
                                                                c("condition_type_concept_id", "visit_concept_id"), c(
-                                                                 "outpatient visits linked to inpatient condition headers",
-                                                                 9202, 
-                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100))) 
+                                                                 "inpatient (ED to inpatient) visits linked to incorrect condition headers",
+                                                                 2000000048
+                                                                 , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102, 2000000103,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))),
+      silent = F)
   
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
+  message("inconvisittype ed to inpatient visits complete")
+  log_entry_content<-(read.csv(log_file_name))
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "inpatient (observation) visits linked to incorrect condition headers",
+                                                                 2000000088
+                                                                 , 2000000095, 2000000096, 2000000097, 2000000101, 2000000102, 2000000103,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))),
+      silent = F)
   
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  message("inconvisittype inpatient observation visits complete")
+  log_entry_content<-(read.csv(log_file_name))
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "outpatient visits linked to incorrect condition headers",
+                                                                 9202, 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))),
+      silent = F)
   
- #print(head(sibling_concepts_tbl))
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  message("inconvisittype outpatient visits complete")
+  log_entry_content<-(read.csv(log_file_name))
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "outpatient (non-physician) visits linked to incorrect condition headers",
+                                                                 2000000469, 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100,
+                                                                 2000001280,2000001281,2000001282,2000001283,2000001284,2000001285))),
+  silent = F)
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  message("inconvisittype outpatient non-physician visits complete")
+  log_entry_content<-(read.csv(log_file_name))
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconVisitType(), c(table_name, "visit_occurrence"),
+                                                               c("condition_type_concept_id", "visit_concept_id"), c(
+                                                                 "Emergency visits linked to incorrect condition headers",
+                                                                 9203, 
+                                                                 2000000092, 2000000093, 2000000094, 2000000098, 2000000099, 2000000100,
+                                                                 2000000095, 2000000096, 2000000097, 2000000101, 2000000102,2000000103))),
+      silent = F)
+  
+  write.csv(log_entry_content, file = log_file_name
+            ,row.names=FALSE)
+  message("inconvisittype ED visits complete")
   ### Print top 100 no matching concept source values in condition table 
   condition_no_match<- select( filter(condition_tbl, condition_concept_id==0)
                                , condition_occurrence_id, condition_source_value)
@@ -94,14 +133,6 @@ generateLevel2Condition <- function() {
     dplyr::summarise(count=n()) %>%
       dplyr::arrange (desc(count)) %>% 
     filter(row_number()>=1 & row_number()<=100)
-  
-  #  filter(
-  #    arrange(
-  #     summarize(
-  #        group_by(condition_no_match, condition_source_value)
-  #        , count=n(condition_occurrence_id))
-  #      , desc(count))
-  #    , row_number()>=1 & row_number()<=100) ## printing top 100
   
   df_no_match_condition_counts<-as.data.frame(
     no_match_condition_counts
@@ -119,23 +150,16 @@ generateLevel2Condition <- function() {
             ,row.names=FALSE)
   
   }
- #print(head(df_no_match_condition_counts))
   
   ### implementation of unexpected top inpatient conditions check 
   #filter by inpatient and outpatient visits and select visit occurrence id column
   inpatient_visit_tbl<-select(filter(visit_tbl,
-                                     (visit_concept_id==9201
+                                     (visit_concept_id==9201 
                                       | visit_concept_id==2000000048) & !is.na(visit_end_date)
   )
   ,visit_occurrence_id,visit_start_date, visit_end_date)
-
-
-  #print(glimpse(inpatient_visit_tbl))
-  
- 
   
   ###### Identifying outliers in top inpatient conditions 
-  #inpatient_visit_df<-as.data.frame(inpatient_visit_tbl)
   inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
                                         , visit_occurrence_id)
 
@@ -151,8 +175,6 @@ generateLevel2Condition <- function() {
       ,visit_occurrence_id, concept_id, concept_name)
   )
 
-  #print(glimpse(condition_visit_join_tbl))
-  
   condition_counts_by_visit <-
     filter(
       dplyr::arrange(
@@ -161,8 +183,6 @@ generateLevel2Condition <- function() {
           , count=n_distinct(visit_occurrence_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
-
-  #print(glimpse(condition_counts_by_visit))
   
   
   df_condition_counts_by_visit<-as.data.frame(
@@ -171,17 +191,17 @@ generateLevel2Condition <- function() {
                  by=c("concept_id"="concept_id"))
       , concept_id, concept_name, count)
   )
-  #print(nrow(df_condition_counts_by_visit))
+
   if(nrow(df_condition_counts_by_visit)>0)
   {
-  outlier_inpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id', 
+    outlier_inpatient_conditions <- as.data.frame(NULL)
+
+  try(outlier_inpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id', 
                                             c(df_condition_counts_by_visit,'vt_counts','top_inpatient_conditions.csv',
                                               'outlier inpatient condition:',g_top50_inpatient_conditions_path
-                                              , 'Condition'))
-  
-  print(outlier_inpatient_conditions)
-  print(nrow(outlier_inpatient_conditions))
-  
+                                              , 'Condition')), silent = F)
+
+    message("unextop inpatient conditions complete")  
   if(nrow(outlier_inpatient_conditions)>0)
   {
   for ( issue_count in 1: nrow(outlier_inpatient_conditions))
@@ -200,10 +220,8 @@ generateLevel2Condition <- function() {
   
   
   ### printing top 100 outpatient conditions by patient counts
-  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
+  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202 | visit_concept_id==2000000469)
                                ,visit_occurrence_id, person_id)
-  
-  #print(glipmse(outpatient_visit_tbl))
   
   ### implementation of unexpected top outpatient conditions check 
  
@@ -216,8 +234,6 @@ generateLevel2Condition <- function() {
       ,person_id, concept_id, concept_name)
   )
   
-  #print(glipmse(out_condition_visit_join_tbl))
-  
   out_condition_counts_by_person <-
     filter(
       dplyr::arrange(
@@ -226,8 +242,6 @@ generateLevel2Condition <- function() {
           , count=n_distinct(person_id))
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
-
-  #print(glipmse(out_condition_counts_by_person))
 
     
   df_out_condition_counts_by_person<-as.data.frame(
@@ -239,11 +253,13 @@ generateLevel2Condition <- function() {
   
   if(nrow(df_out_condition_counts_by_person)>0)
   {
-  outlier_outpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id', 
+    outlier_outpatient_conditions <- as.data.frame(NULL)
+
+  try(outlier_outpatient_conditions<-applyCheck(UnexTop(),table_name,'condition_concept_id', 
                                            c(df_out_condition_counts_by_person,'pt_counts','top_outpatient_conditions.csv',
                                              'outlier outpatient condition:',g_top50_outpatient_conditions_path
-                                             , 'Condition'))
-  
+                                             , 'Condition')), silent = F)
+    message("unextop outlier outpatient complete")
   if(nrow(outlier_outpatient_conditions)>0)
   for ( issue_count in 1: nrow(outlier_outpatient_conditions))
   {
@@ -273,14 +289,9 @@ generateLevel2Condition <- function() {
                                                                                                       'death_date'))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
-  
-
 
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
 
-  #close the connection
-  #close_database_connection_OHDSI(con,config)
 }

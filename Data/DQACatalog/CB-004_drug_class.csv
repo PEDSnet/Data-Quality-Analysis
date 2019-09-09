@@ -1,0 +1,2 @@
+Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_Threshold
+CB-004,Drug_Exposure,drug_concept_id,80,100

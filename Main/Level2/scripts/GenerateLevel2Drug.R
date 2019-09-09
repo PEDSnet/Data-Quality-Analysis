@@ -3,33 +3,20 @@ library(yaml)
 library(dplyr)
 
 generateLevel2Drug <- function() {
-  #detach("package:plyr", unload=TRUE) # otherwise dplyr's group by , summarize etc do not work
-
-  big_data_flag<-TRUE
 
   table_name<-"drug_exposure"
-  # load the configuration file
-  #get path for current script
 
   log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
-  
-  #g_data_version<-paste("pedsnet-2.3.0-", g_config$reporting$site,"-ETLv", g_config$reporting$etl_script_version, sep="")
 
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path( g_config$reporting$site_directory),"./reports/Level2_Drug_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2", g_config)
 
-
-  # Connection basics ---------------------------------------------------------
-  # To connect to a database first create a src:
- 
-           
   # Then reference a tbl within that src
   visit_tbl <- cdm_tbl(req_env$db_src, "visit_occurrence")
   patient_tbl<-cdm_tbl(req_env$db_src, "person")
   drug_tbl <- cdm_tbl(req_env$db_src, "drug_exposure")
   death_tbl <- cdm_tbl(req_env$db_src, "death")
-
   concept_tbl <- vocab_tbl(req_env$db_src, "concept")
   drug_concept_tbl <- select(filter(concept_tbl, domain_id=='Drug'), concept_id, concept_name)
   drug_in_map_tbl <- dqa_tbl(req_env$db_src, "drug_in_concept_id_map")
@@ -38,10 +25,9 @@ generateLevel2Drug <- function() {
   field_name<-"drug_exposure_start_date"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'drug_type_concept_id'), c(38000175,'dispensing'))) 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000175,'dispensing')))
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
-  
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(dispensing)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-dispensing')));
   
@@ -69,7 +55,6 @@ generateLevel2Drug <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-  
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(InconDateTime(), c(table_name), c('drug_exposure_end_datetime', 
                                                                                                  'drug_exposure_end_date'))) 
@@ -90,15 +75,12 @@ generateLevel2Drug <- function() {
   )
   ,visit_occurrence_id,visit_start_date, visit_end_date)
   
-  
-  outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202),visit_occurrence_id, person_id)
-
-  
+  outpatient_visit_tbl<-select(filter(visit_tbl, visit_concept_id==9202 | visit_concept_id==2000000469),
+                               visit_occurrence_id, person_id)
 
  ### Print top 100 no matching concept source values in drug table 
   drug_no_match<- select( filter(drug_tbl, drug_concept_id==0)
                                , drug_source_value, drug_exposure_id)
-
     
     no_match_drug_counts <-
     filter(
@@ -114,8 +96,6 @@ generateLevel2Drug <- function() {
     no_match_drug_counts
   )
   
-  
-  
   if(nrow(df_no_match_drug_counts)>0)
   {
   ## writing to the issue log file
@@ -127,8 +107,6 @@ generateLevel2Drug <- function() {
                                     "./data/no_match_drugs.csv",sep="")
             ,row.names=FALSE)
   }
-
-  
   
   ###### Identifying outliers in top inpatient drugs 
   inpatient_visit_gte_2days_tbl<-select(filter(inpatient_visit_tbl, visit_end_date - visit_start_date >=2)
@@ -148,13 +126,12 @@ generateLevel2Drug <- function() {
   )
   
   drug_ingredient_visit_join_tbl<- distinct(
-    select (
+    select(
       inner_join(drug_visit_join_tbl,
                  drug_in_map_tbl,
                  by = c("concept_id" = "drug_concept_id"))
       ,visit_occurrence_id, in_concept_id, in_concept_name)
   )
-  
   
   drug_counts_by_visit <-
     filter(
@@ -180,8 +157,7 @@ generateLevel2Drug <- function() {
                                              , 'Drug'))
   
   if(nrow(outlier_inpatient_drugs)>0)
-  for ( issue_count in 1: nrow(outlier_inpatient_drugs))
-  {
+  for ( issue_count in 1: nrow(outlier_inpatient_drugs)){
     ### open the person log file for appending purposes.
     log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/drug_exposure_issue.csv",sep="")
     log_entry_content<-(read.csv(log_file_name))
@@ -193,7 +169,7 @@ generateLevel2Drug <- function() {
   
   }
   ### outlier outpatient drugs 
-  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202)
+  outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202 | visit_concept_id==2000000469)
                                ,visit_occurrence_id, person_id)
   
   drug_visit_join_tbl <- distinct(
@@ -253,7 +229,6 @@ generateLevel2Drug <- function() {
   
   fileContent<-c(fileContent,"##Implausible Events")
 
-
   table_name<-"drug_exposure"
   log_entry_content<-(read.csv(log_file_name))
   log_entry_content<-custom_rbind(log_entry_content,applyCheck(PreBirth(), c(table_name), 
@@ -268,11 +243,7 @@ generateLevel2Drug <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
-  
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
-
-  #close the connection
-  #close_database_connection_OHDSI(con, g_config)
 }

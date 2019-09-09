@@ -1,0 +1,1 @@
+(domain_id=='Device' &  (is.na(invalid_reason) | invalid_reason=='')) | (vocabulary_id == 'PCORNet' & (concept_class_id == 'Undefined' | concept_class_id == 'UnDefined'))

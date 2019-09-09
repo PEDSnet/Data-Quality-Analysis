@@ -13,13 +13,13 @@ ImplFutureDate <- function()
 }
 
 
-applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, con)
+applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, table_df)
 {
   table_name<-table_list[1]
   field_name<-field_list[1]
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
-  df_table<-retrieve_dataframe_group(con, g_config,table_name,field_name)
+  df_table<-retrieve_dataframe_group(table_df,field_name)
   
   df_table<-subset(df_table,!is.na(df_table[,1]))
   if(nrow(df_table)>0)
@@ -32,7 +32,6 @@ applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, con)
     #df_table<-subset(df_table,!is.na(Var1))
     
     df_table$Var1<-as.Date(df_table[,1])
-    #df_table$Var1 <- as.factor(df_table$Var1)
     df_table$Var1 <- as.character(df_table$Var1)
     
     # aggregate df_table again by summing frequency for all equivalent dates
@@ -53,7 +52,6 @@ applyCheck.ImplFutureDate <- function(theObject, table_list, field_list, con)
       {
     # create an issue 
       issue_obj<-Issue(theObject, table_list, field_list, max(df_table$Var1))
-    #print(issue_obj)
     # log issue 
       return(logIssue(issue_obj))
     
