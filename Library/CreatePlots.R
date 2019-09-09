@@ -5,8 +5,8 @@
 #Output: the total number of records in the table, or the total number of unique values of the primary key identifier
 #reportTotalCount<-function(df_table)
 #{
- # assuming the first field is the primary key field
- #return(length(unique(df_table[,1])))
+# assuming the first field is the primary key field
+#return(length(unique(df_table[,1])))
 
 #}
 
@@ -21,8 +21,10 @@ describeIdentifier<-function(table_df, field_name)
     as.data.frame()
   
   if(total_unique == 1){
+
       if(is.na(total_unique)){ return(0);}}
 	return (total_unique);
+
 }
 
 
@@ -32,6 +34,8 @@ describeIdentifier<-function(table_df, field_name)
 #Output: number of rows with NA (missing) values for the input field
 # reportMissingCount<-function(df_table,table_name,field_name)
 reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
+
+
 
   if(group_ret){
     total <- table_df %>%
@@ -45,6 +49,7 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
       select(freq) %>%
       collect()
     if(nrow(missn) == 0) missn = 0
+
   }
   else{
     total <- table_df %>%
@@ -64,6 +69,7 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
   if(missn > 0){
     label <- as.character(paste0(round(100*missn/total,digits=2), "%"))
   
+
     return(paste("\n\nPercentage of",table_name,"with missing values for ",field_name," is ",label));
   }
   else
@@ -80,6 +86,8 @@ reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_co
   table_df[,2] <- as.numeric(table_df[,2])
   colnames(table_df) <- c("Var1", "Freq")
 
+
+
   if(nrow(table_df)>0)
   {
     table_df$Var1 <- as.factor(table_df$Var1)
@@ -93,6 +101,8 @@ reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_co
     if(is.na(count_ot)) count_ot<-"0%";
     count_missing_values<-subset(table_df,is.na(Var1))$label[1]
     if(is.na(count_missing_values)) count_missing_values<-"0%";
+
+
 
     return(paste(
       "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",
@@ -127,11 +137,11 @@ reportUnexpected<-function(table_df,field_name,permissible_values){
 #functionName: describeNominalField
 #Description: generate a barplot for a nominal field
 #Inputs:
-	#1. an R dataframe containing a given database table
-	#2. the name of the nominal field
-	#3. label_bin: pre-defined labels for various bins
-	#4. order_bins: a fixed order for various bins on the plot
-	#5: color_bins: colors assigned to each bin
+#1. an R dataframe containing a given database table
+#2. the name of the nominal field
+#3. label_bin: pre-defined labels for various bins
+#4. order_bins: a fixed order for various bins on the plot
+#5: color_bins: colors assigned to each bin
 #Output: write the barplot to a file
 describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
   flog.info(paste("Plotting for Field: ", field_name))
@@ -140,6 +150,7 @@ describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
     table_df <- table_df %>% na.omit()
   }
   else{
+
   table_df <- table_df %>%
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
@@ -147,6 +158,7 @@ describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
     na.omit() 
   table_df[,2] <- as.numeric(table_df[,2])
   }
+
 
   if(nrow(table_df) > 0){
     colnames(table_df) <- c("Var1", "Freq")
@@ -163,10 +175,12 @@ describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
     p<-p+geom_text(data= table_df, aes(x=Var1,y=Freq,label=label), size=3)
     #save the barplot image (will be referenced by the final report)
     if(nrow(table_df)==1 & is.na(table_df[1,1])){ ### dont print the graph
+
       }
     else {
      ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
                        get_image_name(table_name,field_name),sep=""))
+
     }
   }
 }
@@ -176,8 +190,8 @@ describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
 #functionName: describeOrdinalField
 #Description: generate a barplot for an ordinal field
 #Inputs:
-	#1. an R dataframe containing a given database table
-	#2. the name of the ordinal field
+#1. an R dataframe containing a given database table
+#2. the name of the ordinal field
 #Output: write the barplot to a file
 ##ggplotting, set to false for large datasets to avoid ggplot
 describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, ggplotting = T)
@@ -188,6 +202,7 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
     table_df <- table_df %>% na.omit()
   }
   else{
+
   table_df = table_df %>% 
     group_by_(field_name) %>%
     dplyr::summarize(freq = n()) %>%
@@ -197,6 +212,7 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
 
   if(nrow(table_df) > 0){
       if(ggplotting){
+
       colnames(table_df) <- c("Var1", "Freq")
       table_df[,2] <- as.numeric(table_df[,2])
       #create a bar plot
@@ -209,10 +225,12 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
                  axis.text.x = element_text(angle=90, vjust=1), plot.background = element_blank() ,
                  panel.grid.major = element_blank() ,panel.grid.minor = element_blank() ,
                  panel.border = element_blank())
+
        ggsave(file=paste(normalize_directory_path( g_config$reporting$site_directory),
                          get_image_name(table_name,field_name),sep=""))
       }
       else{
+
       # counting the total number of unique values
       total_locations <- nrow(table_df)
       
@@ -223,6 +241,7 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
               main = paste(field_name,": Distribution"), 
               xlab = paste(field_name,"(Total: ",total_locations,")"), 
               ylab = paste(table_name,"Count"))
+
       }
     
     table_df<-table_df[order(table_df[,2], decreasing = TRUE),] 
@@ -322,6 +341,7 @@ describeYYMMField<-function(df_table, table_name,field_name,fact_type)
                           get_image_name(table_name,paste0(field_name, "-yyyy-mm-", fact_type[2])),sep=""))
        
     }
+
 }
 
 ###Note may fail to capture if events occur at the exact same time
@@ -339,6 +359,8 @@ describeTimeField<-function(table_df, table_name,field_name){
   table_df[,1] <- as.character(table_df[,1])
   table_df[,2] <- as.numeric(table_df[,2])
 
+
+
   table_df <- substr(table_df[,1],12,19)
   time_max <- max(table_df, na.rm = T)
   time_min <- min(table_df, na.rm = T)
@@ -349,11 +371,15 @@ describeTimeField<-function(table_df, table_name,field_name){
               get_image_name(table_name,paste(field_name,"_time",sep="")),sep=""))
     # not using ggplot here as it is very expensive for a large number of values
 
+
+
     barplot(table_df, main = paste(field_name,": Distribution"),
             xlab = paste(field_name,"(Total: ",total_locations,")"), ylab = paste(table_name,"Count"))
     
     table_df <- as.data.frame(table_df)
     table_df <- table_df[order(table_df[,2], decreasing = T),]
+
+
 
     return_message<-paste("The most frequent values for",field_name,"are:")
     for (index in 1:min(5, nrow(table_df))){
@@ -372,9 +398,9 @@ describeTimeField<-function(table_df, table_name,field_name){
 #functionName: describeRatioField
 #Description: generate a histogram for a ratio field
 #Inputs:
-	#1. an R dataframe containing a given database table
-	#2. the name of the ratio field
-	#3. the unit associated with the field
+#1. an R dataframe containing a given database table
+#2. the name of the ratio field
+#3. the unit associated with the field
 #Output: write the histogram to a file
 describeRatioField<-function(table_df,table_name,field_name, unit){
   table_df <- table_df %>%
@@ -440,8 +466,8 @@ describeRatioField<-function(table_df,table_name,field_name, unit){
 #functionName: describeForeignKeyIdentifiers
 #Description: generate a barplot for a foreignkey field in a table
 #Inputs:
-	#1. an R dataframe containing a given database table
-	#2. the name of the foreign key field
+#1. an R dataframe containing a given database table
+#2. the name of the foreign key field
 #Output: write the barplot to a file
 
 describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_ret = 1)
@@ -459,6 +485,7 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
     table_df[,2] <- as.numeric(table_df[,2])
     table_df <- table_df[order(table_df[,1]),]
   }
+
     if(nrow(table_df)>0){
       total_values<- nrow(table_df)
       png(paste(normalize_directory_path( g_config$reporting$site_directory),
@@ -485,7 +512,12 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
       if(!is.null(dev.list())) dev.off()
       if(!is.null(dev.list())) dev.off()
       return(return_message)
+
     }
+    if(!is.null(dev.list())) dev.off()
+    if(!is.null(dev.list())) dev.off()
+    return(return_message)
+  }
 }
 
 
@@ -498,9 +530,13 @@ EnhanceFieldValues<-function(table_df,field_name,df_ref)
   
   for(i in 1:nrow(df_ref)){
     table_df[,column_index][table_df[,column_index]== df_ref[i,1]] <- paste(
+
     df_ref[i,2]," (",df_ref[i,1],")",sep="");
+
   }
   return(table_df);
 }
+
+
 
 

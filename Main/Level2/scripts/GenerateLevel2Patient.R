@@ -8,7 +8,9 @@ generateLevel2Patient <- function() {
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Patient_Report_Automatic.md",sep=""))
   fileContent <-get_report_header("Level 2",g_config)
+
              
+
   # Then reference a tbl within that src
   patient_tbl<-cdm_tbl(req_env$db_src, "person")
   
@@ -40,8 +42,10 @@ generateLevel2Patient <- function() {
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
 
+
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
 
 }
+

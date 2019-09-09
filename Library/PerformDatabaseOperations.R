@@ -76,9 +76,11 @@ retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
 
 retrieve_dataframe_record_count<-function(table_df)
 {
+
    table_df = table_df %>%
        tally() %>%
        as.data.frame()
+
   test_that("Retrieve_dataframe_record_count does not have unique total row value", 
             expect_equal(length(table_df), 1))
   return(table_df)
@@ -87,6 +89,7 @@ retrieve_dataframe_record_count<-function(table_df)
 
 retrieve_dataframe_count_group<-function(table_df, count_column, field_name){
   counts = table_df %>%
+
       rename_(count_column = count_column) %>%
       group_by_(field_name) %>%
       filter(!is.na(count_column)) %>%
@@ -95,13 +98,14 @@ retrieve_dataframe_count_group<-function(table_df, count_column, field_name){
    test_that("Testing Retrieve Dataframe Count Group", 
              expect_equal(colnames(counts), c(field_name, "count")))
    return(counts)
+
 }
 
 
 # printing top 5 values
 retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
 {
-
+  
   #special handling for ODBC drivers
   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
@@ -136,7 +140,19 @@ retrieve_dataframe_top_5<-function(con,config,table_name, field_name)
   #converting all names to lower case for consistency
   names(df) <- tolower(names(df))
   return(df);
+  
+}
 
+retrieve_dataframe_top_5<-function(table_df, field_name){
+  table_df <- table_df %>%
+    filter_(paste("!is.na(", field_name, ")")) %>%
+    group_by_(field_name) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count)) %>%
+    as.data.frame()
+  
+  l = min(nrow(table_df), 5)
+  return(table_df[1:l,])
 }
 
 retrieve_dataframe_top_5<-function(table_df, field_name){
@@ -153,7 +169,7 @@ retrieve_dataframe_top_5<-function(table_df, field_name){
 
 retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,clause)
 {
-
+  
   #special handling for ODBC drivers
   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
@@ -189,7 +205,7 @@ retrieve_dataframe_top_20_clause<-function(con,config,table_name, field_name,cla
   #converting all names to lower case for consistency
   names(df) <- tolower(names(df))
   return(df);
-
+  
 }
 
 
@@ -198,9 +214,11 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
   table_df = table_df %>%
     filter_(clauses) 
   if(column_list[1] == "count(*)"){
+
       table_df <- table_df %>%
         tally() %>%
         as.data.frame()
+
   }
   else{
     table_df <- table_df %>%
@@ -209,6 +227,7 @@ retrieve_dataframe_clause<-function(table_df ,column_list,clauses)
   }
   return(table_df)
 }
+
 
 
 retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, group_by_field,join_field){
@@ -228,12 +247,15 @@ retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, gro
   return(table_df)
 }
 
+
 retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
   table_df <- table_df %>%
     mutate_(var1 = num, var2 = den) %>%
     group_by_(group_by_field) %>%
     dplyr::summarize(numer = n_distinct(var1),
+
               denom = n_distinct(var2)) %>%
+
     dplyr::mutate(numer = as.double(numer)) %>%
     dplyr::mutate(denom = as.double(denom)) %>%
     dplyr:: mutate(ratio = numer/denom) %>%
@@ -246,23 +268,10 @@ retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
 
 retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2,table_name2,column_list,clauses)
 {
-
+  
   #special handling for ODBC drivers
   if (grepl(config$db$driver,"ODBC",ignore.case=TRUE))
   {
-  table_name1<-toupper(table_name1)
-  table_name2<-toupper(table_name2)
-  column_list<-toupper(column_list)
-  clauses<-toupper(clauses)
-  query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
-               ,",",schema2,".",table_name2
-               ," where ",clauses,sep="");
-  df<-sqlQuery(con, query)
-  }
-  else
-  {
-    if (grepl(config$db$driver,"Oracle",ignore.case=TRUE))
-    {
     table_name1<-toupper(table_name1)
     table_name2<-toupper(table_name2)
     column_list<-toupper(column_list)
@@ -270,6 +279,7 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
     query<-paste("select distinct ",column_list," from ",schema1,".",table_name1
                  ,",",schema2,".",table_name2
                  ," where ",clauses,sep="");
+
     df<-querySql(con, query)
   }
   else
@@ -280,10 +290,12 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
     # flog.info(query)
     df<-querySql(con, query)
   }
+
   }
   #converting all names to lower case for consistency
   names(df) <- tolower(names(df))
   return(df);
+
 }
 
 
@@ -342,9 +354,11 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
     group_by_(field_name) %>%
     summarize(count = n()) %>%
     mutate(count = as.numeric(count)) %>%
+
     as.data.frame()
   return(table_df)
 }
+
 
 get_vocabulary_name_by_concept_ids <- function (table_name, field_name, domain, table_df, table_df2)
 {
@@ -364,6 +378,7 @@ get_concept_name <- function(table_df, df_concept_id){
     collect()
   return(concept_name)
 }
+
 
 get_vocabulary_name <- function(table_df, df_concept_id){
   vocab_name <- table_df %>%

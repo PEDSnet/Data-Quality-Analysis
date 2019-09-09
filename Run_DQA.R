@@ -25,7 +25,7 @@ runDQA<-function(level)
       error_log='Level 1 DQA failed to finish')
     
   } else if (level == 2) {
-
+    
     runAndLog(
       FUN=executeLevel2DQA,
       success_log = 'Level 2 DQA succesfully finished!',
@@ -37,6 +37,7 @@ runDQA<-function(level)
 }
 
 generateSingleReport <- function(level, report) {
+
     test_report = NULL
     if(level == 1) {
         test_report <- g_level1_reports[[report]]
@@ -64,5 +65,14 @@ generateSingleReport <- function(level, report) {
             success_log = paste(report, ' report successfully generated.', sep=""),
             error_log = paste('Failed to generate ', report, ' report, see dqa.log for more details.', sep="")
         )
+
     }
+  }
+  else {
+    runAndLog(
+      FUN = test_report,
+      success_log = paste(report, ' report successfully generated.', sep=""),
+      error_log = paste('Failed to generate ', report, ' report, see dqa.log for more details.', sep="")
+    )
+  }
 }
