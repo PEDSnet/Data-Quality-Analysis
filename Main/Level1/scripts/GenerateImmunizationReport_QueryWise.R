@@ -82,6 +82,21 @@ generateImmunizationReport <- function() {
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
 
    flog.info(Sys.time())
+  
+  #immunization type concept id
+  field_name="immunization_type_concept_id"
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  null_message<-reportNullFlavors(df_table,table_name,field_name,44814653,44814649,44814650)
+  
+  df_procedure_type_concept_id <-generate_list_concepts(table_name,"immunization_type_concept_id.csv")
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  
+  ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,"immunization_type_concept_id.csv", concept_tbl, data_tbl)) 
+  describeNominalField(df_table,table_name,field_name)
+  fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   field_name<-"immunization_date" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -98,6 +113,34 @@ generateImmunizationReport <- function() {
   message<-describeTimeField(df_table, table_name, field_name)
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
 
+  field_name<-"imm_recorded_date" #
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  message<-describeTimeField(df_table, table_name, field_name)
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))
+  
+  field_name<-"imm_recorded_datetime" #
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  message<-describeTimeField(df_table, table_name, field_name)
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))
+  
+  field_name<-"imm_exp_date" #
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  message<-describeTimeField(df_table, table_name, field_name)
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))
+  
+  field_name<-"imm_exp_datetime" #
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  message<-describeTimeField(df_table, table_name, field_name)
+  fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_datetime",sep="")));
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))
+  
   field_name<-"imm_route_source_value" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -141,6 +184,51 @@ generateImmunizationReport <- function() {
                                                      c(field_name, "imm_route_source_value"),data_tbl)) 
   }
 
+  
+  
+  field_name<-"imm_body_site_source_value" #
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  missing_message<-reportMissingCount(df_table,table_name,field_name)
+  fileContent<-c(fileContent,missing_message)
+  
+  ###########DQA CHECKPOINT -- missing information##############
+  missing_percent_source_value<-extract_numeric_value(missing_message)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  if(grepl("100",missing_message)==FALSE) # if 100% missing
+  {
+    message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
+    fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
+  }
+  field_name="imm_body_site_concept_id"
+  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  df_modifier <-generate_df_concepts(table_name,"imm_body_site_concept_id_dplyr.txt", concept_tbl)
+  
+  ###########DQA CHECKPOINT##############
+  logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
+                                                   ,"imm_body_site_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
+  fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+  
+  ###########DQA CHECKPOINT -- no matching concept ##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
+  df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
+  missing_message<-reportMissingCount(df_table,table_name,field_name)
+  fileContent<-c(fileContent,missing_message)
+  
+  ###########DQA CHECKPOINT -- missing information##############
+  missing_percent<-extract_numeric_value(missing_message)
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+  if(grepl("100",missing_message)==FALSE) # if not 100% missing
+  {
+    describeNominalField(df_table_modifier_enhanced,table_name,field_name);
+    fileContent<-c(fileContent,paste_image_name(table_name,field_name));
+    
+    ## run the CA-014 DQA check only if there is some data in modifier_concept_id
+    ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
+    logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
+                                                     c(field_name, "imm_body_site_source_value"),data_tbl)) 
+  }
+  
  field_name<-"imm_dose_unit_source_value" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -199,6 +287,26 @@ generateImmunizationReport <- function() {
     logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
     message<-describeForeignKeyIdentifiers(df_table, table_name,field_name)
     fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
+    
+    
+    ###########DQA CHECKPOINT -- missing information##############
+    field_name<-"imm_manufacturer" 
+    df_table<-retrieve_dataframe_group(data_tbl,field_name)
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+    message<-reportMissingCount(df_table,table_name,field_name)
+    fileContent<-c(fileContent,message)
+    missing_percent<-extract_numeric_value(message)
+    logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))
+  
+    ###########DQA CHECKPOINT -- missing information##############
+    field_name<-"imm_lot_num" 
+    df_table<-retrieve_dataframe_group(data_tbl,field_name)
+    fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
+    message<-reportMissingCount(df_table,table_name,field_name)
+    fileContent<-c(fileContent,message)
+    missing_percent<-extract_numeric_value(message)
+    logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl))
+    
  
   #FOREIGN KEY fields
 

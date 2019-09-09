@@ -21,8 +21,6 @@ generateProcedureOccurrenceReport <- function() {
   current_total_count<-as.numeric(df_total_procedure_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", 
                                    formatC(current_total_count, format="d", big.mark=','),"\n"))
-  
-  ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
 
   ## write current total count to total counts 
@@ -109,19 +107,13 @@ generateProcedureOccurrenceReport <- function() {
   field_name<-"procedure_concept_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  
-  # add % of no matching concept (concept id = 0). for the completeness report
-  ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  
-  ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
                                                   c('Procedure', 'HCPCS','CPT4', 'SNOMED','ICD9Proc','ICD10PCS'),
                                                    concept_tbl, data_tbl)) 
-  
   message<-describeOrdinalField(df_table, table_name, field_name,ggplotting = F)
   new_message<-create_meaningful_message_concept_id(concept_tbl , message,field_name)
-  fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
+  fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name))
 
   field_name<-"procedure_concept_id" #
   df_table_new<-retrieve_dataframe_count_group(data_tbl,"person_id", field_name)
@@ -135,7 +127,6 @@ generateProcedureOccurrenceReport <- function() {
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeDateField(df_table, table_name, field_name)
-  
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
@@ -151,8 +142,7 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
-  
-  ###########DQA CHECKPOINT -- missing information##############
+
   missing_percent_source_value<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   if(grepl("100",missing_message)==FALSE) # if 100% missing
@@ -165,20 +155,15 @@ generateProcedureOccurrenceReport <- function() {
 
   field_name="modifier_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
-  
   df_modifier <-generate_df_concepts(table_name,"modifier_concept_id_dplyr.txt", concept_tbl)
-    
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"modifier_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
-  
-  ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   df_table_modifier_enhanced<-EnhanceFieldValues(df_table,field_name,df_modifier);
   missing_message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,missing_message)
-  
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(missing_message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -194,12 +179,11 @@ generateProcedureOccurrenceReport <- function() {
                                                      data_tbl)) 
   }
 
-  field_name<-"quantity" #
+  field_name<-"quantity" 
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
-  
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -218,8 +202,6 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   count_novisit<-retrieve_dataframe_clause(data_tbl,"count(*)","is.na(visit_occurrence_id)")
   missing_visit_percent<-round(count_novisit*100/df_total_procedure_count,2)
-  
-  ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,apply_check_type_1("BA-001", field_name, missing_visit_percent, 
                                                            table_name, g_data_version));
 
@@ -228,7 +210,6 @@ generateProcedureOccurrenceReport <- function() {
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name)
   fileContent<-c(fileContent,message)
-  
   ###########DQA CHECKPOINT -- missing information##############
   missing_percent<-extract_numeric_value(message)
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
