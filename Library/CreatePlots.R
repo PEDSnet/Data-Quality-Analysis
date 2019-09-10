@@ -517,7 +517,6 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
     if(!is.null(dev.list())) dev.off()
     if(!is.null(dev.list())) dev.off()
     return(return_message)
-  }
 }
 
 

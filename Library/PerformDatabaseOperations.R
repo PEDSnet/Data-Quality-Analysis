@@ -291,7 +291,7 @@ retrieve_dataframe_join_clause<-function(con,config,schema1,table_name1, schema2
     df<-querySql(con, query)
   }
 
-  }
+  
   #converting all names to lower case for consistency
   names(df) <- tolower(names(df))
   return(df);
