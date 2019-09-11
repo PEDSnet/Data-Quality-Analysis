@@ -1,0 +1,2 @@
+site,condition_occurrence.Inpatient_Condition_Headers,condition_occurrence.Outpatient_Condition_Headers,condition_occurrence.ED_Condition_Headers,drug_exposure.Dispensing,drug_exposure.InpatientMAR,drug_exposure.Prescriptions,measurement.Labs,measurement.Vitals,observation.EHR,observation.Patient_Reported,visit_occurrence.Inpatient,visit_occurrence.Outpatient,visit_occurrence.ED
+ohdsi,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000
