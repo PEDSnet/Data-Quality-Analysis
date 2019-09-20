@@ -16,18 +16,26 @@ generateLocationReport <- function() {
   fileContent <-get_report_header(table_name, g_config)
 
   #PRIMARY FIELD(s)
-  field_name<-"location_id"
+  field_name<-"location_history_id"
   current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",
                                    field_name,"is: ",current_total_count ,"\n"))
   
   ###########DQA CHECKPOINT############## difference from previous cycle
-  #logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
-  
+  logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
 
   
+  field_name<-"location_id"
+  current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
+  fileContent<-c(fileContent,paste("The total number of unique values for ",
+                                   field_name,"is: ",current_total_count ,"\n"))
+  
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
+
   #entity id
   field_name="entity_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
