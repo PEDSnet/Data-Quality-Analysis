@@ -479,13 +479,13 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
   else{
     table_df <- table_df %>%
       na.omit() %>%
-      group_by_(field_name) %>%
+      dplyr::group_by_(field_name) %>%
       dplyr::summarize(freq = n()) %>%
       as.data.frame()
     table_df[,2] <- as.numeric(table_df[,2])
     table_df <- table_df[order(table_df[,1]),]
   }
-
+    return_message <- ""
     if(nrow(table_df)>0){
       total_values<- nrow(table_df)
       png(paste(normalize_directory_path( g_config$reporting$site_directory),

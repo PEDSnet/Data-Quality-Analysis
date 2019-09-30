@@ -1,4 +1,4 @@
-generateLocationReport <- function() {
+generateLocationHistoryReport <- function() {
 
   # read a table into an R dataframe
   table_name<-"location_history"
@@ -58,6 +58,7 @@ generateLocationReport <- function() {
   message<-reportMissingCount(data_tbl,table_name,field_name, group_ret = 0)
   fileContent<-c(fileContent,message)
   ###########DQA CHECKPOINT -- missing information##############
+  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   field_name<-"start_date"

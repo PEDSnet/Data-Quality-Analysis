@@ -60,3 +60,6 @@ BA-002,immunization,immunization_source_concept_id,0,10
 BA-002,immunization,immunization_concept_id,0,10
 BA-002,immunization,imm_route_concept_id,0,10
 BA-002,immunization,imm_dose_unit_concept_id,0,10
+BA-002,immunization,immunization_type_concept_id,0,10
+BA-002,immunization,imm_body_site_concept_id,0,10
+BA-002,Location_History,relationship_type_concept_id,0,10
