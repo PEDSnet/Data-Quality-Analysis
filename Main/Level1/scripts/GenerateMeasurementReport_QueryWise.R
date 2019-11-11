@@ -264,7 +264,8 @@ generateMeasurementReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"specimen_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
   ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),table_df = lab_data)) 
+  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),
+                                                   c(field_name),table_df = lab_data)) 
   #generating concept wise graphs for numerical readings
   
   print(field_name)
