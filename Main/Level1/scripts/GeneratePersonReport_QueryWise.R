@@ -257,23 +257,22 @@ generatePersonReport <- function() {
                                                    ,  "day_of_birth.csv", data_tbl)) 
 
   #birth_date 
-  field_name<-"birth_datet"
+  field_name<-"birth_date"
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
   fileContent<-c(fileContent,missing_percent_message)
-  
+
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeDateField(df_table, table_name,field_name, datetime = 0)
-  
+
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), 
                                                    c(field_name), data_tbl)) 
-  
+
   fileContent<-c(fileContent,message,paste_image_name(table_name,paste(field_name,"_date",sep="")));
-  
   
   #birth_datetime --
   field_name<-"birth_datetime"

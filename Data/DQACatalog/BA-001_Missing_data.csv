@@ -2,6 +2,7 @@ Category Code,PEDSnet_Table,PEDSnet_Field,Lower_Threshold,Upper_Threshold
 BA-001,Person,month_of_birth,0,0
 BA-001,Person,day_of_birth,0,0
 BA-001,Person,birth_datetime,0,0
+BA-001,Person,birth_date,0,0
 BA-001,Person,location_id,0,0
 BA-001,Person,provider_id,0,0
 BA-001,Person,pn_gestational_age,0,0

@@ -18,8 +18,6 @@ applyCheck.UnexDiff <- function(theObject, table_list, field_list, current_total
   table_name<-table_list[1]
   prev_total_count<-as.data.frame(get_previous_cycle_total_count( g_config$reporting$site, table_name))
 
-
-
   if(is.null(prev_total_count[1,1])) ## if previously this table was not generated
     return(c())
   

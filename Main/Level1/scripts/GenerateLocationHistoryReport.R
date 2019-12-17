@@ -28,12 +28,11 @@ generateLocationHistoryReport <- function() {
   
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
 
-  
   field_name<-"location_id"
   current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",
                                    field_name,"is: ",current_total_count ,"\n"))
-  
+
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
 
   #entity id
