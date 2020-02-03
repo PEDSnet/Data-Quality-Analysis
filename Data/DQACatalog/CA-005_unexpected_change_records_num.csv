@@ -17,3 +17,4 @@ CA-005,Observation,N/A,0,20
 CA-005,ADT_Occurrence,N/A,0,20
 CA-005,Device_Exposure,N/A,0,20
 CA-005,immunization,N/A,0,20
+CA-005,hash_token,N/A,0,10

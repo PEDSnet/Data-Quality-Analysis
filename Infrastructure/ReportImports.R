@@ -16,6 +16,7 @@ source("../Main/Level1/scripts/GenerateDevice_ExposureReport_QueryWise.R", chdir
 source("../Main/Level1/scripts/GenerateVisit_PayerReport_QueryWise.R", chdir = T)
 source("../Main/Level1/scripts/GenerateFact_RelationshipReport_QueryWise.R", chdir = T)
 source("../Main/Level1/scripts/GenerateADT_OccurrenceReport.R", chdir = T)
+source("../Main/Level1/scripts/GenerateHashReport.R", chdir = T)
 source("../Main/Level2/scripts/GenerateLevel2ADT_Occurrence.R", chdir = T)
 source("../Main/Level2/scripts/GenerateLevel2Condition.R", chdir = T)
 source("../Main/Level2/scripts/GenerateLevel2Death.R", chdir = T)

@@ -153,3 +153,10 @@ BA-001,Immunization,immunization_dose,0,0
 BA-001,Immunization,imm_dose_unit_source_value,0,0
 BA-001,Immunization,imm_dose_unit_concept_id,0,0
 BA-001,Immunization,procedure_occurrence_id,0,0
+BA-001,hash_token,person_id,0,0
+BA-001,hash_token,token_01,0,0
+BA-001,hash_token,token_02,0,0
+BA-001,hash_token,token_03,0,0
+BA-001,hash_token,token_04,0,0
+BA-001,hash_token,token_05,0,0
+BA-001,hash_token,token_06,0,0

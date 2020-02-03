@@ -125,3 +125,10 @@ CA-006,Immunization,immunization_dose,-15,15
 CA-006,Immunization,imm_dose_unit_source_value,-15,15
 CA-006,Immunization,imm_dose_unit_concept_id,-15,15
 CA-006,Immunization,procedure_occurrence_id,-15,15
+CA-006,hash_token,person_id,-15,15
+CA-006,hash_token,token_01,-15,15
+CA-006,hash_token,token_02,-15,15
+CA-006,hash_token,token_03,-15,15
+CA-006,hash_token,token_04,-15,15
+CA-006,hash_token,token_05,-15,15
+CA-006,hash_token,token_06,-15,15
