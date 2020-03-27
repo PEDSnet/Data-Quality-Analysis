@@ -26,8 +26,8 @@ generateImmunizationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   ## write current total count to total counts 
   write_total_counts(table_name, current_total_count)
-  field_name<-"immunization_source_value" #  3 minutes
   
+  field_name<-"immunization_source_value" #  3 minutes
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeOrdinalField(df_table, table_name, field_name, ggplotting = F)
@@ -44,10 +44,6 @@ generateImmunizationReport <- function() {
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
 
-  ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  
   # some fields can have multiple vocabularies
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name), 

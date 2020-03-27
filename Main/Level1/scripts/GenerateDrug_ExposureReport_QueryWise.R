@@ -14,7 +14,9 @@ generateDrugExposureReport <- function() {
   logFileData<-data.frame(g_data_version=character(0), table=character(0),field=character(0), issue_code=character(0),
                           issue_description=character(0), alias=character(0)
                           , finding=character(0), prevalence=character(0))
+  
   logFileData<- custom_rbind(logFileData,applyCheck(DrugClass(), c("drug_exposure"),c("drug_concept_id")))
+  
   #PRIMARY FIELD
   field_name<-"drug_exposure_id"
   df_total_measurement_count<-retrieve_dataframe_count(data_tbl,field_name)

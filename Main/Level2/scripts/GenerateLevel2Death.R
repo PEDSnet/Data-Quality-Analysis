@@ -7,9 +7,7 @@ generateLevel2Death <- function () {
   
   big_data_flag<-TRUE
   table_name<-"death"
-  
-  
- 
+
   
   #writing to the final DQA Report
   fileConn<-file(paste(normalize_directory_path(g_config$reporting$site_directory),"./reports/Level2_Death_Report_Automatic.md",sep=""))

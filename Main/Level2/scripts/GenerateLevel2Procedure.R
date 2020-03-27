@@ -158,13 +158,12 @@ generateLevel2Procedure <- function () {
     ### open the person log file for appending purposes.
     log_file_name<-paste(normalize_directory_path(g_config$reporting$site_directory),"./issues/procedure_occurrence_issue.csv",sep="")
     log_entry_content<-(read.csv(log_file_name))
-    log_entry_content<-
+    log_entry_content <-
     custom_rbind(log_entry_content,c(outlier_inpatient_procedures[issue_count,1:8]))
                   
     write.csv(log_entry_content, file = log_file_name ,row.names=FALSE)
     }
-  
-     }
+}
   ### implementation of unexpected top outpatient procedures check 
   outpatient_visit_tbl<-select(filter(visit_tbl,visit_concept_id==9202 | visit_concept_id==2000000469)
                                ,visit_occurrence_id, person_id)

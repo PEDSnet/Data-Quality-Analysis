@@ -138,11 +138,6 @@ generateDeviceExposureReport <- function(g_data_version) {
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
 
-  ###########DQA CHECKPOINT -- missing information##############
-  missing_percent<-extract_numeric_value(message)
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
-
   new_message<-""
   if(length(message)>0)
   {

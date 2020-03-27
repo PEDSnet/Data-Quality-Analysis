@@ -30,9 +30,6 @@ generateVisitPayerReport <- function() {
   fileContent<-c(fileContent,paste("The visit_payer to visit ratio is ",
                                    round(df_total_procedure_count[1][1]/df_total_visit_count[1][1],2),"\n"))
 
-  field_name<-"visit_occurrence_id"
-  fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
-
   field_name = "plan_type"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))

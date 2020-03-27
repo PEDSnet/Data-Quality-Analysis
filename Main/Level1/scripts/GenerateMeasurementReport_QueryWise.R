@@ -28,7 +28,7 @@ generateMeasurementReport <- function() {
   
   #NOMINAL Fields
   
-  field_name<-"provider_id" #
+  field_name<-"provider_id" 
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
@@ -59,20 +59,16 @@ generateMeasurementReport <- function() {
   
   print(field_name)
   
-  field_name<-"value_as_concept_id" #
+  field_name<-"value_as_concept_id" 
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"value_as_concept_id_dplyr.txt", concept_tbl, data_tbl)) 
-  
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),table_df = 
-                                                   lab_data))
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), table_df = 
                                                    lab_data)) 
   
   print(field_name)
-  
   
   field_name<-"value_as_number" 
   ###########DQA CHECKPOINT -- missing information##############
@@ -93,9 +89,6 @@ generateMeasurementReport <- function() {
   ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)
                                                    ,"unit_concept_id_dplyr.txt", concept_tbl, data_tbl))
-  
-  ###########DQA CHECKPOINT -- no matching concept ##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
   
   ###########DQA CHECKPOINT############## source value Nulls and NI concepts should match
   logFileData<-custom_rbind(logFileData,applyCheck(InconSource(), c(table_name),
@@ -124,9 +117,6 @@ generateMeasurementReport <- function() {
   
   ###########DQA CHECKPOINT -- no matching concept ##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name),data_tbl)) 
-  
-  ###########DQA CHECKPOINT -- missing information##############
-  logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   
   print(field_name)
   
@@ -160,8 +150,6 @@ generateMeasurementReport <- function() {
                                                    ,c("Vitals",fact_type_count))) 
 
   print(field_name)
-  
-  field_name="measurement_source_value"
   
   field_name<-"measurement_source_concept_id"
   ###########DQA CHECKPOINT -- no matching concept ##############
@@ -240,7 +228,7 @@ generateMeasurementReport <- function() {
   print(field_name)
   
   ## compute missing % for labs only 
-  field_name<-"specimen_source_value" #
+  field_name<-"specimen_source_value" 
   
   ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
   count_lab_no_specimen<-retrieve_dataframe_clause(data_tbl,"count(*)"
@@ -258,7 +246,7 @@ generateMeasurementReport <- function() {
   print(field_name)
   
   # specimen concept id
-  field_name<-"specimen_concept_id" #
+  field_name<-"specimen_concept_id" 
   ###########DQA CHECKPOINT##############
   if(field_name %in% colnames(data_tbl)){
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidConID(), c(table_name),c(field_name)

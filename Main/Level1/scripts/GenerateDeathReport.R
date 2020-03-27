@@ -28,7 +28,8 @@ generateDeathReport <- function() {
   field_name<-"person_id" 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
   message<-describeForeignKeyIdentifiers(data_tbl, "death_cause",field_name, group_ret = 0) ### error here?
-  fileContent<-c(fileContent,paste_image_name("death_cause",field_name),paste_image_name_sorted("death_cause",field_name),message);
+  fileContent<-c(fileContent,paste_image_name("death_cause",field_name),
+                 paste_image_name_sorted("death_cause",field_name),message);
 
   #ORDINAL Fields
   
