@@ -112,7 +112,7 @@ generateDeviceExposureReport <- function(g_data_version) {
 
   ### DQA CHECKPOINT ##########
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name), 
-                                                   c('Device','HCPCS'), concept_tbl,data_tbl)) 
+                                                   c('Device','HCPCS', "SNOMED"), concept_tbl,data_tbl)) 
 
   message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
 

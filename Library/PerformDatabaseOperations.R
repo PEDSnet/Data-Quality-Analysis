@@ -76,7 +76,6 @@ retrieve_dataframe_count<-function(table_df, column_list, distinction = F){
 
 retrieve_dataframe_record_count<-function(table_df)
 {
-
    table_df = table_df %>%
        tally() %>%
        as.data.frame()
@@ -89,7 +88,6 @@ retrieve_dataframe_record_count<-function(table_df)
 
 retrieve_dataframe_count_group<-function(table_df, count_column, field_name){
   counts = table_df %>%
-
       rename_(count_column = count_column) %>%
       group_by_(field_name) %>%
       filter(!is.na(count_column)) %>%

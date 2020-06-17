@@ -1,1 +1,2 @@
-(domain_id=='Device' &  (is.na(invalid_reason) | invalid_reason=='')) | (vocabulary_id == 'PCORNet' & (concept_class_id == 'Undefined' | concept_class_id == 'UnDefined'))
+(domain_id=='Device' &  (is.na(invalid_reason) | invalid_reason=='')) | (vocabulary_id == 'PCORNet' & (concept_class_id == 'Undefined' | concept_class_id == 'UnDefined')) |
+device_concept_id %in% c(4044008,4097216,4138614,45761494,4224038,4139525,45768222,4222966,40493026)

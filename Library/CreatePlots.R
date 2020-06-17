@@ -34,15 +34,15 @@ describeIdentifier<-function(table_df, field_name)
 #Output: number of rows with NA (missing) values for the input field
 # reportMissingCount<-function(df_table,table_name,field_name)
 reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
-
-
-
+  if(is.null(nrow(table_df))) return(NA)
   if(group_ret){
+    print(table_df)
     total <- table_df %>%
       dplyr::mutate(total = sum(freq)) %>%
       select(total) %>%
       distinct() %>%
       collect()
+
     missn <- table_df %>%
       dplyr::mutate_(miss_field = field_name) %>%
       filter(is.na(miss_field)) %>%
@@ -101,8 +101,6 @@ reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_co
     if(is.na(count_ot)) count_ot<-"0%";
     count_missing_values<-subset(table_df,is.na(Var1))$label[1]
     if(is.na(count_missing_values)) count_missing_values<-"0%";
-
-
 
     return(paste(
       "\nPercentage of",table_name,"with unknown value for ",field_name," is ",count_un,"\n",

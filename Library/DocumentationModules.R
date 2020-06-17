@@ -70,13 +70,15 @@ create_meaningful_message_concept_code<-function(message,field_name,con,config)
 
 
 
-extract_numeric_value<-function(test_message)
+extract_numeric_value <- function(test_message)
 {
+  if(is.na(test_message)) return('NA')
+  else{
   return(
     as.numeric(
       trim(unlist(strsplit(trim(unlist(strsplit(test_message," is"))[2]),"%"))[1])
     )
-  )
+  )}
 }
 
 

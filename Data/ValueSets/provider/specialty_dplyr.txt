@@ -1,1 +1,1 @@
-domain_id %in% c('Provider Specialty', 'Provider') & vocabulary_id %in% c('Specialty', 'ABMS','NUCC','PEDSnet', "Medicare Specialty")
+vocabulary_id %in% c('Specialty', 'ABMS','NUCC','PEDSnet', "Medicare Specialty")

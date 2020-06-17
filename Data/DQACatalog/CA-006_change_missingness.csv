@@ -30,7 +30,7 @@ CA-006,Visit_Occurrence,provider_id,-15,15
 CA-006,Visit_Occurrence,care_site_id,-15,15
 CA-006,Visit_Occurrence,visit_source_value,-15,15
 CA-006,Visit_Occurrence,visit_source_concept_id,-15,15
-CA-006,Visit_Occurrence,admitted_from_value,-15,15
+CA-006,Visit_Occurrence,admitted_from_source_value,-15,15
 CA-006,Visit_Occurrence,admitted_from_concept_id,-15,15
 CA-006,Visit_Occurrence,discharge_to_source_value,-15,15
 CA-006,Visit_Occurrence,discharge_to_concept_id,-15,15
@@ -99,6 +99,7 @@ CA-006,Measurement,visit_occurrence_id,-15,15
 CA-006,Measurement,measurement_source_concept_id,-15,15
 CA-006,Measurement,unit_source_value,-15,15
 CA-006,Measurement,specimen_source_value,-15,15
+CA-006,Measurement,specimen_concept_id,-15,15
 CA-006,Measurement,priority_concept_id,-15,15
 CA-006,Measurement,priority_source_value,-15,15
 CA-006,Visit_Payer,plan_type,-15,15
@@ -125,6 +126,11 @@ CA-006,Immunization,immunization_dose,-15,15
 CA-006,Immunization,imm_dose_unit_source_value,-15,15
 CA-006,Immunization,imm_dose_unit_concept_id,-15,15
 CA-006,Immunization,procedure_occurrence_id,-15,15
+CA-006,Immunization,imm_manufacturer,-15,15
+CA-006,Immunization,imm_lot_num,-15,15
+CA-006,Immunization,imm_exp_datetime,-15,15
+CA-006,Immunization,imm_exp_date,-15,15
+CA-006,Immunization,imm_body_site_source_value,-15,15
 CA-006,hash_token,person_id,-15,15
 CA-006,hash_token,token_01,-15,15
 CA-006,hash_token,token_02,-15,15
@@ -132,3 +138,8 @@ CA-006,hash_token,token_03,-15,15
 CA-006,hash_token,token_04,-15,15
 CA-006,hash_token,token_05,-15,15
 CA-006,hash_token,token_06,-15,15
+CA-006,location,city,-15,15
+CA-006,location,state,-15,15
+CA-006,location,zip,-15,15
+CA-006,location_history,end_date,-15,15
+CA-006,location_history,end_datetime,-15,15
