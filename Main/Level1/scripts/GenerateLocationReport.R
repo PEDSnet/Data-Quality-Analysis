@@ -21,7 +21,7 @@ generateLocationReport <- function() {
   current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",
                                    field_name,"is: ",current_total_count ,"\n"))
-  
+  print('test 1')
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   
@@ -32,11 +32,11 @@ generateLocationReport <- function() {
   message(field_name)
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ",
                                    describeIdentifier(data_tbl, field_name),"\n"))
-  
+  print('test 2')
   ###########DQA CHECKPOINT##############  total id different from source value
   logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), 
                                                    c("location_id",field_name),data_tbl)) 
-
+  print('test 3')
     ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
 
@@ -50,7 +50,7 @@ generateLocationReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidValue(), c(table_name),c(field_name)
                                                    ,"zip.csv", data_tbl)) 
-  
+  print('test 4')
   field_name="city"
   message(field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -59,7 +59,7 @@ generateLocationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   describeOrdinalField(data_tbl, table_name,field_name, ggplotting = F, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
-
+  print('test 5')
   field_name="zip"
   message(field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
@@ -68,7 +68,7 @@ generateLocationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
   message<-describeOrdinalField(data_tbl, table_name,field_name,ggplotting = F, group_ret = 0)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
-
+  print('test 6')
   #write all contents to the report file and close it.
   writeLines(fileContent, fileConn)
   close(fileConn)
