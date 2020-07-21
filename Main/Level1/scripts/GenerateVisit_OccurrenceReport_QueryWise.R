@@ -18,11 +18,12 @@ generateVisitOccurrenceReport <- function() {
 
   #PRIMARY FIELD
   field_name<-"visit_occurrence_id"
+  message(field_name)
   df_total_visit_count<-retrieve_dataframe_count(data_tbl,field_name)
   current_total_count<-as.numeric(df_total_visit_count[1][1])
   fileContent<-c(fileContent,paste("The total number of",field_name,"is:", 
                                    formatC(current_total_count, format="d", big.mark=','),"\n"))
-  
+ 
   ###########DQA CHECKPOINT############## difference from previous cycle
   logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name), NULL,current_total_count)) 
   ## write current total count to total counts 
@@ -35,6 +36,7 @@ generateVisitOccurrenceReport <- function() {
   # ORDINAL Fields
   
   field_name<-"visit_start_datetime"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeDateField(df_table, table_name, field_name, datetime = 1)
@@ -45,6 +47,7 @@ generateVisitOccurrenceReport <- function() {
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name), c(field_name),data_tbl)) 
   field_name<-"visit_end_date"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
 
@@ -64,6 +67,7 @@ generateVisitOccurrenceReport <- function() {
    
   # visit type concept id
   field_name="visit_type_concept_id"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   df_visit_type <-generate_df_concepts(table_name,"visit_type_dplyr.txt", concept_tbl)
   order_bins <-c(df_visit_type$concept_id,0,NA)
@@ -78,6 +82,7 @@ generateVisitOccurrenceReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   field_name<-"visit_source_value"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
@@ -91,6 +96,7 @@ generateVisitOccurrenceReport <- function() {
 
   # visit source concept id
   field_name="visit_source_concept_id"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   missing_percent_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
   missing_percent<- extract_numeric_value(missing_percent_message)
@@ -107,6 +113,7 @@ generateVisitOccurrenceReport <- function() {
 
   # visit concept id
   field_name="visit_concept_id"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   ### write fact type counts 
 
@@ -171,6 +178,7 @@ generateVisitOccurrenceReport <- function() {
 
   ### admitting source value 
   field_name="admitted_from_source_value"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
@@ -188,6 +196,7 @@ generateVisitOccurrenceReport <- function() {
 
   ### admitting source concept id 
   field_name="admitted_from_concept_id"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
 
   ###########DQA CHECKPOINT##############
@@ -212,6 +221,7 @@ generateVisitOccurrenceReport <- function() {
 
   ### admitting source value 
   field_name="discharge_to_source_value"
+  message(field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
@@ -247,15 +257,17 @@ generateVisitOccurrenceReport <- function() {
   
   #FOREIGN KEY field
   field_name<-"person_id"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl, field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),
                  paste_image_name_sorted(table_name,field_name),message);
-
+  
   flog.info(Sys.time())
 
   field_name<-"provider_id"
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)
@@ -269,6 +281,7 @@ generateVisitOccurrenceReport <- function() {
                  paste_image_name_sorted(table_name,field_name),message);
 
   field_name<-"care_site_id" # 8 minutes
+  message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1)

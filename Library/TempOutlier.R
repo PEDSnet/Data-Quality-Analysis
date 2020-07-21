@@ -35,7 +35,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
              filter(date_field < earliest_date) %>%
              group_by_(date_field) %>% 
              dplyr::summarise(date_level_count = n()) %>%
-             collect()
+             as.data.frame()
   } else 
   {
     fact_type_concept_id<-fact_type[1]

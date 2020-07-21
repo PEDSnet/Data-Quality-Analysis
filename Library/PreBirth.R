@@ -28,7 +28,7 @@ applyCheck.PreBirth<- function(theObject, table_list, field_list)
                              ) %>%
     mutate(birth_datetime = sql('cast("birth_datetime" as date)')) %>%
     filter_(paste0('birth_datetime >', date_field)) %>%
-    select_(quote(person_id), date_field) %>% collect() 
+    select_(quote(person_id), date_field) %>% as.data.frame() 
   
    if(nrow(df_before_dob)>0)
   {

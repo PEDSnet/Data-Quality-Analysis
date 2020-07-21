@@ -24,24 +24,24 @@ generateLevel2Drug <- function() {
   ### temporal outlier check 
   field_name<-"drug_exposure_start_date"
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'drug_type_concept_id'), c(38000175,'dispensing')))
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000175,'dispensing'))))
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(dispensing)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-dispensing')));
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'drug_type_concept_id'), c(38000180,'inpatient-mar'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000180,'inpatient-mar')))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(inpatient MAR)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-inpatient-mar')));
   
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'drug_type_concept_id'), c(38000177,'prescriptions'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'drug_type_concept_id'), c(38000177,'prescriptions')))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(prescriptions)","\n"))

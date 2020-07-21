@@ -20,8 +20,8 @@ generateLevel2Observation <- function () {
   ### CA008 temporal outlier check 
   field_name<-"observation_date"
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name), NULL)) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name), NULL))) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   

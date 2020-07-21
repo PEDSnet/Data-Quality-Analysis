@@ -373,7 +373,7 @@ get_concept_name <- function(table_df, df_concept_id){
   concept_name <- table_df %>%
     filter(concept_id == df_concept_id) %>%
     select(concept_name) %>% 
-    collect()
+    as.data.frame()
   return(concept_name)
 }
 
@@ -382,7 +382,7 @@ get_vocabulary_name <- function(table_df, df_concept_id){
   vocab_name <- table_df %>%
     filter(concept_id == df_concept_id) %>%
     select(vocabulary_id) %>%
-    collect()
+    as.data.frame()
   return(vocab_name)
 }
 

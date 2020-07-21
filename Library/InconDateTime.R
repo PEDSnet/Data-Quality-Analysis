@@ -64,7 +64,7 @@ applyCheck.InconDateTime<- function(theObject, table_list, field_list)
      filter(time_day != date_day,
             time_month != date_month,
             time_year != date_year) %>%
-     collect()
+     as.data.frame()
   }
   
   df_incon <- as.data.frame(mismatch_date_tbl)

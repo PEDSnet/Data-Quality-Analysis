@@ -17,6 +17,7 @@ generateLocationReport <- function() {
 
   #PRIMARY FIELD(s)
   field_name<-"location_id"
+  message(field_name)
   current_total_count<-as.numeric(describeIdentifier(data_tbl,field_name))
   fileContent<-c(fileContent,paste("The total number of unique values for ",
                                    field_name,"is: ",current_total_count ,"\n"))
@@ -28,6 +29,7 @@ generateLocationReport <- function() {
   write_total_counts(table_name, current_total_count)
   
   field_name<-"location_source_value"
+  message(field_name)
   fileContent<-c(fileContent,paste("The total number of",field_name,"is: ",
                                    describeIdentifier(data_tbl, field_name),"\n"))
   
@@ -39,6 +41,7 @@ generateLocationReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
 
   field_name="state"
+  message(field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -49,6 +52,7 @@ generateLocationReport <- function() {
                                                    ,"zip.csv", data_tbl)) 
   
   field_name="city"
+  message(field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   
   ###########DQA CHECKPOINT -- missing information##############
@@ -57,6 +61,7 @@ generateLocationReport <- function() {
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
 
   field_name="zip"
+  message(field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   
   ###########DQA CHECKPOINT -- missing information##############
