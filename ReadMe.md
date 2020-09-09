@@ -40,6 +40,4 @@ install_github("baileych/ohdsi-argos")
 * The `RPostgres` package is _not_ required if PostgreSQL is not the target database type
 * For Oracle users, the [`ROracle`](https://cran.r-project.org/web/packages/ROracle/index.html) package should be installed
 
-For troubleshooting with `install_github("ohdsi/SqlRender")`, please see [here](https://github.com/OHDSI/SqlRender/issues/28). 
-
 Note: if previously installed, run `update.packages()` to get the latest version of each library
