@@ -15,15 +15,9 @@ This toolkit has been designed for conducting data quality assessments on clinic
 
 ## Required Downloads
 
-### JDK  
-Java version 5
-
-If using OSX, download [here](https://support.apple.com/kb/dl1572?locale=en_US)
-
-Note: version 5 must be installed, even if a higher version of Java is installed
 
 ### R
-R version 3.1.x or above, 64-bit ([Comprehensive R Archive Network](http://cran.r-project.org/))
+R version 3.2.x or above, 64-bit ([Comprehensive R Archive Network](http://cran.r-project.org/))
 
 ### R Packages 
 
@@ -33,8 +27,6 @@ install.packages(c("DBI","yaml","ggplot2","RJDBC","devtools","futile.logger","pl
 
 install.packages("RPostgres")
 library(devtools)
-install_github("ohdsi/SqlRender")
-install_github("ohdsi/DatabaseConnector")
 install_github("baileych/ohdsi-argos")
 ```
 * Minimum Versions Required:
@@ -47,7 +39,5 @@ install_github("baileych/ohdsi-argos")
   * stringr: 1.2
 * The `RPostgres` package is _not_ required if PostgreSQL is not the target database type
 * For Oracle users, the [`ROracle`](https://cran.r-project.org/web/packages/ROracle/index.html) package should be installed
-
-For troubleshooting with `install_github("ohdsi/SqlRender")`, please see [here](https://github.com/OHDSI/SqlRender/issues/28). 
 
 Note: if previously installed, run `update.packages()` to get the latest version of each library
