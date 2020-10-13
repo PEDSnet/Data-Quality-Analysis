@@ -34,7 +34,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
   date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
              filter(date_field < earliest_date) %>%
              group_by_(date_field) %>% 
-             dplyr::summarise(date_level_count = n()) %>%
+             dplyr::summarise(date_level_count = n(),.groups = 'drop') %>%
              as.data.frame()
   } else 
   {
@@ -43,7 +43,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     date_dist_tbl<-cdm_tbl(req_env$db_src, table_name) %>%
     filter_(paste0(fact_type_concept_id_colname,'==',fact_type_concept_id)) %>%
     group_by_(date_field) %>% 
-    dplyr::summarise(date_level_count = n()) %>%
+    dplyr::summarise(date_level_count = n(), .groups = 'drop') %>%
     as.data.frame() %>%
     filter_(paste(date_field,"<", "\"",as.Date(earliest_date), "\"")) 
   }
@@ -65,7 +65,7 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     mutate(yyyymm = paste0(year,'-',month)) %>%
     filter(yyyymm <= paste0(year(Sys.Date() - 31),'-',month(Sys.Date() - 31))) %>%
     group_by(yyyymm) %>%
-    dplyr::summarise(yyyymm_level_count = sum(date_level_count)) %>%
+    dplyr::summarise(yyyymm_level_count = sum(date_level_count), .groups = 'drop') %>%
     dplyr::mutate(rnum = row_number()) %>%
     dplyr::mutate(next_rnum = rnum+1)
   ## plot this table 

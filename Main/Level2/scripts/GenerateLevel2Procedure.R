@@ -25,8 +25,8 @@ generateLevel2Procedure <- function () {
   ### CA008 temporal outlier check 
   field_name<-"procedure_date"
   log_entry_content<-(read.csv(log_file_name))
-  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name), NULL))) 
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name), NULL)) 
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   message("Completed Temp Outliers")
@@ -37,7 +37,7 @@ generateLevel2Procedure <- function () {
   ### CA-018 procedure date vs visit dates check 
   field_name<-"procedure_date"
   log_entry_content<-(read.csv(log_file_name))
-  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(ProcedureVisitDate(), c(table_name), c('procedure_date'))))
+  log_entry_content<-custom_rbind(log_entry_content,applyCheck(ProcedureVisitDate(), c(table_name), c('procedure_date')))
   write.csv(log_entry_content, file = log_file_name
             ,row.names=FALSE)
   
@@ -58,7 +58,6 @@ generateLevel2Procedure <- function () {
                     by =c("ancestor_concept_id"="ancestor_concept_id"))
   temp2<-filter(temp1
                 , max_levels_of_separation.x==1 & max_levels_of_separation.y==1)
-  #print(head(temp2))
   sibling_concepts_tbl<-
     (select (temp2,
              descendant_concept_id.x, descendant_concept_id.y)
@@ -142,8 +141,7 @@ generateLevel2Procedure <- function () {
      if(nrow(df_procedure_counts_by_visit)>0)
      {
        outlier_inpatient_procedures <- as.data.frame(NULL)
-       print(dim(df_procedure_counts_by_visit))
-       print(summary(df_procedure_counts_by_visit))
+
     try(outlier_inpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_procedure_counts_by_visit,'vt_counts',
                                              'top_inpatient_procedure.csv',
@@ -197,8 +195,7 @@ generateLevel2Procedure <- function () {
   if(nrow(df_out_procedure_counts_by_person)>0)
   {
     outlier_outpatient_procedures <- as.data.frame(NULL)
-    print(dim(df_out_procedure_counts_by_person))
-    print(summary(df_out_procedure_counts_by_person))
+
   try(outlier_outpatient_procedures<-applyCheck(UnexTop(),table_name,'procedure_concept_id', 
                                            c(df_out_procedure_counts_by_person,'pt_counts','top_outpatient_procedure.csv',
                                              'outlier outpatient procedure:',g_top50_outpatient_procedures_path

@@ -100,7 +100,7 @@ print('test 1')
                  paste_image_name_sorted(table_name,field_name),message);
   print('test 9')
   ##### ##### ##### ##### May Need Work ##### ##### ##### ##### ##### #####
-  field_name<-"device_concept_id" #
+  field_name<-"device_concept_id" 
   message(field_name)
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))

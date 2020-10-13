@@ -179,7 +179,7 @@ generateVisitOccurrenceReport <- function() {
   ### admitting source value 
   field_name="admitted_from_source_value"
   message(field_name)
-  df_table<-retrieve_dataframe_group(data_tbl,field_name)
+  df_table<-retrieve_dataframe_group(data_tbl %>% filter(!visit_concept_id %in% c(9202,2000000469,44814711,581399)),field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   missing_message<-reportMissingCount(df_table,table_name,field_name, group_ret = 1);
   fileContent<-c(fileContent,missing_message)

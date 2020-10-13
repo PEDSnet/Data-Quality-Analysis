@@ -33,13 +33,13 @@ logFileData<-custom_rbind(logFileData,applyCheck(UnexDiff(), c(table_name),NULL,
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
- 
+
    field_name<-"visit_occurrence_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"","\n"))
   message<-describeForeignKeyIdentifiers(df_table, table_name, field_name)
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),paste_image_name_sorted(table_name,field_name),message);
-  
+
    # ORDINAL Fields
     field_name<-"adt_datetime"
     df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -96,7 +96,6 @@ logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(fi
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name), data_tbl)) 
   logFileData<-custom_rbind(logFileData,applyCheck(MissConID(), c(table_name),c(field_name), data_tbl)) 
 
-  #print(logFileData)
   if(missing_percent<100)
   {
     ###########DQA CHECKPOINT##############

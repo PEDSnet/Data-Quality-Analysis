@@ -94,6 +94,14 @@ Multiple log files can be applied:
 				for i, r := range report.Results {
 					// Ensure we are comparing the correct result.
 					if r.Model != issue.Model || r.ModelVersion != issue.ModelVersion || r.DataVersion != issue.DataVersion || r.Table != issue.Table {
+						cmd.Println(r.Model)
+						cmd.Println(issue.Model)
+						cmd.Println(r.ModelVersion)
+						cmd.Println(issue.ModelVersion)
+						cmd.Println(r.DataVersion)
+						cmd.Println(issue.DataVersion)
+						cmd.Println(r.Table)
+						cmd.Println(issue.Table)
 						cmd.Println("comparing different versions")
 						os.Exit(1)
 					}

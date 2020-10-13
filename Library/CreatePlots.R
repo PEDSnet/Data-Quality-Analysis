@@ -36,7 +36,6 @@ describeIdentifier<-function(table_df, field_name)
 reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
   if(is.null(nrow(table_df))) return(NA)
   if(group_ret){
-    print(table_df)
     total <- table_df %>%
       dplyr::mutate(total = sum(freq)) %>%
       select(total) %>%
@@ -54,14 +53,16 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
   else{
     total <- table_df %>%
       select_(field_name) %>%
-      dplyr::summarize(n = n()) %>%
+      dplyr::summarize(n = n(),.groups = "drop_last") %>%
       collect()
+    if(".groups" %in% colnames(total)) total <- total %>% select(-.groups)
     missn <- table_df %>%
       collect() %>%
       select_(field_name) %>%
       na.omit() %>%
-      dplyr::summarize(n = n()) %>%
+      dplyr::summarize(n = n(),.groups = "drop_last") %>%
       collect() 
+    if(".groups" %in% colnames(missn)) missn <- missn %>% select(-.groups)
     ##Switch from rate present to missing rate
     missn = total - missn 
   }
@@ -80,9 +81,10 @@ reportMissingCount<-function(table_df, table_name, field_name, group_ret = 0){
 reportNullFlavors<-function(table_df,table_name,field_name,UN_code,OT_code,NI_code){
   table_df <- table_df %>%
     group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
+    dplyr::summarize(freq = n(),.groups = "drop_last") %>%
     as.data.frame() %>%
     na.omit() 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   table_df[,2] <- as.numeric(table_df[,2])
   colnames(table_df) <- c("Var1", "Freq")
 
@@ -151,9 +153,10 @@ describeNominalField<-function(table_df, table_name,field_name, group_ret = 1){
 
   table_df <- table_df %>%
     group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
+    dplyr::summarize(freq = n(),.groups = "drop_last") %>%
     as.data.frame() %>%
     na.omit() 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   table_df[,2] <- as.numeric(table_df[,2])
   }
 
@@ -203,9 +206,10 @@ describeOrdinalField<-function(table_df, table_name,field_name, group_ret = 1, g
 
   table_df = table_df %>% 
     group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
+    dplyr::summarize(freq = n(),.groups = "drop_last") %>%
     as.data.frame() %>%
     na.omit() 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   }
 
   if(nrow(table_df) > 0){
@@ -272,8 +276,9 @@ describeDateField<-function(table_df, table_name, field_name, group_ret = 1, dat
   table_df <- table_df %>%
     na.omit() %>%
     group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
+    dplyr::summarize(freq = n(),.groups = "drop_last") %>%
     as.data.frame()
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   table_df[,2] <- as.numeric(table_df[,2])
   table_df[,1] = as.Date(table_df[,1])
   date_max <- max(table_df[,1], na.rm = T)
@@ -351,9 +356,10 @@ describeTimeField<-function(table_df, table_name,field_name){
   flog.info(paste("Plotting for Field: ", field_name))
   table_df <- table_df %>%
     group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
+    dplyr::summarize(freq = n(),.groups = "drop_last") %>%
     as.data.frame() %>%
     na.omit() 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   table_df[,1] <- as.character(table_df[,1])
   table_df[,2] <- as.numeric(table_df[,2])
 
@@ -403,9 +409,10 @@ describeTimeField<-function(table_df, table_name,field_name){
 describeRatioField<-function(table_df,table_name,field_name, unit){
   table_df <- table_df %>%
     group_by_(field_name) %>%
-    dplyr::summarize(freq = n()) %>%
+    dplyr::summarize(freq = n(),.groups = "drop_last") %>%
     as.data.frame() %>%
     na.omit() 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   table_df[,2] <- as.numeric(table_df[,2])
   colnames(table_df) <- c("Var1", "Freq")
   table_df$Var1 = as.numeric(table_df$Var1)
@@ -478,8 +485,9 @@ describeForeignKeyIdentifiers<-function(table_df, table_name, field_name, group_
     table_df <- table_df %>%
       na.omit() %>%
       dplyr::group_by_(field_name) %>%
-      dplyr::summarize(freq = n()) %>%
+      dplyr::summarize(freq = n(),.groups = "drop_last") %>%
       as.data.frame()
+    if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
     table_df[,2] <- as.numeric(table_df[,2])
     table_df <- table_df[order(table_df[,1]),]
   }

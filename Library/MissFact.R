@@ -24,7 +24,7 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   
   df_table<-retrieve_dataframe_group(table_df, field_name)
-  
+
   for(list_index in 1:length(list_of_facts))
   {
   metadata<- unlist(list_of_facts[list_index])
@@ -32,6 +32,7 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
   
   if(length(metadata)==2)
   {
+
     number_of_records<-nrow(subset(df_table,df_table[,1]==metadata[1]))
   } else {
       values="";
@@ -47,14 +48,12 @@ applyCheck.MissFact <- function(theObject, table_list, field_list, list_of_facts
                                                 )
     
   }
-  
-  if( number_of_records==0)
-  {
+
+  if(number_of_records==0){
     # create an issue 
     issue_obj<-Issue(theObject, table_list, field_list, paste(metadata[1], ":", value_name))
     issue_list<-custom_rbind( issue_list, logIssue(issue_obj))
-    
-  }
+    }
   } ## for loop ends
   
   NextMethod("applyCheck",theObject)

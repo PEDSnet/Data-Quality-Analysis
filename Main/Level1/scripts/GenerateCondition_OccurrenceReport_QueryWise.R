@@ -112,7 +112,7 @@ generateConditionOccurrenceReport <- function() {
 
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidFormat(), c(table_name),c(field_name)
                                                    ,3, data_tbl))  ## number of components in condition_source_value
-  
+
   field_name<-"condition_source_concept_id"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
@@ -145,8 +145,9 @@ generateConditionOccurrenceReport <- function() {
   ###########DQA CHECKPOINT -- invalid vocab ##############
   logFileData<-custom_rbind(logFileData,applyCheck(InvalidVocab(), c(table_name),c(field_name),
                                                    c('Condition','SNOMED'), concept_tbl, data_tbl)) 
-
+  
   message<-describeOrdinalField(df_table, table_name,field_name, ggplotting = F)
+
   # create meaningful message
   new_message<-create_meaningful_message_concept_id(concept_tbl, message,field_name)
   fileContent<-c(fileContent,new_message,paste_image_name(table_name,field_name));
@@ -168,7 +169,6 @@ generateConditionOccurrenceReport <- function() {
   ### DQA checkpoint - future date
   logFileData<-custom_rbind(logFileData,applyCheck(ImplFutureDate(), c(table_name),
                                                    c(field_name),data_tbl)) 
-  
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
 
   field_name<-"condition_end_date"
@@ -191,7 +191,7 @@ generateConditionOccurrenceReport <- function() {
   fileContent<-c(fileContent,message,paste_image_name(table_name,field_name));
   logFileData<-custom_rbind(logFileData,applyCheck(ImplEvent(),c(table_name),
                                                    c('condition_start_date','condition_end_date'),data_tbl)) 
-
+  
   field_name<-"stop_reason"
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
@@ -203,7 +203,7 @@ generateConditionOccurrenceReport <- function() {
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), table_name, field_name, data_tbl)) 
   message<-describeOrdinalField(df_table, table_name,field_name,ggplotting = F)
   fileContent<-c(fileContent, paste_image_name(table_name,field_name),message);
-  
+
   #FOREIGN KEY fields
   field_name<-"person_id" #
   df_table<-retrieve_dataframe_group(data_tbl,field_name)
@@ -214,7 +214,7 @@ generateConditionOccurrenceReport <- function() {
 
   field_name<-"visit_occurrence_id"
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
- 
+
     ## compute missing % for visits stratified by condition_type_concept_id (problem list vs non-problem list)
     ## the expectation is that there shouldnt be any missing visit in non-problem list. and there could be missing for problem list entries
     count_nonproblemlist_novisit<-retrieve_dataframe_clause(data_tbl,"count(*)"
@@ -242,7 +242,7 @@ generateConditionOccurrenceReport <- function() {
     fileContent <-c(fileContent,paste("## Barplot for",field_name,"\n"))
     message<-reportMissingCount(df_table,table_name,field_name)
     fileContent<-c(fileContent,message)
-    
+
     ###########DQA CHECKPOINT -- missing information##############
     missing_percent<-extract_numeric_value(message)
     logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 

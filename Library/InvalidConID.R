@@ -21,18 +21,16 @@ applyCheck.InvalidConID <- function(theObject, table_list, field_list, metadata,
 
   check_list_entry<-get_check_entry_one_variable(theObject$check_code, table_name, field_name)
   if(is.character(metadata)){
-   if(grepl('csv$', metadata))
-    { 
+   if(grepl('csv$', metadata)){ 
       concept_id_list<-generate_list_concepts(table_name, metadata)
-    } else
-    {
+    } else{
       concept_id_list <-generate_df_concepts(table_name, metadata, table_df)
     }
   }
   else{
     concept_id_list <- metadata
   }
-  
+
   order_bins <-c(concept_id_list$concept_id,0,44814650,44814653, 44814649,NA)
   df_table<-retrieve_dataframe_group(table_df2,field_name)
 

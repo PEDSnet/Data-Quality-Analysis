@@ -91,8 +91,9 @@ retrieve_dataframe_count_group<-function(table_df, count_column, field_name){
       rename_(count_column = count_column) %>%
       group_by_(field_name) %>%
       filter(!is.na(count_column)) %>%
-      summarize(count = n_distinct(count_column)) %>%
+      summarize(count = n_distinct(count_column),.groups = "drop_last") %>%
       as.data.frame()
+  if(".groups" %in% colnames(counts)) counts <- counts %>% select(-.groups)
    test_that("Testing Retrieve Dataframe Count Group", 
              expect_equal(colnames(counts), c(field_name, "count")))
    return(counts)
@@ -145,9 +146,10 @@ retrieve_dataframe_top_5<-function(table_df, field_name){
   table_df <- table_df %>%
     filter_(paste("!is.na(", field_name, ")")) %>%
     group_by_(field_name) %>%
-    summarise(count = n()) %>%
+    summarise(count = n(),.groups = "drop_last") %>%
     arrange(desc(count)) %>%
     as.data.frame()
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   
   l = min(nrow(table_df), 5)
   return(table_df[1:l,])
@@ -157,10 +159,11 @@ retrieve_dataframe_top_5<-function(table_df, field_name){
   table_df <- table_df %>%
     filter_(paste("!is.na(", field_name, ")")) %>%
     group_by_(field_name) %>%
-    summarise(count = n()) %>%
+    summarise(count = n(),.groups = "drop_last") %>%
     arrange(desc(count)) %>%
     as.data.frame()
 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   l = min(nrow(table_df), 5)
   return(table_df[1:l,])
 }
@@ -234,13 +237,14 @@ retrieve_dataframe_ratio_group_join<-function(table_df, table_df2, num, den, gro
     inner_join(table_df2, by = join_field) %>%
     group_by_(group_by_field) %>%
     dplyr::summarize(numer = n_distinct(var1),
-              denom = n_distinct(var2)) %>%
+              denom = n_distinct(var2), .groups = "drop_last") %>%
     dplyr::mutate(numer = as.double(numer)) %>%
     dplyr::mutate(denom = as.double(denom)) %>%
     dplyr::mutate(ratio = numer/denom) %>%
     select_(group_by_field, 'ratio') %>%
     as.data.frame() %>%
     mutate(ratio = round(ratio, 2)) 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   colnames(table_df)[2] = sprintf('%s_%s_ratio', num, den)
   return(table_df)
 }
@@ -251,15 +255,14 @@ retrieve_dataframe_ratio_group<-function(table_df, num, den, group_by_field){
     mutate_(var1 = num, var2 = den) %>%
     group_by_(group_by_field) %>%
     dplyr::summarize(numer = n_distinct(var1),
-
-              denom = n_distinct(var2)) %>%
-
+              denom = n_distinct(var2),.groups = "drop_last") %>%
     dplyr::mutate(numer = as.double(numer)) %>%
     dplyr::mutate(denom = as.double(denom)) %>%
     dplyr:: mutate(ratio = numer/denom) %>%
     select_(group_by_field, 'ratio') %>%
     as.data.frame() %>%
     mutate(ratio = round(ratio, 2)) 
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   colnames(table_df)[2] = sprintf('%s_%s_ratio', num, den)
   return(table_df)
 }
@@ -303,20 +306,21 @@ retrieve_dataframe_join_clause_group<-function(table_df, table_df2,join_field,
     inner_join(table_df2, by = setNames("concept_id", join_field)) %>%
     filter_(clauses) %>%
     group_by_(group_by_field) %>%
-    summarise(counts = n()) %>%
+    summarise(counts = n(),.groups = "drop_last") %>%
     arrange(desc(counts)) %>%
     as.data.frame()
-   
+  
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   return(table_df)
 }
 
 
-retrieve_dataframe_group_join<-function(table_df, table_df2, keep_fields,
+retrieve_dataframe_group_join<-function(table_df, table_df2, drop_fields,
                                         group_by_field,join_field){
   table_df <- table_df %>%
     inner_join(table_df2, by = join_field) %>%
     group_by_(group_by_field) %>%
-    select_(keep_fields) %>%
+    select_(drop_fields) %>%
     as.data.frame()
   return(table_df)
 }
@@ -329,15 +333,17 @@ retrieve_dataframe_group <- function(table_df, field_name, distinct_field = NULL
 
   if(!is.null(distinct_field)){
     table_df <- table_df %>%
-      summarize(freq = n_distinct(distinct_field)) %>%
+      summarize(freq = n_distinct(distinct_field),.groups = "drop_last") %>%
       as.data.frame()
   }
   else{
     table_df <- tryCatch(table_df %>%
-      summarize(freq = n()) %>%
+      summarize(freq = n(),.groups = "drop_last") %>%
       as.data.frame()
     , error = function(e){setNames(data.frame(matrix(ncol = 2, nrow = 0)), c(field_name, "freq"))})
   }
+
+  if(".groups" %in% colnames(table_df)) table_df <- table_df %>% select(-.groups)
   test_that("Testing that retrieve_dataframe_group has correct naming",
             expect_equal(colnames(table_df), c(field_name, "freq")))
   table_df[,"freq"] = as.numeric(table_df[,"freq"]) 
@@ -350,10 +356,11 @@ retrieve_dataframe_group_clause <- function(table_df, field_name, clauses){
   counts_group = table_df %>%
     filter_(clauses) %>%
     group_by_(field_name) %>%
-    summarize(count = n()) %>%
+    summarize(count = n(),.groups = "drop_last") %>%
     mutate(count = as.numeric(count)) %>%
-
     as.data.frame()
+  
+  if(".groups" %in% colnames(counts_group)) counts_group <- counts_group %>% select(-.groups)
   return(table_df)
 }
 

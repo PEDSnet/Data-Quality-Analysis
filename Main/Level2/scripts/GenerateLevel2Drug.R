@@ -148,7 +148,6 @@ generateLevel2Drug <- function() {
                  by=c("in_concept_id"="concept_id"))
       , in_concept_id, concept_name, count)
   )
-  print(df_drug_counts_by_visit)
   if(nrow(df_drug_counts_by_visit)>0)
   {
   outlier_inpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id', 
@@ -203,7 +202,6 @@ generateLevel2Drug <- function() {
                  by=c("in_concept_id"="concept_id"))
       , in_concept_id, concept_name, count)
   )
- # print(df_drug_counts_by_visit)
   
   if(nrow(df_drug_counts_by_person)>0)
   {

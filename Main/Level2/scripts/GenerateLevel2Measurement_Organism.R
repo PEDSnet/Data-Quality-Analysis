@@ -30,8 +30,7 @@ generateLevel2MeasurementOrganism <- function () {
     no_match_measurement_organism_counts
   )
 
-  
-  #print(df_no_match_measurement_counts)
+
   if(nrow(df_no_match_measurement_organism_counts)>0)
   {
   ## writing to the issue log file
@@ -45,7 +44,6 @@ generateLevel2MeasurementOrganism <- function () {
   }
   
   ##### Printing top 100 vital measurements ##### 
-  #print("here")
   
   measurement_organism_tbl_enhanced<- distinct(select(inner_join(concept_tbl,measurement_organism_tbl, by = c("concept_id"="organism_concept_id"))
                                            ,meas_organism_id, concept_id, concept_name))
@@ -60,8 +58,6 @@ generateLevel2MeasurementOrganism <- function () {
           , occurrence_counts=n())
         , desc(occurrence_counts))
       , row_number()>=1 & row_number()<=100) ## printing top 100
-  
-  #print(head(measurement_organism_counts))
   
   df_measurement_organism_counts_all<-as.data.frame(
     dplyr::arrange(distinct(
