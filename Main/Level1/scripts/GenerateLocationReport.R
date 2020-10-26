@@ -34,8 +34,8 @@ generateLocationReport <- function() {
                                    describeIdentifier(data_tbl, field_name),"\n"))
   print('test 2')
   ###########DQA CHECKPOINT##############  total id different from source value
-  logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), 
-                                                   c("location_id",field_name),data_tbl)) 
+  try(logFileData<-custom_rbind(logFileData,applyCheck(InconPK(), c(table_name), 
+                                                   c("location_id",field_name),data_tbl))) 
   print('test 3')
     ###########DQA CHECKPOINT##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
@@ -57,7 +57,7 @@ generateLocationReport <- function() {
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  describeOrdinalField(data_tbl, table_name,field_name, ggplotting = F, group_ret = 0)
+  try(describeOrdinalField(data_tbl, table_name,field_name, ggplotting = F, group_ret = 0))
   fileContent<-c(fileContent,paste_image_name(table_name,field_name));
   print('test 5')
   field_name="zip"
@@ -66,7 +66,7 @@ generateLocationReport <- function() {
   
   ###########DQA CHECKPOINT -- missing information##############
   logFileData<-custom_rbind(logFileData,applyCheck(MissData(), c(table_name),c(field_name),data_tbl)) 
-  message<-describeOrdinalField(data_tbl, table_name,field_name,ggplotting = F, group_ret = 0)
+  try(message<-describeOrdinalField(data_tbl, table_name,field_name,ggplotting = F, group_ret = 0))
   fileContent<-c(fileContent,paste_image_name(table_name,field_name),message);
   print('test 6')
   #write all contents to the report file and close it.

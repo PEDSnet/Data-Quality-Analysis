@@ -21,32 +21,32 @@ generateLevel2Visit <- function () {
   field_name<-"visit_start_date"
   log_entry_content<-(read.csv(log_file_name))
 
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'visit_concept_id'), c(9201,'inpatient'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), c(9201,'inpatient')))) 
   write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
 
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(inpatient)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-inpatient')));
 
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'visit_concept_id'), c(9202,'outpatient'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), c(9202,'outpatient')))) 
   write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(outpatient)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-outpatient')));
 
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
-                                                               c(field_name, 'visit_concept_id'), c(9203,'ED'))) 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+                                                               c(field_name, 'visit_concept_id'), c(9203,'ED')))) 
 
   write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(ED)","\n"))
   fileContent<-c(fileContent,paste_image_name(table_name,paste0(field_name,'-yyyy-mm-ED')));
 
   log_entry_content<-(read.csv(log_file_name))
-  log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
+  try(log_entry_content<-custom_rbind(log_entry_content,applyCheck(TempOutlier(), c(table_name), 
                                                                c(field_name, 'visit_concept_id'), 
-                                                               c(2000000469,'OP Non-Physician'))) 
+                                                               c(2000000469,'OP Non-Physician')))) 
 
   write.csv(log_entry_content, file = log_file_name,row.names=FALSE)
   fileContent <-c(fileContent,paste("## Barplot for",field_name,"(OP Non-Physician)","\n"))

@@ -67,14 +67,16 @@ applyCheck.TempOutlier<- function(theObject, table_list, field_list, fact_type)
     group_by(yyyymm) %>%
     dplyr::summarise(yyyymm_level_count = sum(date_level_count), .groups = 'drop') %>%
     dplyr::mutate(rnum = row_number()) %>%
-    dplyr::mutate(next_rnum = rnum+1)
+    dplyr::mutate(next_rnum = rnum+1) %>%
+    as.data.frame()
   ## plot this table 
 
   describeYYMMField(date_dist_tbl_simplified %>% select(yyyymm, yyyymm_level_count)
                     , table_name, date_field, fact_type)
   ## this table contains deltas and the data points used for outlier detection 
-  date_dist_delta<- date_dist_tbl_simplified %>% 
-      inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) 
+  date_dist_delta <- date_dist_tbl_simplified %>% 
+      inner_join(date_dist_tbl_simplified, by = c("next_rnum" = "rnum")) %>%
+      as.data.frame()
 if(length(date_dist_delta$yyyymm_level_count.y) > 0){
       date_dist_delta <- date_dist_delta %>%
         dplyr::mutate(change_over_last_month = yyyymm_level_count.y- yyyymm_level_count.x) %>%
@@ -83,7 +85,8 @@ if(length(date_dist_delta$yyyymm_level_count.y) > 0){
       sd_value <- sd(date_dist_delta$change_over_last_month)
       mean_value <- mean(date_dist_delta$change_over_last_month)
       lower_bound<-as.integer(round(mean_value-3*sd_value))
-      upper_bound<-as.integer(round(mean_value+4*sd_value))
+      upper_bound<-as.integer(round(mean_value+4*sd_value)) %>%
+      as.data.frame()
 }
 
   if(!(is.na(lower_bound) | is.na(upper_bound))){
@@ -94,15 +97,13 @@ if(length(date_dist_delta$yyyymm_level_count.y) > 0){
     dev.off()
   }
 
-  if(nrow(date_dist_delta)>0) 
-  {
-  date_dist_delta$outlier<-FALSE
-  for(i in 1:nrow(date_dist_delta))
-  {
-    if(date_dist_delta[i,2]<lower_bound) 
-      date_dist_delta[i,3]<-TRUE
-    if(date_dist_delta[i,2]>upper_bound) 
-      date_dist_delta[i,3]<-TRUE
+  print(dim(date_dist_delta))
+  if(nrow(date_dist_delta)>0) {
+    date_dist_delta$outlier<-FALSE
+    for(i in 1:nrow(date_dist_delta)){
+      print(i)
+      if(date_dist_delta[i,2]<lower_bound){ date_dist_delta[i,3]<-TRUE}
+      if(date_dist_delta[i,2]>upper_bound){ date_dist_delta[i,3]<-TRUE}
   }
 
   df_outliers<-date_dist_delta[date_dist_delta$outlier==TRUE,c(1,2)]
