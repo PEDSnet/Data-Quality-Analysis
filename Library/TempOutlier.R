@@ -97,11 +97,9 @@ if(length(date_dist_delta$yyyymm_level_count.y) > 0){
     dev.off()
   }
 
-  print(dim(date_dist_delta))
   if(nrow(date_dist_delta)>0) {
     date_dist_delta$outlier<-FALSE
     for(i in 1:nrow(date_dist_delta)){
-      print(i)
       if(date_dist_delta[i,2]<lower_bound){ date_dist_delta[i,3]<-TRUE}
       if(date_dist_delta[i,2]>upper_bound){ date_dist_delta[i,3]<-TRUE}
   }
