@@ -10,6 +10,12 @@ A summary of how to execute the tool for an initial run can be found here: ([Ini
 
 Instructions for how to execute the toolkit for a PEDSnet data submission can be found here: ([PEDSnet Site](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Doc/DQA-HowtoexecuteDQAonaPEDSnetSiteDataset.pdf))
 
+#### Uploading to the Database
+
+Issues are uploaded at the end of each cycle in their raw form to the database. The script to do this is included in the package here and utlizes the argos package in the standard approach: ([Upload Issues](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Tools/upload_issues.R))
+
+To upload issues, set the <path> variable to the directory where the resulting issue .csv files were output, specifcy the data version in the <cdm> variable, and specify the site. Sourcing the script will upload the issues.
+
 ## Objective
 This toolkit has been designed for conducting data quality assessments on clinical datasets modeled using the OMOP common data model. The toolkit includes a wide variety of data quality checks and a GitHub-based issue reporting mechanism. The toolkit is being routinely used by the PEDSnet CDRN. 
 
