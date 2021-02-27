@@ -1,5 +1,15 @@
 # Data Quality Assessment  in PEDSnet
 
+## Additional Resources
+
+### Introduction to the Tool
+
+A summary of how to execute the tool for an initial run can be found here: ([Initial Run](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Doc/PEDSnet_DQA_Documentation.md))
+
+### Running for a PEDSnet Site
+
+Instructions for how to execute the toolkit for a PEDSnet data submission can be found here: (PEDSnet Site](https://github.com/PEDSnet/Data-Quality-Analysis/blob/master/Doc/DQA-HowtoexecuteDQAonaPEDSnetSiteDataset.pdf))
+
 ## Objective
 This toolkit has been designed for conducting data quality assessments on clinical datasets modeled using the OMOP common data model. The toolkit includes a wide variety of data quality checks and a GitHub-based issue reporting mechanism. The toolkit is being routinely used by the PEDSnet CDRN. 
 
