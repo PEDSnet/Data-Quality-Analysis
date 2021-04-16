@@ -138,7 +138,7 @@ generateLevel2Drug <- function() {
       dplyr::arrange(
         dplyr::summarize(
           group_by(drug_ingredient_visit_join_tbl, in_concept_id)
-          , count=n_distinct(visit_occurrence_id))
+          , count=n_distinct(visit_occurrence_id),.groups = 'drop')
         , desc(count))
       , row_number()>=1 & row_number()<=20) ## look at top 20
   
@@ -147,7 +147,8 @@ generateLevel2Drug <- function() {
       inner_join(drug_counts_by_visit, concept_tbl,
                  by=c("in_concept_id"="concept_id"))
       , in_concept_id, concept_name, count)
-  )
+  ) 
+  
   if(nrow(df_drug_counts_by_visit)>0)
   {
   outlier_inpatient_drugs<-applyCheck(UnexTop(),table_name,'drug_concept_id', 

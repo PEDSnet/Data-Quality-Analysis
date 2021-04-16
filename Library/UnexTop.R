@@ -28,7 +28,7 @@ applyCheck.UnexTop <- function(theObject, table_name, field_name, metadata)
   {
      concept_id<-unlist(metadata[1])[i]
     concept_name<-unlist(metadata[2])[i]
-    count<-unlist(metadata[3])[i]
+    count<-as.numeric(unlist(metadata[3])[i])
 
     data_file[i,1]<-concept_id
     data_file[i,2]<-concept_name
